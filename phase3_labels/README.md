@@ -9,7 +9,7 @@ Candidate lists for hand-labeling rear-naked-choke (RNC) attempts in UFC fights.
 | `rnc_successes.csv` | Every UFC fight finished by "Submission (Rear Naked Choke)": attacker (winner), round, finish time, weight class, ufcstats URL. 683 rows (incl. 2 overturned/DQ chokes, flagged `finish_status`) |
 | `failed_attempt_candidates.csv` | Fighter-rounds with `SUB.ATT > 0` where the round did **not** end in a submission. 3,436 rows in 2,429 fights (109 are defender rows from finish rounds, `row_kind`). **Attempt type is unknown** (any submission counts), so video review decides whether an RNC happened |
 | `LABEL_SCHEMA.md` | Labeling CSV schema, definitions, review priority |
-| `pilot_15.csv`, `PILOT.md`, `draw_pilot.py` | Seeded, year-stratified fight draw for the pilot, with watch lookups and the substitution rule |
+| `labeling_queue_successes.csv`, `labeling_queue_failures.csv`, `random_10.csv`, `build_queues.py`, `PILOT.md` | Hybrid labeling queues (PREREG v0.2): hand-picked successes and failures with per-fighter caps, plus a seeded random-fight subset; first session plan. `pilot_15_RETIRED.csv` / `draw_pilot.py` are retired |
 | `fighter_priors.csv`, `build_fighter_priors.py`, `test_priors_leak.py` | Leak-free fighter priors as of event date - 1 day (one row per fight and fighter), plus a leak test |
 | `build_candidates.py` | Rebuilds the CSVs and `summary_stats.json` from `raw_sources/` (`.venv/Scripts/python -I build_candidates.py`; v2 fixes critique #22) |
 | `raw_sources/` | Input snapshot (taken 2026-10-18) of the Greco1899 CSVs |

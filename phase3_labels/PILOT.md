@@ -1,33 +1,29 @@
-# 15-attempt pilot: fight draw (PREREG section 2)
+# Labeling queues and first session (PREREG v0.2 section 2)
 
-`pilot_15.csv` is a seeded, year-stratified random draw of **fights** (not attempts), made before any video was watched.
+**Retired:** `pilot_15_RETIRED.csv` (the seeded random-fight draw, `draw_pilot.py`) is kept only as a record. It is not a subset of `random_10.csv` and full-fight watching at random was judged too slow. Do not use it for labeling.
 
-- **Frame:** fights from 2018 on that appear in `rnc_successes.csv` or `failed_attempt_candidates.csv` (1,273 fights; 121 to 159 per year).
-- **Seed:** `20261018` (numpy `default_rng`; frame sorted by `fight_id` before shuffling). Re-run `draw_pilot.py` to reproduce the file exactly.
-- **Order:** shuffle within each year 2018 to 2026, then interleave the years round-robin, giving `global_order` 1 to 54. Rows 1 to 36 are `primary` (4 per year); rows 37 to 54 are `reserve` (2 per year).
-- **Mix in the primary list:** 6 finish-list fights, 2 in both lists, 28 candidate-only. Candidate-only fights often have no RNC at all (about 1 in 3 hold one, unverified), so expect roughly 15 to 20 RNC attempts from the 36 primaries. That is a guess; the first fights will show the real rate.
-- **`rounds_to_watch`:** every round in which ufcstats scored a submission attempt (candidate list), plus the finishing round for RNC finishes. Label **every** RNC attempt in those rounds, finish rounds included. `known_finish` is the ufcstats finish (round and time) for the RNC finishes; it anchors the clock (about ±3 s, see LABEL_SCHEMA.md).
-- **Row field `found_via`** is `rnc_success`, `sub_att_candidate` or both; copy it to each attempt row.
+Everything below is rebuilt by `.venv/Scripts/python -I build_queues.py`. Frame for the random draw: fights from 2018 on in `rnc_successes.csv` or `failed_attempt_candidates.csv` (1,273 fights).
 
-## Stopping rule
+## Files
 
-Work through `global_order` strictly in order. Stop when **15 RNC attempts** are labeled (finish the fight you are in). Never stop on a success/failure quota and never skip around by interest. If a primary fight has no RNC attempt, that is a valid result: log it (0 attempts) so the hit rate is measured.
+| file | rows | `found_via` | what to do |
+|---|---|---|---|
+| `labeling_queue_successes.csv` | 315 | `finish_list` | Valid RNC finishes 2018+, recent first. Jump to `jump_to_elapsed_s` (finish minus 60 s, in elapsed-round seconds) or the `jump_to_clock_remaining` on the broadcast clock (assumes a 5:00 round). Label every RNC attempt from there to the end of the round, including earlier failed attempts if the 60 s window shows one |
+| `labeling_queue_failures.csv` | 47 | `candidate_round` | Rounds with `sub_att_count >= 2` where the attacker already had at least one RNC win before the event (as-of priors from `fighter_priors.csv`). Watch that round only. The attempt type is unknown, so "no RNC in this round" is a valid result: log it |
+| `random_10.csv` | 10 | `random_fight` | 10 fights drawn uniformly at random, seed `20261019`. Watch the full fight and label every RNC attempt. Exempt from caps, never trimmed. These fights are removed from the two queues |
 
-## Watch links: what is and is not in the file
+Caps: at most 3 attempts per attacker and 3 per defender, counted jointly (successes fill their slots first, then failures). Overturned/DQ and "technical submission" finishes are not in the success queue (they stay in `rnc_successes.csv`).
 
-There are **no direct video links**, deliberately. A search for the first fight returned a video-game simulation, and the other hits were third-party re-uploads; there is no way to confirm an official upload without opening each one. Each row has instead:
+## First labeling session: 8 successes + 7 failures
 
-- `ufc_youtube_channel_search`: a search link scoped to UFC's official channel (`@UFC`), with both fighter names.
-- `fight_pass_lookup`: the event name to search on UFC Fight Pass.
-- `free_full_fight_on_ufc_youtube`: `unverified` for every row. Set it to `yes` or `no` after you look, and paste the official URL into `notes` if `yes`. I expect few of the 2023 to 2026 fights to be free.
+- **Successes:** queue ranks 1 to 8 (`session = 1`): the 8 most recent finishes (Aug to Oct 2026).
+- **Failures:** queue ranks 1 to 7 (`session = 1`).
+- The random 10 are a separate job, not part of this session.
 
-## Substitution rule (no cherry-picking)
+Notes for the session: every row has `ufc_youtube_channel_search` (a search scoped to the official `@UFC` channel) and `fight_pass_lookup`. There are no direct video links, because search hits often turn out to be game footage or re-uploads. `free_full_fight_on_ufc_youtube` starts as `unverified`. Set `status` to `unwatchable` if you can't legally reach a live-feed copy after a 10-minute lookup, and take the next row in the same queue. Never skip a row because it looks hard. Record the skip count.
 
-A fight counts as unwatchable only if you cannot reach a **legitimate, full, live-feed** copy (UFC Fight Pass, the official UFC channel, or a PPV/ESPN+ account you hold) after a 10-minute lookup. Then:
+## Caveats (read before analysing)
 
-1. Replace it with the lowest-`global_order` unused `reserve` fight **from the same year**; if that year has none left, take the next unused reserve in global order.
-2. Write the replaced fight's `fight_id` in `substituted_for` on the substitute's row, and set the replaced row's `status` to `unwatchable`.
-3. Never substitute because a fight looks boring, hard, or has no obvious choke. Never pick a fight after seeing its video or highlights.
-4. Report the substitution count in the write-up. If more than a third of the primaries need replacing, the sample is no longer random: say so.
-
-`status` values: `todo`, `done`, `unwatchable`, `no_rnc_found`.
+- **The failure queue is small (47) and selective.** Requiring a prior RNC win, `sub_att >= 2` and the caps leaves few rounds. Its failures come from fighters known for RNCs, so failure rates from it are not base rates. Only `random_10` gives a base rate.
+- **`random_10` will hold few attempts.** The frame is mostly candidate-only fights and about 1 in 3 candidate rows contains an RNC (unverified), so expect about 5 attempts in 10 fights. If that is too few for a base rate, extend the same seeded draw to 20 fights (change the count in `build_queues.py`; the first 10 would change, so decide before watching).
+- Recent-first ordering puts the first session entirely in 2025 to 2026; later years will be needed for variety.
