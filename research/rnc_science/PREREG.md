@@ -1,4 +1,6 @@
-# Pre-registration: what makes a UFC rear-naked choke finish? (DRAFT v0.1)
+# Pre-registration: what makes a UFC rear-naked choke finish? (DRAFT v0.2)
+
+> v0.2 (2026-10-18), from user review: hand-picked sampling with per-fighter caps (§2); bell excluded from the primary analysis (§3); the exploratory factor list expanded and multi-tag styles added (§6). Still a draft, so these changes are not amendments.
 
 **Status: DRAFT, awaiting user approval.** Once approved, it's committed as v1.0 *before* any pilot outcome is tabulated. The commit hash is cited in the write-up, proving the hypotheses came before the data. Later changes are allowed only as dated amendments at the bottom, never silent edits.
 
@@ -7,9 +9,15 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 
 ## 2. Data
 - **Population:** UFC fights 2018–2026 with at least one RNC attempt.
-- **Sampling frame (by fight, not by outcome):** fights drawn at random, stratified by year, from (RNC finishes ∪ rounds with submission attempts), with the list fixed *before* watching. **Every** RNC attempt in every watched round is labeled, finish rounds included. Each row records `found_via` (finish list or candidate list).
+- **Sampling (hybrid; watching full fights at random is too slow):**
+  - **Successes:** chosen from the 677-finish list (the finish time is known, so jump straight to it). Choosing by outcome keeps the factor comparisons (odds ratios) valid; it only distorts the *overall* finish %, which comes from the random subset below.
+  - **Failures:** from rounds that UFC stats flag with submission attempts, and later from back-control moments flagged by the pose pre-labeler. No full-fight watching.
+  - **Every** RNC attempt in a watched round is labeled, including failed attempts before a finish in the same round.
+  - **Per-fighter cap:** at most 3 attempts per attacker and 3 per defender, so no single fighter (e.g. Charles Oliveira) dominates the results.
+  - **Random subset:** about 10 fights drawn at random (fixed seed, list fixed before watching) and fully labeled. This gives the honest base finish rate.
+  - Each row records `found_via` (`finish_list`, `candidate_round`, `random_fight`). The analysis adjusts for it.
 - **Unit:** one attempt, per [LABEL_SCHEMA.md](../../phase3_labels/LABEL_SCHEMA.md).
-- **Target:** about 150 attempts. Stopping rule: stop at 150 attempts or 60 fights, whichever comes first. Never stop on a success/failure quota.
+- **Target:** about 150 attempts, roughly balanced between successes and failures (balance from the hand-picked lists; the random subset is never trimmed).
 - **Source:** live feed only (no replays), per [docs/FOOTAGE.md](../../docs/FOOTAGE.md).
 
 ## 3. Outcome
@@ -32,7 +40,7 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 | — | `round_time_left` | seconds at start | Adjustment only (bell censoring); no hypothesis |
 
 ## 6. Exploratory (labeled as such in every output)
-`rnc_style` (key contrast: figure_four vs wrist_pull), `back_context`, `opponent_flattened`, round, weight class, `attacker_side` (sanity check: should be null).
+`rnc_style_at_L` (key contrast: figure_four vs wrist_pull), `rnc_style_sequence` (descriptive), `back_context`, `forearm_placement`, `choking_hand_tucked`, `second_hand_on_traps`, `squeeze_direction`, `chin_tucked`, `opponent_flattened`, round, weight class, `attacker_side` (sanity check: should be null). More may be added after the user's technique research, but only before v1.0 is frozen. Exploratory results are hints for a future study, never claims.
 
 ## 7. Analysis
 - **Primary:** Firth logistic regression, profile-likelihood 95% CIs, reported as odds ratios.
