@@ -5,12 +5,14 @@
   "rule_cv_tuned": {
     "recall": 0.4066116952870868,
     "precision": 0.5864062840933886,
-    "f1": 0.4802322984141166
+    "f1": 0.4802322984141166,
+    "recall_both_visible": 0.8269230769230769
   },
   "rule_default_untuned": {
     "recall": 0.33028216960435736,
     "precision": 0.6828276509227401,
-    "f1": 0.44521490847907
+    "f1": 0.44521490847907,
+    "recall_both_visible": 0.6716923076923077
   },
   "rule_role_accuracy_among_hits": 0.8426046511627907,
   "suffix_convention": "back1 = pose1 is behind",
@@ -45,5 +47,29 @@
       "b": -0.1,
       "h": 1.5
     }
-  ]
+  ],
+  "oof_gbm": {
+    "recall": 0.6477040623345185,
+    "precision": 0.7320451436388509,
+    "f1": 0.6872968091511138,
+    "recall_both_visible": 0.699076923076923
+  },
+  "oof_gbm_swapaug": {
+    "recall": 0.78303956426356,
+    "precision": 0.8462922083231134,
+    "f1": 0.8134381139489194,
+    "recall_both_visible": 0.9181538461538462
+  },
+  "oof_mlp": {
+    "recall": 0.6446024661472124,
+    "precision": 0.7414078134516663,
+    "f1": 0.6896244739397863,
+    "recall_both_visible": 0.7386153846153846
+  },
+  "oof_mlp_swapaug": {
+    "recall": 0.7410545427036841,
+    "precision": 0.7843702458163183,
+    "f1": 0.7620974015870546,
+    "recall_both_visible": 0.8852307692307693
+  }
 }

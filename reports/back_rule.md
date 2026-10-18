@@ -2,10 +2,14 @@
 
 13219 back frames of 120279. Both athletes have a pose in 49% of back frames (the rule can't fire otherwise).
 
-| Method | Back recall | Precision | F1 |
-|---|---|---|---|
-| Geometry rule, thresholds tuned on train blocks | 0.407 | 0.586 | 0.480 |
-| Geometry rule, default thresholds (no tuning) | 0.330 | 0.683 | 0.445 |
+| Method | Back recall | Recall, both athletes visible | Precision | F1 |
+|---|---|---|---|---|
+| Geometry rule, thresholds tuned on train blocks | 0.407 | 0.827 | 0.586 | 0.480 |
+| Geometry rule, default thresholds (no tuning) | 0.330 | 0.672 | 0.683 | 0.445 |
+| Classifier `gbm` (18-class, back1|back2) | 0.648 | 0.699 | 0.732 | 0.687 |
+| Classifier `gbm_swapaug` (18-class, back1|back2) | 0.783 | 0.918 | 0.846 | 0.813 |
+| Classifier `mlp` (18-class, back1|back2) | 0.645 | 0.739 | 0.741 | 0.690 |
+| Classifier `mlp_swapaug` (18-class, back1|back2) | 0.741 | 0.885 | 0.784 | 0.762 |
 
 Rule picks the right attacker in 84.3% of its correct back detections (back1 = pose1 is behind).
 

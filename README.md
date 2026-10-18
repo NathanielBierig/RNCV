@@ -40,16 +40,19 @@ C:\Users\netan\.venvs\rncv\Scripts\python -I src/pose_smoke.py
 
 ## Results
 
-First baseline: scikit-learn gradient boosting, 5 time-block folds, ~23 min on a laptop CPU. Full detail is in `reports/` (`metrics_gbm.json`, `per_class_gbm.csv`, `confusion_gbm.png`) and `reports/TRAINING_STATUS.md`.
+Full detail: `reports/TRAINING_STATUS.md`, plus `metrics_*.json`, `per_class_*.csv`, `confusion_*.png` and `back_rule.md` in `reports/`.
 
-| Metric | Value |
-|---|---|
-| Macro-F1 | **0.46** (folds 0.45–0.66) |
-| Balanced accuracy | **0.47** |
-| Majority-class baseline accuracy | 0.14 |
+| Model (5 time-block folds) | Macro-F1 | Swap macro-F1 | Balanced acc. |
+|---|---|---|---|
+| GBM | 0.46 | 0.60 | 0.47 |
+| **GBM + swap augmentation (default)** | **0.63** | **0.63** | **0.63** |
+| MLP + swap augmentation | 0.58 | 0.58 | 0.58 |
+| Majority-class accuracy | | | 0.14 |
 
-The distinctive positions are learned well (standing 0.92 F1, turtle ~0.8, open guard ~0.76, back ~0.6).
-**The "who's on top" pairs fail** (half guard ~0.06, side control / mount / closed_guard2 0.14–0.23), probably because the athlete roles get swapped (a hypothesis, still to be checked). That's the next thing to fix.
+- **Swap augmentation** (train on every frame twice: as-is and with the two athletes and the 1/2 label suffix swapped) gave +0.17 macro-F1 and made the model independent of athlete order, which UFC tracking needs.
+- **Swap macro-F1** = score on test frames with athletes swapped. If it differs from normal macro-F1, the model is keying on *which* athlete is which (their build, the detector's ordering) instead of geometry.
+- **Back control:** recall 0.78, precision 0.85. A training-free geometry rule reaches 0.83 recall where both skeletons exist (only 49% of VICOS back frames have both). Both get compared on hand-tagged UFC frames next.
+- Still weak: half guard (~0.3), takedowns (~0.4), side control/mount (~0.5).
 
 ## Kaggle steps (re-extract keypoints with YOLO11-pose)
 
