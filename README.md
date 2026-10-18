@@ -37,7 +37,16 @@ curl.exe -L --fail -o data/raw/vicos/annotations.json https://data.vicos.si/data
 
 ## Results
 
-RESULTS_PLACEHOLDER
+First baseline: scikit-learn gradient boosting, 5 time-block folds, ~23 min on a laptop CPU. Full detail is in `reports/` (`metrics_gbm.json`, `per_class_gbm.csv`, `confusion_gbm.png`) and `reports/TRAINING_STATUS.md`.
+
+| Metric | Value |
+|---|---|
+| Macro-F1 | **0.46** (folds 0.45–0.66) |
+| Balanced accuracy | **0.47** |
+| Majority-class baseline accuracy | 0.14 |
+
+The distinctive positions are learned well (standing 0.92 F1, turtle ~0.8, open guard ~0.76, back ~0.6).
+**The "who's on top" pairs fail** (half guard ~0.06, side control / mount / closed_guard2 0.14–0.23), probably because the athlete roles get swapped (a hypothesis, still to be checked). That's the next thing to fix.
 
 ## Kaggle steps (re-extract keypoints with YOLO11-pose)
 
