@@ -25,6 +25,9 @@ Scores are 1–5 and are **judgement calls** (estimates), grounded in the compet
 
 ## Scoreboard
 
+> **Critique (#17): these scores favor the author's own pick.** A and D score 5 for portfolio even though A's UFC footage can't be shown publicly. D's "difficulty 3" *is* the 50–80 h labeling grind. E (post-fight analytics) is A without its hardest part, yet scores lower. Read the table as a rough sort, not a measurement. The chosen direction (below) is the science write-up, which this table never scored: it's labels-only, so it can be fully shown in public. That makes its portfolio case stronger than A's, and its difficulty is mostly labeling.
+
+
 | # | Direction | Portfolio | Difficulty | Uniqueness | Profit |
 |---|---|---|---|---|---|
 | A | UFC broadcast overlay demo (RNC + live finish %) | **5** | 4 | 4 | 1 |

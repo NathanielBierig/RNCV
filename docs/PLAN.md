@@ -36,7 +36,7 @@ You'll build a pipeline that runs on keypoints. It takes the **pose** of both fi
 
 | Need | Pick | License | Why |
 |---|---|---|---|
-| Pose (main) | [rtmlib](https://github.com/Tau-J/rtmlib) with **RTMO-m** (one-stage, built for crowded scenes) or RTMPose + detector | Apache-2.0 | ONNX runs on a CPU for small tests and on a Kaggle GPU for bulk work. Clean license if you ever charge money. |
+| Pose (main) | [rtmlib](https://github.com/Tau-J/rtmlib) with **RTMO-m** (one-stage, built for crowded scenes) or RTMPose + detector | Code Apache-2.0; **weights: check** | ONNX runs on a CPU for small tests and on a Kaggle GPU for bulk work. The code license is clean, but the pretrained weights were trained on several public pose datasets, some of them research-only, so check the weights' terms before any commercial use (critique #16). |
 | Pose (comparison) | Ultralytics YOLO11-pose | AGPL-3.0 ([commercial license needs a quote](https://www.ultralytics.com/license)) | Easiest API. Fine for open-source hobby work; it blocks closed-source profit. |
 | Tracking | `supervision` ByteTrack (Roboflow) | MIT (verify in repo) | Simple. There are only 2 fighters, so add a "color of shorts" check to fix ID swaps. |
 | Fighter vs referee | Fine-tune a detector on [FightersMMA](https://universe.roboflow.com/teamsilver/fightersmma-9vudg) | CC BY 4.0 | The class is `mma_fighter` only, so the referee is excluded automatically |
@@ -80,6 +80,7 @@ Results are in the chat summary. Main conclusion: nothing public covers submissi
 | Outputs | `position_model.pkl`, per-frame position probabilities, a confusion matrix |
 | Eval | **Time-block folds with all cameras together** (`src/vicos_data.time_block_folds`): 5 contiguous frame blocks per sequence, with a ±300-frame purge gap between train and test. ~~Leave-one-sequence-out~~ doesn't work, because each of the 6 sequences drills only 2–4 positions (e.g. seq 5 = back only), so a held-out sequence's classes never appear in training. Splitting by video leaks, because the 16 videos are 6 sequences × up to 3 synced cameras showing the same moment. Metrics: macro-F1, balanced accuracy, per-class recall. |
 | Caveat | Same athletes, same session, so **the scores are optimistic**. VICOS can't measure generalization to new athletes. Only Phase 3+ UFC data split by fight can, so judge the position model's real value on the first labeled UFC rounds (does "Back" fire during real back control?). |
+| Critique findings (#1, #13) | **"Back" exists in only one VICOS sequence** (one session, one pair of athletes), and every other sequence drills one position family, so position is confounded with session. Measured: macro-F1 0.447, Back recall 0.64. Both are below the gate even in this optimistic setup. The model also isn't **symmetric in athlete order**: swapping pose1/pose2 changes the result (F1 0.59 vs 0.45), while UFC tracker IDs are arbitrary. Fixes (build-phase2): train with swap augmentation (swap the poses *and* the 1/2 label suffix), or predict an order-free position plus a separate "who's on top/back" head. Expect the VICOS-based pre-labeler to be weak, and compare it against the geometry rule ("chest against back") on UFC frames in the week-2 stopwatch test. |
 | Baseline to beat | Always predicting the majority class, and a k-NN on raw keypoints |
 | Risks | Only 6 sequences and the same few athletes, so the model may memorize body shapes. The keypoints aren't guaranteed correct. Gym footage ≠ cage footage. |
 | Time (est.) | 6–10 h |
@@ -101,66 +102,39 @@ Run pose plus tracking on **3–5 short UFC ground clips** (at least one RNC eac
   - Watch through legitimate access (UFC YouTube free fights, Fight Pass) and keep any local copies **private and never redistributed**.
   - Store only **derived data** in the project: keypoints, timestamps and labels. Keep raw video out of git and out of Kaggle public datasets. Kaggle notebooks with private datasets are fine.
   - For anything public (demo reel, social posts), prefer gym footage you recorded, with every athlete's consent.
+- **Owner: you. Due: before week 2 (critique #2, blocker).** Watching on YouTube is enough to *label* timestamps, but pose extraction (2b, 3.3, 4–6) needs frames, and there's no $0 legal way to get downloadable UFC copies. Decide one, in writing, in `docs/FOOTAGE.md`:
+  1. **Labels-only science.** Label from legal streams; factors are labeled by hand. This fully supports the core science result (5a) at $0 with no copies. The live overlay is then shown on gym footage or grappling footage you have permission to use.
+  2. **Private local copies** for pose work: a personal-research risk you accept knowingly (not legal advice).
+  3. **A promotion that owns its footage gives permission** (see research/venture/: Polaris, Brave CF, CJI-style events).
+  - Option 1 is the default because it makes the core result independent of footage access.
 
 ### 3.2 Finding candidates from stats
 1. Scrape ufcstats.com fight pages and get: `method`, `round`, `time`, and per-round `sub_att` and `ctrl` (control time) for each fighter.
 2. **Successes:** `method` contains "Rear Naked Choke" → the exact round and clock time of the finish. Find the attempt start by scrubbing backward about 60 s.
 3. **Failure candidates:** rounds with `sub_att ≥ 1` and high control time, in fights that did *not* end by RNC in that round. You scrub those rounds by hand, so failures cost more labeling time. Note that a `sub_att` count can be any submission type.
-4. **Prior:** an older Fightnomics analysis says RNC attempts finish about [41% of the time](https://www.lowkickmma.com/cagepotato-databomb-2-breaking-down-submission-success-rates-in-ufc-fights/) (denominator not verified). RNC accounts for [about 49% of UFC choke finishes](https://combatsportslaw.com/2020/12/26/physician-reviews-and-analyzes-all-choke-submissions-in-ufc-history/) (through 2020). Expect classes to be roughly 40/60, success vs failure.
+4. **Prior:** no reliable per-attempt finish rate exists. The often-quoted "41%" (Fightnomics, via a now-dead CagePotato link) has an unknown denominator, so **don't use it** (critique #15). RNC accounts for [about 49% of UFC choke finishes](https://combatsportslaw.com/2020/12/26/physician-reviews-and-analyzes-all-choke-submissions-in-ufc-history/) (through 2020), but that's a share of finishes, not a rate. The real ratio comes from the pilot (5).
+5. **Sampling bias (critique #3).** Successes come from a complete list, while failures only come from rounds a scorer flagged. Rounds that ended in a submission were excluded, even though about 128 of 693 RNC finishing rounds also contain earlier attempts. So the success:failure ratio in the labels reflects *how they were found*, not how RNCs behave. Fixes:
+   - Sample **fights**, not outcomes. Pick a seeded random set of fights from successes ∪ candidates, then label **every** RNC attempt in every labeled round, including failed attempts earlier in a round the attacker later finished.
+   - Record `found_via` (`success_list` / `candidate_round` / `same_round_as_finish`) so the analysis can weight or stratify by it.
+   - Only report a "finish rate" from the fight-sampled set.
+
 
 ### 3.3 AI pre-labeling (saves your hours)
 Run pose → tracker → Phase 2 position model over every candidate round. Output **back-control segments** longer than 3 s as a review list, each with a start time. You review only those segments, plus a 10 s buffer, instead of whole 5-minute rounds. Target: under 4 minutes of review per round (est.).
 
-### 3.4 Label schema (`labels/rnc_attempts.csv`)
+### 3.4 Label schema: one source of truth
 
-| Column | Type | Rule |
-|---|---|---|
-| `attempt_id` | str | `{fight_id}_r{round}_{n}` |
-| `fight_id` | str | ufcstats fight ID. **This is the split key.** |
-| `event_date` | date | For temporal splits in Phase 7 |
-| `clip_file` | str | Local path (never shared) |
-| `round` | int | |
-| `start_s` / `end_s` | float | Seconds in the clip file. Start and end rules below. |
-| `round_clock_start` | mm:ss | Round clock when the attempt starts, if visible |
-| `attacker_corner` | red/blue | |
-| `attacker_track_side` | left/right/unknown | Fighter position on screen at `start_s`, to start tracking |
-| `outcome` | enum | `SUCCESS_TAP`, `SUCCESS_REF`, `SUCCESS_UNCONSCIOUS`, `FAIL_ESCAPE`, `FAIL_POSITION_CHANGE`, `FAIL_BELL` |
-| `hooks` | enum | `both_hooks`, `body_triangle`, `one_hook`, `none`, at start |
-| `choke_arm_depth` | enum | `under_chin`, `on_jaw`, `unclear` (your best judgement at the deepest point) |
-| `visible_frac` | 0–1 | Rough share of the attempt shown live (no cuts or replays) |
-| `has_replay` | bool | A replay of this attempt exists in the clip. Mark its time range in `notes`. |
-| `labeler_conf` | 1–3 | How sure you are |
-| `notes` | str | |
+The earlier draft of this section disagreed with the labeling files on the start rule, the escape rule and the outcome codes (critique #4). **The authoritative definitions are now:**
+- **Attempts:** [`phase3_labels/LABEL_SCHEMA.md`](../phase3_labels/LABEL_SCHEMA.md). Columns are `fight_id, round, attempt_start_s, attempt_end_s` on the round clock, plus `attacker, defender, outcome, camera_cut_flag`. Outcome codes are `tap, ref_stop, unconscious, escape, position_change, bell`. Start requires back control *and* the arm across the neck *and* the second hand locking.
+- **Science factors:** [`research/rnc_science/FACTORS.md`](../research/rnc_science/FACTORS.md). If it disagrees with LABEL_SCHEMA, FACTORS.md wins.
+- **Code:** `tools/eval_harness/horizons.normalize_labels()` reads that schema and **fails loudly** on unknown columns or codes.
 
-**Start rule:** the first frame where the attacker's forearm crosses the front of the defender's neck *or* jaw, from behind, with clear intent to choke. Hand-fighting before the arm crosses doesn't count.
-**End rule:** the first frame of one of these:
-- `SUCCESS_TAP`: a visible tap (hand or foot) or a verbal tap the referee acts on. `end_s` = tap frame.
-- `SUCCESS_REF`: the referee stops the fight without a tap. `end_s` = referee contact.
-- `SUCCESS_UNCONSCIOUS`: the defender goes limp before a tap or stoppage. `end_s` = first limp frame.
-- `FAIL_ESCAPE`: the defender clears the choking arm off the neck for > 2 s, *or* turns to face the attacker.
-- `FAIL_POSITION_CHANGE`: the attacker abandons the choke for another submission, strikes or a new position for > 2 s.
-- `FAIL_BELL`: the round ends during the attempt.
-- **Re-attacks:** if the arm comes back after a `FAIL` end, that's a new `attempt_id`.
-- **Exclude** (keep in the file, `outcome` = `EXCLUDE`): `visible_frac` < 0.5, or the attempt is only shown in replay.
-
-### 3.4b Factor timeline (`labels/rnc_factors.csv`) — the science variables
-
-The per-attempt columns above (`hooks`, `choke_arm_depth`) give one value per attempt. Effects that change *while* the attempt unfolds need a timeline. Log one row whenever a factor changes state (usually 3–8 rows per attempt):
-
-| Column | Values | Rule |
-|---|---|---|
-| `attempt_id`, `t_s` | | Seconds since `start_s` when the new state begins |
-| `arm` | `under_chin`, `on_jaw`, `over_face`, `off` | Where the choking forearm sits |
-| `grip` | `rnc_figure4`, `palm_to_palm`, `hand_on_shoulder`, `none` | How the choke is locked |
-| `lower_body` | `both_hooks`, `body_triangle`, `one_hook`, `none` | |
-| `flattened` | yes/no | Defender is chest-down, with hips pinned flat |
-| `defender_hands` | `two_on_one`, `one_hand`, `none` | Hand fighting on the choking arm |
-| `defender_turning` | yes/no | Shoulders or hips turning toward the attacker (escape) |
-
-- These columns *are* the variables of the science study. Keep the codes stable; any change goes through `research/rnc_science/`.
-- **Pre-label later:** once Phase 4 exists, pose geometry can propose `arm`/`lower_body`/`defender_hands` states and you only correct them.
-- **Non-visual covariates**, joined from ufcstats by `fight_id`: round, round time left, the defender's career submission defense, the attacker's submission rate, and weight class.
-- **Agreement:** κ is checked for every factor, not just the outcome. Any factor below κ 0.6 is reported as unreliable, not interpreted.
+Rules this plan adds on top:
+- **`bell` is censoring, not failure.** The choke was still on when time ran out, so the harness leaves it out of finish/fail scoring by default and reports the count. In the hazard analysis (5a) it's a censored observation.
+- **`position_change` into another submission that finishes:** add `notes: chained_finish`. The science analysis keeps these separate, as a sensitivity check.
+- **Factor states over time:** if FACTORS.md adopts a timeline (a row per state change: `attempt_id, t_s`, factor values), the live predictor uses it. Otherwise only per-attempt values exist, and 5b must estimate factor states from pose.
+- **Never model inputs:** `seconds_to_lock`, "deepest point" values, the outcome and the end time. These are enforced by `LEAKY_COLUMNS` in the harness.
+- **Agreement:** κ is checked per factor as well as for the outcome. A factor below κ 0.6 is reported as unreliable, not interpreted.
 
 **Quality check:** two weeks after labeling the first 20 attempts, re-label them blind. Target Cohen's κ (chance-corrected agreement) ≥ 0.8 on outcome, and start-time differences under 1 s. If you miss that, tighten the rules before going further.
 
@@ -170,9 +144,9 @@ The per-attempt columns above (`hooks`, `choke_arm_depth`) give one value per at
 |---|---|
 | Minimum viable | 100 attempts (≈40 success / 60 fail), ≥ 70 fights |
 | Target v1 | **150 attempts, ≥ 100 fights** |
-| Locked test set | 20% of fights. Chosen once, by `fight_id`, before any modeling, and never tuned on. |
+| Locked test set | About 20% of fights, chosen by a frozen hash rule (`splits.lock_test_groups`), so fights labeled late join the test set at the same rate as pilot fights (critique #10). Never tuned on. |
 | Negatives for Phase 4 | Back-control segments with no attempt, which come free from pre-labeling |
-| Labeling time | About 15–20 min per attempt including search and the factor timeline, so **35–50 h** total |
+| Labeling time | **Measure it in the pilot** (15 attempts from randomly chosen fights, logging `search_min`/`label_min`). Rough estimate: successes about 15–20 min each, while failures cost 2–3× more because candidate rounds have to be scrubbed (critique #14). Plan for **50–80 h** until the pilot says otherwise. |
 
 | | |
 |---|---|
@@ -193,7 +167,7 @@ The per-attempt columns above (`hooks`, `choke_arm_depth`) give one value per at
 
 | | |
 |---|---|
-| Eval | `GroupKFold` by `fight_id` on the training fights, then a single run on the locked test set. Metrics: event-level F1 at tIoU ≥ 0.3, PR-AUC per window, **false alarms per fight-hour**, and median start-time error. |
+| Eval | `GroupKFold` by `fight_id` on the training fights, with `purge_shared_fighters` (the same fighter never appears on both sides, critique #9), then a single run on the locked test set. Metrics: event-level F1 at tIoU ≥ 0.3 within fight + round, PR-AUC per window, median start-time error, and **false alarms per hour of *exhaustively* labeled rounds**. Label 10–15 full rounds end-to-end for this, because candidate-only review can't measure false alarms (critique #11). |
 | Baselines | "Back control longer than 3 s = attempt" rule, using Phase 2 output only |
 | Risks | Occlusion hides the choking arm. Negatives are rare and close to the positives (hand-fighting on the back looks like an attempt). Replays count as duplicates (detect them, or drop them using `has_replay` ranges). |
 | Time (est.) | 12–18 h |
@@ -206,30 +180,28 @@ The per-attempt columns above (`hooks`, `choke_arm_depth`) give one value per at
 **Goal 1 (core, science):** Estimate how much each RNC detail changes the chance of a finish, with confidence intervals.
 **Goal 2 (showcase):** At each moment *t* seconds into an attempt, output P(finish) using only frames up to *t*, plus the factors pushing it up or down.
 
-### 5a. Interpretable factor model (primary analysis)
-- **Pre-register before looking at outcomes.** Write the factor list, codings and model in `research/rnc_science/` before fitting anything. With about 150 attempts and about 60 finishes, the data can support **about 5–6 predictors** (the common rule of thumb is about 10 events per variable). Pick them:
-  - `arm` (under_chin vs other)
-  - `lower_body` (body_triangle / both_hooks / less)
-  - `flattened`
-  - `defender_hands` (two_on_one vs not)
-  - `round`
-  - `log(time held)`
-  - Everything else is exploratory and labeled as such.
-- **Model:** **penalized logistic regression** (logistic regression with a small shrinkage penalty, ridge or Firth, which keeps estimates stable on small data). Use the factor states in the first 3 s, or at the deepest point; pick one in the pre-registration and keep it fixed.
-- **Report:** **odds ratios** (how many times higher the odds of a finish are when the factor is present) with 95% CIs bootstrapped **by fight**, plus a forest plot. Translate to plain language, e.g. "under the chin vs on the jaw: 2.1× the odds (95% CI 1.1–4.0)". The numbers are illustrative.
-- **Secondary analysis:** a discrete-time **hazard model**. Split each attempt into 1-s bins with the current factor states; outcome = finish within this bin; escape is a competing outcome. It shows *when* factors matter. Also check confounding, e.g. whether "under the chin" only looks strong because it comes later in an attempt.
-- **Honesty rules:**
-  - These are associations, not causes.
-  - Wide CIs are a result, not a failure.
-  - Don't test 20 factors and report the 2 that came out "significant".
-  - Selection bias: attempts were found through stats and the pre-labeler, so ones the cameras missed are absent.
+### 5a. Interpretable factor model (primary analysis), revised after critique §B
+
+- **Pre-register first, with a timestamp (S13).** Write `research/rnc_science/PREREG.md` (main session): hypotheses, codings, landmark, model, CI method and decision rules. Commit it **before the 15-attempt pilot**, so the git history proves it came first.
+- **Landmark design instead of "first 3 s or deepest point" (S1, S2).** Score each factor **at a fixed landmark** L = 2 s after the attempt start, among attempts still ongoing at start + L + 2 s. This matches the harness's eligibility rule.
+  - No "deepest point" and no "ever reached state X" codings. Those leak the outcome, and longer attempts get more chances to reach a state.
+  - **No `time held` predictor.** Duration is a *result* of the outcome. Time enters only through the landmark, and through the hazard model's time axis.
+- **Predictor budget (S4, S10).** Count degrees of freedom, not names. Real finishes may be fewer than 60, so the **primary** model gets at most **4 df**: `arm` (under_chin vs not), `lower_body` (body_triangle or both hooks vs less), `defender_two_on_one`, and `round_time_left` (adjusts for bell censoring, S14). `flattened`, grip and round are **secondary/exploratory**, reported as such. A power table at realistic prevalence (e.g. a factor in 20% of attempts) goes in PREREG, which makes clear that small effects are undetectable.
+- **No tautological factors (S3).** `defender_turning` and `arm = off` are part of the escape definition, so they're excluded as predictors. They can only describe *how* attempts fail.
+- **Model and CIs (S5).** **Firth logistic regression** (removes small-sample bias) with **profile-likelihood 95% CIs**. Sensitivity check: a cluster bootstrap by **fighter**, the attacker, because specialists recur (S8). No tuned ridge penalty.
+- **Missing and "unclear" states (S7).** Report how often each factor is unclear, split by outcome. Primary analysis: complete cases plus an explicit `unclear` level. Sensitivity checks: unclear coded as each extreme. If unclear-rates differ a lot by outcome, say the factor can't be estimated from broadcast footage.
+- **Blinding and reliability (S6).** Label factor states at the landmark **before watching the ending**: pause at start + L and code it, then play on and code the outcome. Get a **second rater** (a training partner) on ≥ 30 attempts for inter-rater κ. Self-relabeling only measures your own consistency.
+- **Selection (S9).** Sampling by outcome alone leaves odds ratios consistent (only the intercept moves). But highlight packages and replays favor clear, finished chokes, so selection also depends on the factors. Mitigate with fight-based sampling (§3.2), `found_via` stratification, and labeling from the live feed, never replays.
+- **Report:** odds ratios with CIs, a forest plot, and plain language ("under the chin vs not: 2.1× the odds, 95% CI 1.1–4.0"; illustrative numbers). Absolute finish probabilities come only from the fight-sampled subset.
+- **Secondary:** a discrete-time hazard model. 1-s bins of the current factor states; finish vs escape as competing outcomes; bell = censored. It shows *when* factors matter.
+- **Honesty rules:** associations, not causes; wide CIs are a result; exploratory findings are labeled exploratory; no hunting through 20 factors.
 
 ### 5b. Live predictor (for the overlay)
-Use the same logistic family, fed by **auto-detected** factor states (pose geometry), so the overlay's explanations match the science model. A LightGBM model is only allowed if it beats this one by a clear margin on the harness, and even then it's explained with SHAP values, which split one prediction into per-factor contributions.
+**Refit the same model family on auto-detected factor states (S11)**, not on the human-label coefficients. Measurement error in detected states otherwise pulls probabilities toward the base rate and mis-ranks the factors shown. The overlay's factor arrows come from the refit model. The write-up states how well detection agrees with human labels, per factor (κ). A LightGBM model is only allowed if it beats this one clearly on the harness, and it's explained with SHAP values (per-factor contributions to one prediction).
 
 **Features, and how to compute them from pose**
-- Snapshot features at *t*: elapsed time; hooks / body-triangle proxy (attacker ankles near the defender's hips); arm depth (attacker wrist past the defender's far shoulder); two-on-one defense (both defender wrists on the choking arm); defender's head and hips turning toward the attacker (escape direction); round time remaining; distance to the cage edge, if detectable.
-- **Fighter priors** from ufcstats (no video): defender's career submission defense, attacker's submissions per 15 minutes. These could be a large share of the signal, so they're also a baseline.
+- Snapshot features at *t*: (no time-held or end-time features); hooks / body-triangle proxy (attacker ankles near the defender's hips); arm depth (attacker wrist past the defender's far shoulder); two-on-one defense (both defender wrists on the choking arm); defender's head and hips turning toward the attacker (escape direction); round time remaining; distance to the cage edge, if detectable.
+- **Fighter priors** from ufcstats (no video): defender's submission defense and attacker's submissions per 15 minutes, **computed only from fights *before* this fight's date**. Career totals include this fight and later ones, which leaks the label (critique #8). These could be a large share of the signal, so they're also a baseline.
 - Model: logistic regression, then LightGBM. Calibrate with isotonic regression inside cross-validation.
 - Upgrade (optional): a discrete-time **hazard model**, which predicts "tap in the next second" vs "escape in the next second" (competing risks) and turns that into an overall P(finish).
 
@@ -237,11 +209,13 @@ Use the same logistic family, fed by **auto-detected** factor states (pose geome
 - Make predictions at fixed horizons *t* ∈ {1, 2, 3, 5, 8} s after `start_s`.
 - At each *t*, include only attempts still ongoing **and whose outcome is at least 2 s away**. Report how many attempts that leaves at each *t*.
 - Metrics: ROC-AUC, PR-AUC (finish = positive), Brier score, reliability plot. Bootstrap 95% confidence intervals over fights.
-- Baselines the CV model **must beat**: (B0) base rate; (B1) elapsed time only; (B2) fighter priors + round time, no video. **If it can't beat B2, say so in the write-up. That's still an honest result.**
+- Baselines the CV model **must beat**: (B0) base rate; (B1) **non-video attempt context**: round, round time left at the attempt start, fight time (elapsed time alone is constant within a horizon, so its AUC is 0.5 by construction, critique #7; the harness rejects it); (B2) B1 + as-of-date fighter priors. **If it can't beat B2, say so in the write-up. That's still an honest result.**
+- **Measure B2 first, before any labeling** (critique experiment 3): with stats data alone, predict "the round ended by RNC | a submission attempt was scored", using as-of priors vs full-career priors. The gap shows the size of the leak, and the as-of AUC is the bar to clear.
+- Also report 5b metrics with t measured from the **detected** start (Phase 4), not just your labeled start, because the demo runs on detections (critique #20).
 
 | | |
 |---|---|
-| Realistic target (est.) | ROC-AUC 0.65–0.75 at t = 3 s. Expect a confidence interval of about ±0.1 with roughly 30 test attempts. |
+| Realistic target (est.) | ROC-AUC 0.65–0.75 at t = 3 s. With about 30 test attempts (about 12 finishes), the **95% CI is about ±0.2** (Hanley–McNeil, critique #11), so the locked test set alone can't tell 0.65 from 0.75. Use cross-validation over all fights for the main numbers and treat the locked test set as a sanity check. |
 | Risks | Small sample, so confidence intervals overlap the baseline. Pose loss right when it matters, because the choke is the most occluded moment. A lot of the outcome depends on things you can't see, like grip strength and fatigue. |
 | Extra eval for 5b | How well the auto-detected factor states agree with your labels (κ per factor). An overlay explanation is only as good as that agreement. |
 | Time (est.) | 15–25 h (science write-up included) |
@@ -295,17 +269,18 @@ ufcstats scrape ───────── candidate list ───┘
 | Week | Milestone | Owner |
 |---|---|---|
 | 1 | Phase 2 CPU baseline on VICOS keypoints, with time-block-fold results | build session |
+| 2–3 | **Critique experiments:** (1) stopwatch pose + back-control test on 3 clips; (2) a 15-attempt pilot from randomly chosen fights, double-coded, with timing logged; (3) leak-free B2 on stats only. These set the real labeling cost, the success:failure ratio and the bar Phase 5 must clear. Footage decision (§3.1) by week 2. | you + build |
 | 2 | **2b broadcast pose smoke test (go/no-go)**; ufcstats scrape → RNC candidate list | build + you |
-| 3 | Phase 2 RTMO re-extraction; pre-labeler; label 15 pilot attempts; finalize the rules | you |
+| 3 | Phase 2 RTMO re-extraction; pre-labeler; finalize the rules from the pilot | you + build |
 | 4 | **Pre-register the science analysis** (factors, codings, model) in `research/rnc_science/` before fitting any outcomes | you + main |
-| 4–8 | Label to 100–150 attempts with factor timelines (about 8/week); κ check in week 5; lock the test fights in week 4 | you |
-| 5–6 | Phase 4 v0 on the first 60 attempts (built while you keep labeling) | build |
-| 8–9 | Phase 4 final on the locked test set | build + you review |
-| 10–11 | Phase 5a science (odds ratios, forest plot, hazard check), then 5b live predictor vs baselines | build + you |
-| 12 | Phase 6 overlay with factor explanations, plus the write-up: "What makes an RNC finish?" with CIs, and failure cases | both |
-| 13+ | Phase 7: guillotine | you |
+| 4–10 | Label to 100–150 attempts (pace set by the pilot, about 8/week est.); κ check in week 5; the hash rule for the test set is frozen in week 4 | you |
+| 6–7 | Phase 4 v0 on the first 60 attempts (built while you keep labeling) | build |
+| 10–11 | Phase 4 final on the locked test set | build + you review |
+| 11–12 | Phase 5a science (odds ratios, forest plot, hazard check), then 5b live predictor vs baselines | build + you |
+| 13–14 | Phase 6 overlay with factor explanations, plus the write-up: "What makes an RNC finish?" with CIs, and failure cases | both |
+| 15+ | Phase 7: guillotine | you |
 
-**Total to a working RNC demo: about 12 weeks part-time (est.).** If you can put in 15 h/week, it drops to about 6–7 weeks, but labeling still sets the pace.
+**Total to a working RNC demo: about 14 weeks part-time (est.; revised up after the critique's labeling-cost estimate).** If you can put in 15 h/week, it drops to about 7–8 weeks, but labeling still sets the pace.
 
 ## 10. Top risks
 
