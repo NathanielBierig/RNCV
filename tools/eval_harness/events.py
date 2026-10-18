@@ -1,7 +1,9 @@
 """Phase 4: turn window probabilities into attempt segments and score them.
 
 A predicted segment is a hit if its temporal IoU with an unmatched true
-attempt in the same fight is >= iou_thr (greedy, highest score first).
+attempt in the same fight (and round, when both tables have one) is >= iou_thr
+(greedy, highest score first). Times are whatever clock both tables share;
+with the round clock of LABEL_SCHEMA the `round` column is required.
 """
 import numpy as np
 import pandas as pd
@@ -37,16 +39,31 @@ def temporal_iou(a0, a1, b0, b1):
     return inter / union if union > 0 else 0.0
 
 
+def _keys(pred, true):
+    keys = ["fight_id"]
+    if "round" in pred.columns and "round" in true.columns:
+        keys.append("round")
+    elif "round" in pred.columns or "round" in true.columns:
+        raise ValueError("`round` is in only one table; round-clock times need it in both")
+    return keys
+
+
 def match_events(pred, true, iou_thr=0.3):
     """pred, true: DataFrames with fight_id, start_s, end_s (pred also score).
 
-    Returns pred with columns matched (bool), true_idx, iou.
+    Returns pred (fresh 0..n-1 index) with columns matched (bool), true_pos
+    (row position in `true`, -1 if unmatched) and iou.
     """
-    pred = pred.sort_values("score", ascending=False).copy()
-    pred["matched"], pred["true_idx"], pred["iou"] = False, -1, 0.0
+    keys = _keys(pred, true)
+    true = true.reset_index(drop=True)
+    pred = pred.sort_values("score", ascending=False).reset_index(drop=True)
+    pred["matched"], pred["true_pos"], pred["iou"] = False, -1, 0.0
+    by_key = {k: g for k, g in true.groupby(keys)}
     used = set()
     for i, r in pred.iterrows():
-        cands = true[true.fight_id == r.fight_id]
+        cands = by_key.get(tuple(r[c] for c in keys))
+        if cands is None:
+            continue
         best, best_iou = None, iou_thr
         for j, s in cands.iterrows():
             if j in used:
@@ -56,12 +73,17 @@ def match_events(pred, true, iou_thr=0.3):
                 best, best_iou = j, iou
         if best is not None:
             used.add(best)
-            pred.loc[i, ["matched", "true_idx", "iou"]] = [True, best, best_iou]
+            pred.loc[i, ["matched", "true_pos", "iou"]] = [True, best, best_iou]
     return pred
 
 
 def event_metrics(pred, true, total_hours, iou_thr=0.3):
-    """Event-level precision/recall/F1, false alarms per fight-hour, start error."""
+    """Event-level precision/recall/F1, false alarms per hour, start error.
+
+    `total_hours` must be footage that was *exhaustively* labeled; hours where
+    only candidate segments were reviewed would make false alarms look rarer.
+    """
+    true = true.reset_index(drop=True)
     m = match_events(pred, true, iou_thr)
     tp = int(m.matched.sum())
     fp = len(m) - tp
@@ -69,7 +91,7 @@ def event_metrics(pred, true, total_hours, iou_thr=0.3):
     recall = tp / len(true) if len(true) else 0.0
     f1 = 2 * precision * recall / (precision + recall) if tp else 0.0
     hits = m[m.matched]
-    start_err = (hits.start_s.values - true.loc[hits.true_idx, "start_s"].values) if tp else []
+    start_err = hits.start_s.values - true.start_s.values[hits.true_pos.astype(int)]
     return {
         "n_true": len(true), "n_pred": len(m), "tp": tp, "fp": fp,
         "precision": precision, "recall": recall, "f1": f1,
