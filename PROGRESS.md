@@ -18,14 +18,15 @@
 - 🟡 **Critique:** 22 issues found (`research/critique/CRITIQUE.md`).
 
 ## Blockers (from the critique; need your decision)
-- 🔴 **Footage access:** no $0 legal way to get UFC frames for pose extraction. Pick: (i) local-only copies at your own ToS risk, CPU pose, never upload to Kaggle; or (ii) your own gym footage for the CV + UFC for hand labeling only.
+- 🟢 **Footage decided: UFC only** (`docs/FOOTAGE.md`). Label from legal streams; private local attempt clips for pose, laptop CPU only, never uploaded.
 - 🔴 **VICOS "Back" exists in only one sequence:** its score can't validate RNC detection. Gate on hand-tagged UFC frames instead.
 - 🟡 **Fix before labeling:** merge the two label schemas into one, sample by fight (not by outcome), treat the bell as censored rather than a failure, compute fighter stats as of fight date, split test by fighter graph / hash.
 
-- 🟡 **Align `research/rnc_science/FACTORS.md` with PLAN §5a/5b** (the critic's science review): fixed-landmark design, no time-held predictor, at most 4 primary factors, Firth CIs, blind factor coding, a second rater. Then write `PREREG.md`.
+- 🟢 **FACTORS.md aligned with PLAN §5a** + **RNC style tags** added (figure_four, palm_to_palm, gable, wrist_pull = Dagestani forearm grip, short_choke, one_arm) and `back_context` (ground / turtle ride / standing / scramble).
+- ⚪ Write and commit `research/rnc_science/PREREG.md` before the pilot.
 - 🟢 Eval harness hardened per the critique (11 tests pass).
 
 ## Next
-- ⚪ Decide on footage access → freeze the label schema → pilot-label 15 RNC attempts with a stopwatch.
+- ⚪ Write PREREG → freeze the label schema → pilot-label 15 RNC attempts with a stopwatch.
 - ⚪ Run the Kaggle pose notebook (`notebooks/kaggle_yolo_pose_vicos.ipynb`).
 - ⚪ Phases 4–7: attempt detection → success prediction → overlay on real clips → more submissions.
