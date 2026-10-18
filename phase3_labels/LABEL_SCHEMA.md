@@ -30,7 +30,14 @@ Added for the study of which details predict a finish. All are **reviewer-labele
 | `control` | `two_hooks`, `body_triangle`, `one_hook`, `none` | leg control at attempt start |
 | `opponent_flattened` | bool | defender's back/chest flat on the mat |
 | `defender_two_on_one` | bool | both defender hands on the choking arm |
-| `rnc_style` | `figure_four`, `palm_to_palm`, `gable`, `wrist_pull`, `short_choke`, `one_arm`, `unclear` | grip style at the landmark (replaces the old `second_hand`). Definitions in FACTORS.md "RNC style tags"; `wrist_pull` = the "Dagestani" forearm/wrist grip with no figure-four |
+| `rnc_style_at_L` | `figure_four`, `palm_to_palm`, `gable`, `wrist_pull`, `short_choke`, `one_arm`, `unclear` | ONE grip style at the landmark (start + 2 s). Definitions in FACTORS.md "RNC style tags"; `wrist_pull` = the "Dagestani" forearm/wrist grip with no figure-four |
+| `rnc_style_sequence` | style tags joined by `>` | every style seen during the attempt, in order, e.g. `wrist_pull>figure_four` |
+| `forearm_placement` | `blade`, `v_elbow`, `across_jaw`, `unclear` | at the landmark (FACTORS.md) |
+| `choking_hand_tucked` | bool | at the landmark (definition being confirmed, FACTORS.md) |
+| `second_hand_on_traps` | bool | at the landmark |
+| `squeeze_direction` | `straight_back`, `tilt_choke_side`, `tilt_away`, `pull_up`, `unclear` | at the landmark |
+| `chin_tucked` | bool | defender, at the landmark |
+| `found_via` | `finish_list`, `candidate_round`, `random_fight` | how this attempt was found (PREREG §2) |
 | `back_context` | `ground_back`, `turtle_ride`, `standing_back`, `scramble` | where the back attack happens |
 | `attacker_side` | `left`, `right` | which arm is the choking arm |
 | `seconds_to_lock` | float | seconds from back control established to the choke going in |

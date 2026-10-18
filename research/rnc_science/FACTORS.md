@@ -21,7 +21,13 @@ One **attempt** as defined in [LABEL_SCHEMA.md](../../phase3_labels/LABEL_SCHEMA
 
 | Factor | Coding | Question |
 |---|---|---|
-| `rnc_style` | see style tags below | Does grip style change finish rate? E.g. figure-four vs the Dagestani wrist pull |
+| `rnc_style_at_L` | one style tag (below), at the landmark | Does grip style change finish rate? E.g. figure-four vs the Dagestani wrist pull |
+| `rnc_style_sequence` | all styles in order, `>`-joined, e.g. `wrist_pull>figure_four` | How attackers switch grips; do switches finish more often? (descriptive) |
+| `forearm_placement` | `blade` (bony edge of the forearm across the throat) / `v_elbow` (elbow centered under the chin, biceps and forearm on the two sides of the neck) / `across_jaw` | Proposed definitions; refine after your research |
+| `choking_hand_tucked` | yes / no: choking hand hidden deep (on the opposite biceps or shoulder) vs just gripping | **Definition to confirm** with your research |
+| `second_hand_on_traps` | yes / no: second hand on the defender's trapezius or shoulder instead of behind the head | Common in short-choke / wrist-pull styles |
+| `squeeze_direction` | `straight_back` / `tilt_choke_side` / `tilt_away` / `pull_up` | Proposed; probably hard to see on broadcast, so check κ |
+| `chin_tucked` | yes / no (defender) | The defender's first line of defense |
 | `back_context` | ground_back / turtle_ride / standing_back / scramble | Do chokes from rides and standing finish differently than from classic back mount? |
 | `opponent_flattened` | yes / no | Flattened = can't turn in |
 | `round`, weight class | stats | Fatigue and division effects |
@@ -31,7 +37,7 @@ Excluded as predictors (part of the escape definition, so tautological): `defend
 
 ## RNC style tags
 
-Coded at the landmark from what the attacker's two hands are doing. If the style changes mid-attempt, code the landmark style and write the change in `notes`.
+RNCs are dynamic, so styles are coded twice: `rnc_style_at_L` is **one** tag at the landmark (this is what the statistics use: one value per attempt at a fixed moment), and `rnc_style_sequence` lists **every** style seen, in order (this tells the story of how the grip evolved). The exploratory factor list grows after the user's technique research; every addition is logged here with a date **before** PREREG v1.0 is frozen.
 
 | Tag | What it looks like | Typical of |
 |---|---|---|
