@@ -22,6 +22,9 @@
 - 🔴 **VICOS "Back" exists in only one sequence:** its score can't validate RNC detection. Gate on hand-tagged UFC frames instead.
 - 🟡 **Fix before labeling:** merge the two label schemas into one, sample by fight (not by outcome), treat the bell as censored rather than a failure, compute fighter stats as of fight date, split test by fighter graph / hash.
 
+- 🟡 **Align `research/rnc_science/FACTORS.md` with PLAN §5a/5b** (the critic's science review): fixed-landmark design, no time-held predictor, at most 4 primary factors, Firth CIs, blind factor coding, a second rater. Then write `PREREG.md`.
+- 🟢 Eval harness hardened per the critique (11 tests pass).
+
 ## Next
 - ⚪ Decide on footage access → freeze the label schema → pilot-label 15 RNC attempts with a stopwatch.
 - ⚪ Run the Kaggle pose notebook (`notebooks/kaggle_yolo_pose_vicos.ipynb`).
