@@ -1,0 +1,25 @@
+t_s,sub_type,prob,factors
+0.0,,0.0,
+0.5,,0.0,
+1.0,,0.0,
+1.5,,0.0,
+2.0,RNC,0.2,+body triangle;+arm under chin
+2.5,RNC,0.24000000000000002,+body triangle;+arm under chin
+3.0,RNC,0.28,+body triangle;+arm under chin
+3.5,RNC,0.32,+body triangle;+arm under chin
+4.0,RNC,0.36,+body triangle;+arm under chin
+4.5,RNC,0.4,+body triangle;+arm under chin
+5.0,RNC,0.19,-2-on-1 hand fight;+body triangle
+5.5,RNC,0.23000000000000004,-2-on-1 hand fight;+body triangle
+6.0,RNC,0.27,-2-on-1 hand fight;+body triangle
+6.5,RNC,0.31000000000000005,-2-on-1 hand fight;+body triangle
+7.0,RNC,0.6000000000000001,+body triangle;+arm under chin
+7.5,RNC,0.64,+body triangle;+arm under chin
+8.0,RNC,0.6799999999999999,+body triangle;+arm under chin
+8.5,RNC,0.72,+body triangle;+arm under chin
+9.0,RNC,0.76,+body triangle;+arm under chin
+9.5,RNC,0.8,+body triangle;+arm under chin
+10.0,RNC,0.8400000000000001,+body triangle;+arm under chin
+10.5,RNC,0.8800000000000001,+body triangle;+arm under chin
+11.0,RNC,0.9199999999999999,+body triangle;+arm under chin
+11.5,RNC,0.96,+body triangle;+arm under chin
