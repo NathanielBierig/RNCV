@@ -10,6 +10,16 @@ Owned by the secretary session, which keeps this list current. Tick a box when d
 - [ ] **3. Save 3 UFC RNC clips locally for the pose smoke test** (20 min). This is Phase 2b, the biggest technical risk: does pose survive tangled cage footage?
   - Watch through [UFC Fight Pass](https://ufcfightpass.com/) or [UFC on YouTube](https://www.youtube.com/@ufc). Save **only the attempt**: about 30 s before the finish to the tap. One way is screen recording with [OBS](https://obsproject.com/) (free).
   - Put the clips in `C:\Users\netan\projects\RNCV\data\clips\` (git ignores this folder). Never upload them anywhere (see [docs/FOOTAGE.md](docs/FOOTAGE.md)).
+  - **Clips already saved in `data\clips\` (2026-10-19):**
+
+    | File | Fight | Finish (round, time) | Source |
+    |---|---|---|---|
+    | `pantoja_asakura_r2.mp4` | Pantoja vs Asakura, UFC 310 | R2, 2:05 | our fight list |
+    | `sterling_sandhagen.mp4` | Sterling vs Sandhagen, UFC 250 (2020-06-06) | R1, 1:28 | [Tapology](https://www.tapology.com/fightcenter/bouts/502954-ufc-250-aljamain-funk-master-sterling-vs-cory-sandhagen) |
+    | `gsp_bisping.mp4` | St-Pierre vs Bisping, UFC 217 (2017-11-04) | R3, 4:23 | [Tapology](https://www.tapology.com/fightcenter/events/46980-ufc) |
+
+    Note: GSP–Bisping is from 2017 (outside the 2018+ study window), fine for the pose test only. Older fights are also lower resolution.
+
   - Suggested fights: all **main events**, so they are easy to find on Paramount+ (finish time is the time in the round; record from ~30 s before it to the tap):
 
     | Fight | Event | Round (time) | Stats page |

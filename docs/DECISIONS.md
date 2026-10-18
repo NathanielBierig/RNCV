@@ -10,9 +10,10 @@ Newest last. Owned by the secretary session.
 | 2026-10-18 | Added RNC style tags (figure_four, palm_to_palm, gable, wrist_pull, short_choke, one_arm) and `back_context` | The BJJ-relevant question is which grip/style finishes, not just whether a choke happens |
 | 2026-10-18 | Repo = RNCV (dedicated git repo) | Keeps history clean and shareable as a portfolio piece |
 | 2026-10-18 | Phase 2 eval = time-block folds, not leave-one-sequence-out | Each VICOS sequence drills only 2–4 positions; per-video splits leak (synced cameras) |
+| 2026-10-19 | User approved PREREG v0.2 (to be frozen as v1.0 by the main session). Atypical chokes (e.g. one-armed) are to be tagged and kept out of the main model; rule to be added before freeze | Fixes the exclusion before any outcome is seen |
 
 ## Pending
 | Decision | Status | My recommendation |
 |---|---|---|
-| Approve [PREREG.md](../research/rnc_science/PREREG.md) | 🔴 waiting on you | Approve |
+| Freeze PREREG v1.0 (commit) | 🟡 approved by user 2026-10-19, waiting on main session | Commit with the atypical-choke rule |
 | Phase 5/6 option choice | ⚪ memo coming at `docs/DECISION_PHASE5_6.md` | Decide after reading the memo |
