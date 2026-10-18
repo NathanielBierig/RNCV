@@ -61,7 +61,6 @@ def time_block_folds(meta, n_blocks=5, purge=300):
     frame = meta["frame"].to_numpy()
     seq = meta["sequence"].to_numpy()
     block = np.zeros(len(meta), dtype=int)
-    lo = {},
     edges = {}
     for s in np.unique(seq):
         m = seq == s

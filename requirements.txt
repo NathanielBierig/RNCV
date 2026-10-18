@@ -1,6 +1,10 @@
-# CPU-only deps for Phase 2 (laptop). GPU/pose deps live in the Kaggle notebook.
+# CPU-only deps (laptop). Bulk GPU pose extraction lives in the Kaggle notebook.
 numpy>=1.26
 pandas>=2.1
 scikit-learn>=1.4
 matplotlib>=3.8
 tqdm>=4.66
+# Phase 2b pose smoke test (RTMO-m on CPU)
+onnxruntime>=1.17
+rtmlib>=0.0.13
+opencv-python-headless>=4.9

@@ -8,6 +8,12 @@ neighbouring frames and other camera views of the same moment would leak.
 Usage:
     python -I src/train_baseline.py --model gbm       # gradient boosting (default)
     python -I src/train_baseline.py --model mlp       # small MLP for comparison
+    python -I src/train_baseline.py --swap-aug --tag _swapaug   # athlete-order augmentation
+
+Every run also reports the "swap" macro-F1: the same test frames with pose1/pose2
+swapped and the label suffix 1<->2 swapped. A model that uses geometry, not
+athlete identity or order, scores the same on both (critique #13). Tracker IDs
+on UFC footage are arbitrary, so this matters.
 """
 import argparse
 import json
@@ -52,6 +58,20 @@ def make_model(kind, n_classes):
                       random_state=0))
 
 
+def swap_label_index(classes):
+    """Index of each class after swapping athletes: mount1 <-> mount2; standing stays."""
+    idx = {c: i for i, c in enumerate(classes)}
+    return np.array([idx.get(c[:-1] + {"1": "2", "2": "1"}[c[-1]], i) if c[-1] in "12" else i
+                     for i, c in enumerate(classes)])
+
+
+def fold_macro_f1(y_true, y_pred):
+    # classes present in truth OR predictions, so false positives into classes absent
+    # from this block still count (critique #18); classes absent from both are skipped
+    return f1_score(y_true, y_pred, average="macro", zero_division=0,
+                    labels=np.union1d(y_true, y_pred))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", choices=["gbm", "mlp"], default="gbm")
@@ -62,30 +82,40 @@ def main():
     ap.add_argument("--annotations", default=str(vicos_data.DEFAULT_PATH),
                     help="VICOS-format JSON (original, or re-extracted by the Kaggle notebook)")
     ap.add_argument("--tag", default="", help="suffix for report filenames")
+    ap.add_argument("--swap-aug", action="store_true",
+                    help="train on each frame twice: as-is and with athletes + label suffix swapped")
     args = ap.parse_args()
 
     meta, poses = vicos_data.load(args.annotations)
     X, names = features.build(poses)
+    X_sw, _ = features.build(poses[:, ::-1])          # athletes swapped
     classes = sorted(meta["position"].unique())
     y = meta["position"].map({c: i for i, c in enumerate(classes)}).to_numpy()
+    sw = swap_label_index(classes)
+    base = np.array([c.rstrip("12") for c in classes])  # 10 role-free positions
     k = args.blocks
     print(f"{len(y)} frames, {X.shape[1]} features, {len(classes)} classes, "
           f"{meta['sequence'].nunique()} sequences -> {k} time-block folds")
 
     oof = np.full(len(y), -1)
+    oof_sw = np.full(len(y), -1)
     fold_rows = []
     for fold, (tr, te) in enumerate(vicos_data.time_block_folds(meta, k, args.purge)):
         tr = tr[:: args.train_stride]
         t0 = time.time()
         model = make_model(args.model, len(classes))
-        model.fit(X[tr], y[tr])
+        if args.swap_aug:
+            model.fit(np.vstack([X[tr], X_sw[tr]]), np.concatenate([y[tr], sw[y[tr]]]))
+        else:
+            model.fit(X[tr], y[tr])
         oof[te] = model.predict(X[te])
+        oof_sw[te] = model.predict(X_sw[te])
         fold_rows.append({
             "fold": fold, "n_train": int(len(tr)), "n_test": int(len(te)),
             "test_classes_unseen_in_train": sorted(set(classes[c] for c in np.unique(y[te])) -
                                                    set(classes[c] for c in np.unique(y[tr]))),
-            "macro_f1": f1_score(y[te], oof[te], average="macro",
-                                 labels=np.unique(y[te])),
+            "macro_f1": fold_macro_f1(y[te], oof[te]),
+            "swap_macro_f1": fold_macro_f1(sw[y[te]], oof_sw[te]),
             "balanced_acc": balanced_accuracy_score(y[te], oof[te]),
             "seconds": round(time.time() - t0, 1)})
         print(fold_rows[-1])
@@ -93,14 +123,21 @@ def main():
     out = ROOT / "reports"
     out.mkdir(exist_ok=True)
     summary = {
-        "model": args.model, "split": f"time-block folds: {k} blocks per sequence, all cameras together, purge={args.purge} frames",
+        "model": args.model, "swap_aug": args.swap_aug, "annotations": Path(args.annotations).name,
+        "split": f"time-block folds: {k} blocks per sequence, all cameras together, purge={args.purge} frames",
         "n_frames": int(len(y)), "n_features": int(X.shape[1]),
         "pooled_macro_f1": f1_score(y, oof, average="macro"),
+        "pooled_swap_macro_f1": f1_score(sw[y], oof_sw, average="macro"),
+        "pooled_macro_f1_10_positions_roles_merged": f1_score(base[y], base[oof], average="macro"),
         "pooled_balanced_acc": balanced_accuracy_score(y, oof),
         "pooled_accuracy": float((y == oof).mean()),
         "majority_class_baseline_acc": float(np.bincount(y).max() / len(y)),
         "per_fold": fold_rows}
     (out / f"metrics_{args.model}{args.tag}.json").write_text(json.dumps(summary, indent=2, default=float))
+    pd.DataFrame({"row": np.arange(len(y)), "video": meta["video"], "frame": meta["frame"],
+                  "true": np.array(classes)[y], "pred": np.array(classes)[oof],
+                  "pred_swapped_input": np.array(classes)[oof_sw]}
+                 ).to_csv(out / f"oof_{args.model}{args.tag}.csv", index=False)
     rep = classification_report(y, oof, target_names=classes, output_dict=True, zero_division=0)
     pd.DataFrame(rep).T.round(3).to_csv(out / f"per_class_{args.model}{args.tag}.csv")
 

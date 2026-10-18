@@ -1,0 +1,49 @@
+{
+  "n_frames": 120279,
+  "n_back": 13219,
+  "pct_back_frames_with_both_athletes": 49.171646871926775,
+  "rule_cv_tuned": {
+    "recall": 0.4066116952870868,
+    "precision": 0.5864062840933886,
+    "f1": 0.4802322984141166
+  },
+  "rule_default_untuned": {
+    "recall": 0.33028216960435736,
+    "precision": 0.6828276509227401,
+    "f1": 0.44521490847907
+  },
+  "rule_role_accuracy_among_hits": 0.8426046511627907,
+  "suffix_convention": "back1 = pose1 is behind",
+  "thresholds_per_fold": [
+    {
+      "s": 0.3,
+      "c": 1.3,
+      "b": -0.1,
+      "h": 1.0
+    },
+    {
+      "s": 0.3,
+      "c": 1.3,
+      "b": -0.1,
+      "h": 1.5
+    },
+    {
+      "s": 0.3,
+      "c": 1.3,
+      "b": -0.1,
+      "h": 1.5
+    },
+    {
+      "s": 0.3,
+      "c": 1.3,
+      "b": -0.1,
+      "h": 1.0
+    },
+    {
+      "s": 0.3,
+      "c": 1.3,
+      "b": -0.1,
+      "h": 1.5
+    }
+  ]
+}

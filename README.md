@@ -9,22 +9,25 @@ This is the foundation for later phases: submissions happen *from* positions (RN
 |---|---|
 | `src/vicos_data.py` | Loads `annotations.json`, maps the 16 videos to 6 sparring sequences, builds leak-free time-block folds. Run it alone for dataset stats. |
 | `src/features.py` | Turns 2×17 COCO keypoints into 178 features: normalized coordinates, joint angles, torso direction, inter-athlete distances. |
-| `src/train_baseline.py` | Trains + evaluates the classifier (`--model gbm` gradient boosting or `--model mlp`), writes metrics, per-class report and confusion matrix to `reports/`. |
+| `src/train_baseline.py` | Trains + evaluates the classifier (`--model gbm` gradient boosting or `--model mlp`; `--swap-aug` = athlete-order augmentation). Writes metrics (incl. swap macro-F1 and a 10-position score with roles merged), per-class report, out-of-fold predictions and confusion matrix to `reports/`. |
+| `src/back_rule.py` | Training-free back-control detector from two skeletons (facing the same way, close, chest on back, head by neck), evaluated on VICOS next to the classifiers → `reports/back_rule.md`. |
+| `src/pose_smoke.py` | Phase 2b: RTMO-m pose on the laptop CPU over `data/clips/*.mp4` → keypoints + preview video in `data/pose/`, fps and coverage in `reports/pose_smoke.md`. |
 | `notebooks/kaggle_yolo_pose_vicos.ipynb` | Kaggle GPU notebook: re-extracts VICOS keypoints with YOLO11-pose (optionally RTMO) in the same JSON format. |
 | `DOWNLOADS.md` | Copy-paste download commands, sizes and licenses for every dataset/model. |
 
 ## Setup (Windows, no GPU)
 
 ```powershell
-py -3.12 -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
+py -3.12 -m venv C:\Users\netan\.venvs\rncv
+C:\Users\netan\.venvs\rncv\Scripts\python -m pip install -r requirements.txt
 curl.exe -L --fail -o data/raw/vicos/annotations.json https://data.vicos.si/datasets/JuiJuitsu/annotations.json
-.venv\Scripts\python -I src/vicos_data.py
-.venv\Scripts\python -I src/train_baseline.py --model gbm
+C:\Users\netan\.venvs\rncv\Scripts\python -I src/train_baseline.py --model gbm --swap-aug --tag _swapaug
+C:\Users\netan\.venvs\rncv\Scripts\python -I src/back_rule.py
+C:\Users\netan\.venvs\rncv\Scripts\python -I src/pose_smoke.py
 ```
 
-> **Windows path-length gotcha:** inside the Claude app's session folder the real path is very long, so LightGBM/OpenCV DLLs fail to load (`WinError 206`).
-> That's why the trainer uses scikit-learn's `HistGradientBoostingClassifier` (same algorithm family as LightGBM). In a normal folder like `C:\Users\netan\projects\...` this isn't an issue.
+> **Windows path-length gotcha:** a venv inside a long folder path fails to load some DLLs (`WinError 206`), so the venv lives at the short path `C:\Users\netan\.venvs\rncv`.
+> The trainer uses scikit-learn's `HistGradientBoostingClassifier` (same algorithm family as LightGBM) so there's one fewer native dependency.
 
 ## How the evaluation works (and why)
 
