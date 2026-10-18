@@ -102,16 +102,21 @@ Run pose plus tracking on **3–5 short UFC ground clips** (at least one RNC eac
 - **Pose work** (2b, 4, 5b, 6) uses private local clips of single attempts, kept on the laptop and run on the CPU. This is a personal-research risk the user accepts knowingly (not legal advice). Raw video never goes to git, Kaggle, cloud drives or social media.
 - **Public output is derived only:** labels, stats, plots, and skeleton-only renders on a blank background. Overlays on real UFC frames stay private (shown live in interviews). No gym footage or other promotions for now.
 
-### 3.2 Finding candidates from stats
-1. Scrape ufcstats.com fight pages and get: `method`, `round`, `time`, and per-round `sub_att` and `ctrl` (control time) for each fighter.
-2. **Successes:** `method` contains "Rear Naked Choke" → the exact round and clock time of the finish. Find the attempt start by scrubbing backward about 60 s.
-3. **Failure candidates:** rounds with `sub_att ≥ 1` and high control time, in fights that did *not* end by RNC in that round. You scrub those rounds by hand, so failures cost more labeling time. Note that a `sub_att` count can be any submission type.
-4. **Prior:** no reliable per-attempt finish rate exists. The often-quoted "41%" (Fightnomics, via a now-dead CagePotato link) has an unknown denominator, so **don't use it** (critique #15). RNC accounts for [about 49% of UFC choke finishes](https://combatsportslaw.com/2020/12/26/physician-reviews-and-analyzes-all-choke-submissions-in-ufc-history/) (through 2020), but that's a share of finishes, not a rate. The real ratio comes from the pilot (5).
-5. **Sampling bias (critique #3).** Successes come from a complete list, while failures only come from rounds a scorer flagged. Rounds that ended in a submission were excluded, even though about 128 of 693 RNC finishing rounds also contain earlier attempts. So the success:failure ratio in the labels reflects *how they were found*, not how RNCs behave. Fixes:
-   - Sample **fights**, not outcomes. Pick a seeded random set of fights from successes ∪ candidates, then label **every** RNC attempt in every labeled round, including failed attempts earlier in a round the attacker later finished.
-   - Record `found_via` (`success_list` / `candidate_round` / `same_round_as_finish`) so the analysis can weight or stratify by it.
-   - Only report a "finish rate" from the fight-sampled set.
+### 3.2 Sampling: hybrid design (matches [PREREG v0.2 §2](../research/rnc_science/PREREG.md))
+Watching whole fights at random is too slow, so the sample is built from three sources. Every attempt records its source in `found_via`.
 
+| Source (`found_via`) | How | Queue file (`phase3_labels/`) | Why |
+|---|---|---|---|
+| `finish_list` | Hand-picked from the 677 UFC RNC finishes (2018–2026). Jump to about 60 s before the known finish time. | `labeling_queue_successes.csv` | Fast to find. Choosing by outcome keeps the **odds ratios** valid; it only distorts the overall finish %. |
+| `candidate_round` | Rounds that UFC stats flag with submission attempts, and later back-control moments flagged by the pose pre-labeler. Never full-fight watching. A flagged round may contain no RNC; log that and move on. | `labeling_queue_failures.csv` | The only cheap source of failed attempts |
+| `random_fight` | About **10 fights drawn at random** (fixed seed; list fixed before watching), fully labeled | `random_10.csv` | The **honest base finish rate**. Never trimmed. |
+
+Rules:
+- **Label every RNC attempt** in every round you watch, including failed attempts before a finish in the same round.
+- **Per-fighter cap:** at most **3 attempts per attacker and 3 per defender**, so no specialist (e.g. Charles Oliveira) dominates the factor estimates.
+- **Target:** about 150 attempts, roughly balanced between successes and failures using the two hand-picked queues; the random subset is added on top.
+- **Analysis:** adjusts for `found_via`. Overall finish % comes **only** from `random_fight`.
+- **Prior:** no reliable per-attempt finish rate exists. The often-quoted "41%" has an unknown denominator and a dead source, so don't use it (critique #15). RNC is [about 49% of UFC choke finishes](https://combatsportslaw.com/2020/12/26/physician-reviews-and-analyzes-all-choke-submissions-in-ufc-history/) (through 2020), a share, not a rate.
 
 ### 3.3 AI pre-labeling (saves your hours)
 Run pose → tracker → Phase 2 position model over every candidate round. Output **back-control segments** longer than 3 s as a review list, each with a start time. You review only those segments, plus a 10 s buffer, instead of whole 5-minute rounds. Target: under 4 minutes of review per round (est.).
@@ -140,7 +145,7 @@ Rules this plan adds on top:
 | Target v1 | **150 attempts, ≥ 100 fights** |
 | Locked test set | About 20% of fights, chosen by a frozen hash rule (`splits.lock_test_groups`), so fights labeled late join the test set at the same rate as pilot fights (critique #10). Never tuned on. |
 | Negatives for Phase 4 | Back-control segments with no attempt, which come free from pre-labeling |
-| Labeling time | **Measure it in the pilot** (15 attempts from randomly chosen fights, logging `search_min`/`label_min`). Rough estimate: successes about 15–20 min each, while failures cost 2–3× more because candidate rounds have to be scrubbed (critique #14). Plan for **50–80 h** until the pilot says otherwise. |
+| Labeling time | **Measure it in the pilot** (the first labeling session from the queues; the labeler logs `label_min` in `notes`). Rough estimate: successes about 15–20 min each, while failures cost 2–3× more because candidate rounds have to be scrubbed (critique #14). Plan for **50–80 h** until the pilot says otherwise. |
 
 | | |
 |---|---|
@@ -176,7 +181,7 @@ Rules this plan adds on top:
 
 ### 5a. Interpretable factor model (primary analysis), revised after critique §B
 
-- **Pre-register first, with a timestamp (S13).** Write `research/rnc_science/PREREG.md` (main session): hypotheses, codings, landmark, model, CI method and decision rules. Commit it **before the 15-attempt pilot**, so the git history proves it came first.
+- **Pre-register first, with a timestamp (S13).** Write `research/rnc_science/PREREG.md` (main session): hypotheses, codings, landmark, model, CI method and decision rules. Commit it **before the first outcomes are labeled**, so the git history proves it came first.
 - **Landmark design instead of "first 3 s or deepest point" (S1, S2).** Score each factor **at a fixed landmark** L = 2 s after the attempt start, among attempts still ongoing at start + L + 2 s. This matches the harness's eligibility rule.
   - No "deepest point" and no "ever reached state X" codings. Those leak the outcome, and longer attempts get more chances to reach a state.
   - **No `time held` predictor.** Duration is a *result* of the outcome. Time enters only through the landmark, and through the hazard model's time axis.
@@ -185,7 +190,7 @@ Rules this plan adds on top:
 - **Model and CIs (S5).** **Firth logistic regression** (removes small-sample bias) with **profile-likelihood 95% CIs**. Sensitivity check: a cluster bootstrap by **fighter**, the attacker, because specialists recur (S8). No tuned ridge penalty.
 - **Missing and "unclear" states (S7).** Report how often each factor is unclear, split by outcome. Primary analysis: complete cases plus an explicit `unclear` level. Sensitivity checks: unclear coded as each extreme. If unclear-rates differ a lot by outcome, say the factor can't be estimated from broadcast footage.
 - **Blinding and reliability (S6).** Label factor states at the landmark **before watching the ending**: pause at start + L and code it, then play on and code the outcome. Get a **second rater** (a training partner) on ≥ 30 attempts for inter-rater κ. Self-relabeling only measures your own consistency.
-- **Selection (S9).** Sampling by outcome alone leaves odds ratios consistent (only the intercept moves). But highlight packages and replays favor clear, finished chokes, so selection also depends on the factors. Mitigate with fight-based sampling (§3.2), `found_via` stratification, and labeling from the live feed, never replays.
+- **Selection (S9).** Sampling by outcome alone leaves odds ratios consistent (only the intercept moves). But highlight packages and replays favor clear, finished chokes, so selection also depends on the factors. Mitigate with the hybrid sampling of §3.2 (random_10 for the base rate, per-fighter cap), `found_via` adjustment, and labeling from the live feed, never replays.
 - **Report:** odds ratios with CIs, a forest plot, and plain language ("under the chin vs not: 2.1× the odds, 95% CI 1.1–4.0"; illustrative numbers). Absolute finish probabilities come only from the fight-sampled subset.
 - **Secondary:** a discrete-time hazard model. 1-s bins of the current factor states; finish vs escape as competing outcomes; bell = censored. It shows *when* factors matter.
 - **Honesty rules:** associations, not causes; wide CIs are a result; exploratory findings are labeled exploratory; no hunting through 20 factors.
@@ -251,7 +256,7 @@ Rules this plan adds on top:
 ## 8. Critical path
 
 ```
-Labeler + PREREG ──► pilot (15) ──► labeling (≈150, hand-coded factors) ──► 5a science result   ← the core; needs NO pose
+Labeler + PREREG ──► first ~15 (timing) ──► labeling (≈150, hand-coded factors) ──► 5a science result   ← the core; needs NO pose
                           │
 private clips ──► 2b pose ──► Phase 4 detector ──► 5b live model ──► Phase 6 overlay   ← the showcase; runs in parallel
 stats data ──► leak-free B2 baseline (the bar 5b must clear)
@@ -264,7 +269,7 @@ stats data ──► leak-free B2 baseline (the bar 5b must clear)
 
 | Work | Who | Hours (est.) |
 |---|---|---|
-| Labeling ~150 attempts | **you** | about 4 min in the labeler + 5–25 min to find the attempt (successes fast, failures slow) → **30–50 h** total. The 15-attempt pilot gives the real number. |
+| Labeling ~150 attempts | **you** | about 4 min in the labeler + 5–25 min to find the attempt (successes fast, failures slow) → **30–50 h** total. The first ~15 labeled attempts (`label_min` in notes) give the real number. |
 | Pose on private clips (laptop CPU, 1–3 fps) | machine, overnight | about 5–10 h unattended |
 | Code (Phases 4–6, stats baseline, analysis) | build/main sessions | Runs in parallel while you label; not the bottleneck |
 
@@ -277,8 +282,8 @@ stats data ──► leak-free B2 baseline (the bar 5b must clear)
 
 | Week | You | Build session | Main session |
 |---|---|---|---|
-| **1** | Footage set up (FOOTAGE.md ✅); clip and label the **15-attempt pilot** in `tools/labeler` (blind factor coding at +2 s); ask a training partner to double-label ~30 | Phase 2 fixes (swap augmentation); **leak-free B2 stats baseline** (no video); CPU pose smoke test on the pilot clips (2b go/no-go) | Commit `PREREG.md` **before** the pilot outcomes are coded; review the pilot timing → final labeling budget |
-| **2** | Label to about 70–80 attempts (fight-sampled, `found_via` recorded) | Pose on all clips overnight; Phase 4 v0 detector on labeled clips; harness wired to `labels.csv` | Rules tweaks from the pilot (no code changes after PREREG); κ check on the first double-labeled batch |
+| **1** | Footage set up (FOOTAGE.md ✅); clip and label the **first ~15 attempts from the queues** in `tools/labeler` (blind factor coding at +2 s); ask a training partner to double-label ~30 | Phase 2 fixes (swap augmentation); **leak-free B2 stats baseline** (no video); CPU pose smoke test on the pilot clips (2b go/no-go) | Commit `PREREG.md` **before** the pilot outcomes are coded; review the pilot timing → final labeling budget |
+| **2** | Label to about 70–80 attempts from the queues + random_10 (`found_via` set by the labeler; cap 3 per fighter) | Pose on all clips overnight; Phase 4 v0 detector on labeled clips; harness wired to `labels.csv` | Rules tweaks from the pilot (no code changes after PREREG); κ check on the first double-labeled batch |
 | **3** | Label to about 150; partner finishes double-labeling | Phase 4 final; Phase 5b refit on detected states; overlay renders (private) + skeleton-only public renders | **Freeze labels → run 5a** (Firth ORs, forest plot, hazard check) |
 | **4** (buffer) | Review failure cases; record the interview demo | Polish; locked-test run (single shot) | Write-up: "What finishes the RNC in the UFC: N attempts" |
 
@@ -288,7 +293,7 @@ stats data ──► leak-free B2 baseline (the bar 5b must clear)
 - The 5a analysis runs **once**, on frozen labels.
 - The locked test set is run once, at the end.
 
-**Go/no-go points stay the same:** 2b pose (end of week 1), the pilot cost and κ (end of week 1), Phase 4 F1 (week 3).
+**Go/no-go points stay the same:** 2b pose (end of week 1), labeling cost per attempt and κ (end of week 1), Phase 4 F1 (week 3).
 
 ## 10. Top risks
 
