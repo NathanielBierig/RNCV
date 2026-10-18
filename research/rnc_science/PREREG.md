@@ -1,8 +1,10 @@
-# Pre-registration: what makes a UFC rear-naked choke finish? (DRAFT v0.2)
+# Pre-registration: what makes a UFC rear-naked choke finish? (FROZEN v1.0)
 
+> v1.0 (2026-10-19): v0.2 approved by the user and frozen, with one added exclusion rule (§3, atypical chokes). No pilot outcome had been tabulated.
+>
 > v0.2 (2026-10-18), from user review: hand-picked sampling with per-fighter caps (§2); bell excluded from the primary analysis (§3); the exploratory factor list expanded and multi-tag styles added (§6). Still a draft, so these changes are not amendments.
 
-**Status: DRAFT, awaiting user approval.** Once approved, it's committed as v1.0 *before* any pilot outcome is tabulated. The commit hash is cited in the write-up, proving the hypotheses came before the data. Later changes are allowed only as dated amendments at the bottom, never silent edits.
+**Status: FROZEN v1.0** (approved by the user 2026-10-19). Committed *before* any pilot outcome is tabulated. The commit hash is cited in the write-up, proving the hypotheses came before the data. Later changes are allowed only as dated amendments at the bottom, never silent edits.
 
 ## 1. Question
 Among UFC RNC attempts, which technical states at a fixed early moment are associated with the attempt finishing?
@@ -24,6 +26,7 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 - `success` = tap, ref stoppage or unconscious.
 - `escape` / `position_change` = failure.
 - `bell` = **censored**: excluded from the primary logistic model, included as censored in the hazard model.
+- **Atypical chokes** (e.g. one-armed or chin-linked chokes, as in Silva vs Delgado, Sep 2026) are tagged `rnc_style_at_L = one_arm`. They're **excluded from the primary model** but still counted and reported separately (count and finish rate).
 
 ## 4. Landmark and blinding
 - Factors are coded at **L = 2 s after attempt start**. Eligible attempts are still ongoing at start + L + 2 s. Attempts that end sooner are reported separately (count and finish rate).
