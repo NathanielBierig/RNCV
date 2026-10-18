@@ -1,1 +1,17 @@
 fold 0: macroF1=0.242 swapped-input macroF1=0.333
+fold 1: macroF1=0.316 swapped-input macroF1=0.365
+fold 2: macroF1=0.482 swapped-input macroF1=0.450
+fold 3: macroF1=0.334 swapped-input macroF1=0.359
+fold 4: macroF1=0.221 swapped-input macroF1=0.297
+POOLED time-block macroF1=0.447  identity-swapped=0.594
+Back recall (merged) 0.642; back1/back2 side correct among Back hits 0.896; swapped side correct 0.823
+
+Standing frames: OOF predictions by sequence
+col_0  5050_guard  back1  back2  closed_guard1  closed_guard2  half_guard2  open_guard1  open_guard2  side_control1  standing  takedown1  takedown2  turtle1  turtle2
+row_0                                                                                                                                                                
+0               0      0      0              0              0            0            0            0              0       141          5          1        0        0
+1               0      0      0              0              0            0            0            0              0        86          1          0        0        0
+3               0      0      0              0              0            0            0            0              0        92          0          0        0        0
+4               1     62      3              2             65            8            5            6              4     15616        229        301       78       16
+
+Sequence-ID from standing-frame pose features: acc=0.973 (chance ~0.981, majority)
