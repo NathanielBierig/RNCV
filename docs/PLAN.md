@@ -107,6 +107,7 @@ Run pose plus tracking on **3–5 short UFC ground clips** (at least one RNC eac
   2. **Private local copies** for pose work: a personal-research risk you accept knowingly (not legal advice).
   3. **A promotion that owns its footage gives permission** (see research/venture/: Polaris, Brave CF, CJI-style events).
   - Option 1 is the default because it makes the core result independent of footage access.
+- ✅ **Decided 2026-10-18: UFC only** (options 1 + 2). Hand labeling from legal streams; private local attempt clips for pose work, run on the laptop CPU, never uploaded to Kaggle. No gym footage. Details: [FOOTAGE.md](FOOTAGE.md).
 
 ### 3.2 Finding candidates from stats
 1. Scrape ufcstats.com fight pages and get: `method`, `round`, `time`, and per-round `sub_att` and `ctrl` (control time) for each fighter.
