@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RNC Labeler</title>
+<style>
+  :root { --bg:#111418; --panel:#1b2027; --line:#2c333d; --fg:#e7ebf0; --dim:#8b95a3; --acc:#4cc2ff; --ok:#5fd38d; --bad:#ff6b6b; --warn:#ffc857; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.4 system-ui, Segoe UI, sans-serif; }
+  header { display:flex; gap:12px; align-items:center; padding:8px 12px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0 8px 0 0; }
+  label.btn, button { background:var(--panel); color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:5px 10px; cursor:pointer; font:inherit; }
+  button.primary { background:var(--acc); color:#001826; border-color:var(--acc); font-weight:600; }
+  label.btn input { display:none; }
+  main { display:grid; grid-template-columns: minmax(0,1fr) 380px; gap:12px; padding:12px; }
+  @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px; }
+  video { width:100%; max-height:62vh; background:#000; border-radius:6px; display:block; }
+  #hud { display:flex; gap:16px; flex-wrap:wrap; margin-top:6px; font-variant-numeric: tabular-nums; }
+  #hud b { color:var(--acc); }
+  #timeline { position:relative; height:26px; background:#0b0d10; border:1px solid var(--line); border-radius:4px; margin-top:6px; cursor:pointer; }
+  #timeline .seg { position:absolute; top:3px; height:8px; background:#3b6e4f; border-radius:2px; }
+  #timeline .att { position:absolute; top:13px; height:10px; background:var(--warn); border-radius:2px; opacity:.85; }
+  #timeline .head { position:absolute; top:0; bottom:0; width:2px; background:var(--acc); }
+  .grid2 { display:grid; grid-template-columns: 110px 1fr; gap:6px 8px; align-items:center; }
+  input[type=text], input[type=number], select, textarea { width:100%; background:#0d1014; color:var(--fg); border:1px solid var(--line); border-radius:4px; padding:4px 6px; font:inherit; }
+  .group { border:1px solid var(--line); border-radius:6px; padding:6px 8px; margin:6px 0; }
+  .group.active { border-color:var(--acc); box-shadow:0 0 0 1px var(--acc) inset; }
+  .group .name { color:var(--dim); font-size:12px; margin-bottom:4px; }
+  .opts { display:flex; flex-wrap:wrap; gap:4px; }
+  .opt { border:1px solid var(--line); border-radius:4px; padding:2px 7px; cursor:pointer; user-select:none; }
+  .opt .k { color:var(--dim); margin-right:4px; }
+  .opt.sel { background:var(--acc); color:#001826; border-color:var(--acc); }
+  .opt.sel .k { color:#00314d; }
+  #status { padding:6px 10px; border-radius:6px; margin-bottom:8px; background:#0d1014; border:1px solid var(--line); }
+  #status.blind { border-color:var(--warn); color:var(--warn); }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th, td { border-bottom:1px solid var(--line); padding:3px 4px; text-align:left; white-space:nowrap; }
+  .dim { color:var(--dim); }
+  .ok { color:var(--ok); } .bad { color:var(--bad); }
+  #tablewrap { max-height:30vh; overflow:auto; }
+  kbd { background:#0d1014; border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:0 4px; font-size:12px; }
+  .hidden { display:none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1>RNC Labeler</h1>
+  <label class="btn">Open video<input id="fVideo" type="file" accept="video/*"></label>
+  <label class="btn">Load fight list(s) CSV<input id="fFights" type="file" accept=".csv" multiple></label>
+  <label class="btn">Load labels.csv<input id="fLabels" type="file" accept=".csv"></label>
+  <button id="bLink" title="Chrome/Edge: write every save straight into labels.csv">Link labels.csv file</button>
+  <label class="btn">Back-control hints CSV<input id="fHints" type="file" accept=".csv"></label>
+  <button id="bExport">Download labels.csv</button>
+  <span id="fileState" class="dim"></span>
+</header>
+
+<main>
+  <section>
+    <div class="card">
+      <video id="v" preload="auto"></video>
+      <div id="timeline"><div class="head" id="head"></div></div>
+      <div id="hud">
+        <span>video <b id="hVid">0.00</b> s</span>
+        <span>round clock (elapsed) <b id="hRound">—</b></span>
+        <span>on-screen (remaining) <b id="hRemain">—</b></span>
+        <span>speed <b id="hSpeed">1×</b></span>
+        <span>this attempt <b id="hTimer">0:00</b></span>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="dim" style="margin-bottom:4px">Saved attempts (<span id="nRows">0</span>) — stored in this browser until you download or link a file</div>
+      <div id="tablewrap"><table id="tbl"></table></div>
+    </div>
+  </section>
+
+  <aside>
+    <div id="status">1) Open a video  2) pick or type the fight  3) pause on a visible round clock and press <kbd>C</kbd>.</div>
+
+    <div class="card" id="fightCard">
+      <div class="grid2">
+        <span>Fight</span><select id="selFight"><option value="">— load fight list CSVs or type below —</option></select>
+        <span>fight_id</span><input id="fight_id" type="text">
+        <span>round</span><input id="round" type="number" min="1" max="5" value="1">
+        <span>attacker</span><input id="attacker" type="text">
+        <span>defender</span><input id="defender" type="text">
+        <span>reviewer</span><input id="reviewer" type="text" placeholder="your initials">
+        <span>anchor</span><span id="anchor" class="dim">—</span>
+      </div>
+    </div>
+
+    <div class="card hidden" id="panel" style="margin-top:12px">
+      <div id="panelTitle" style="font-weight:600"></div>
+      <div id="groups"></div>
+      <div id="extra"></div>
+      <div style="display:flex; gap:8px; margin-top:8px">
+        <button class="primary" id="bConfirm">Confirm (Enter)</button>
+        <button id="bCancel">Cancel (Esc)</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div style="font-weight:600; margin-bottom:4px">Keys</div>
+      <div class="dim" style="font-size:12px; line-height:1.7">
+        <kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> ±1 s · <kbd>Shift</kbd>+arrows ±5 s · <kbd>,</kbd><kbd>.</kbd> ±1 frame · <kbd>[</kbd><kbd>]</kbd> speed<br>
+        <kbd>C</kbd> sync clock · <kbd>S</kbd> mark start (auto-plays to +2 s, then pauses for blind factor coding) · <kbd>E</kbd> mark end → outcome<br>
+        In a panel: <kbd>1</kbd>–<kbd>9</kbd> pick option and advance · <kbd>↑</kbd><kbd>↓</kbd> change field · <kbd>Enter</kbd> confirm · <kbd>Esc</kbd> cancel<br>
+        <kbd>U</kbd> undo last saved row · <kbd>B</kbd> back 10 s
+      </div>
+    </div>
+  </aside>
+</main>
+
+<script>
+"use strict";
+// ---------- schema (phase3_labels/LABEL_SCHEMA.md; codes from research/rnc_science/FACTORS.md) ----------
+const CORE = ["fight_id","round","attempt_start_s","attempt_end_s","attacker","defender","sub_type","outcome","success","camera_cut_flag","notes"];
+const OPTIONAL = ["video_url","video_time_start","video_time_end","reviewer","confidence",
+  "choke_arm_position","control","opponent_flattened","defender_two_on_one","rnc_style","back_context",
+  "attacker_side","seconds_to_lock","fight_time_s"];
+const COLUMNS = CORE.concat(OPTIONAL);
+const LANDMARK_S = 2.0;
+const FPS = 30;
+
+const FACTOR_GROUPS = [   // coded blind at start + 2 s
+  ["choke_arm_position", ["under_chin","over_jaw","unclear"]],
+  ["control",            ["two_hooks","body_triangle","one_hook","none"]],
+  ["defender_two_on_one",["True","False"]],
+  ["opponent_flattened", ["True","False"]],
+  ["rnc_style",          ["figure_four","palm_to_palm","gable","wrist_pull","short_choke","one_arm","unclear"]],
+  ["back_context",       ["ground_back","turtle_ride","standing_back","scramble"]],
+  ["attacker_side",      ["left","right"]],
+];
+const END_GROUPS = [
+  ["outcome",         ["tap","ref_stop","unconscious","escape","position_change","bell"]],
+  ["camera_cut_flag", ["none","cut_in","cut_out"]],
+  ["sub_type",        ["rnc","other_choke","not_a_choke"]],
+  ["confidence",      ["1","2","3"]],
+];
+const SUCCESS = new Set(["tap","ref_stop","unconscious"]);
+
+// ---------- state ----------
+const $ = id => document.getElementById(id);
+const v = $("v");
+let videoName = "";
+let clockOffset = null;          // round_elapsed = video_t + clockOffset
+let rows = [];                   // saved label rows (objects)
+let extraCols = [];              // unknown columns from a loaded labels.csv (kept on export)
+let hints = [];                  // [{start,end}] in video seconds
+let fights = new Map();          // fight_id -> info
+let fileHandle = null;
+let cur = null;                  // attempt in progress
+let panel = null;                // {kind, groups, values, active}
+let timerStart = null;
+
+const LS_KEY = "rncv_labeler_rows_v1";
+try { const saved = JSON.parse(localStorage.getItem(LS_KEY) || "null"); if (saved) { rows = saved.rows || []; extraCols = saved.extraCols || []; } } catch (e) {}
+function persist() { try { localStorage.setItem(LS_KEY, JSON.stringify({rows, extraCols})); } catch (e) {} }
+
+// ---------- helpers ----------
+const r1 = x => (Math.round(x * 10) / 10).toFixed(1);
+function fmtClock(sec) { if (sec == null || isNaN(sec)) return "—"; const s = Math.max(0, sec); const m = Math.floor(s / 60); return m + ":" + (s - m * 60).toFixed(1).padStart(4, "0"); }
+function parseClock(txt) {
+  txt = String(txt).trim(); if (!txt) return null;
+  if (txt.includes(":")) { const [m, s] = txt.split(":"); const val = Number(m) * 60 + Number(s); return isNaN(val) ? null : val; }
+  const val = Number(txt); return isNaN(val) ? null : val;
+}
+function roundTime(vt) { return clockOffset == null ? null : vt + clockOffset; }
+function setStatus(msg, cls) { const el = $("status"); el.innerHTML = msg; el.className = cls || ""; }
+
+function parseCSV(text) {
+  const out = []; let row = [], field = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; } else field += c; }
+    else if (c === '"') q = true;
+    else if (c === ",") { row.push(field); field = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(field); out.push(row); row = []; field = ""; }
+    else field += c;
+  }
+  if (field !== "" || row.length) { row.push(field); out.push(row); }
+  const rowsOut = out.filter(r => r.length > 1 || r[0] !== "");
+  if (!rowsOut.length) return {header: [], data: []};
+  const header = rowsOut[0].map(h => h.trim());
+  return {header, data: rowsOut.slice(1).map(r => Object.fromEntries(header.map((h, i) => [h, r[i] ?? ""])))};
+}
+function csvField(x) { x = x == null ? "" : String(x); return /[",\n\r]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; }
+function toCSV() {
+  const cols = COLUMNS.concat(extraCols.filter(c => !COLUMNS.includes(c)));
+  return [cols.join(",")].concat(rows.map(r => cols.map(c => csvField(r[c])).join(","))).join("\n") + "\n";
+}
+
+// ---------- video ----------
+$("fVideo").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  videoName = f.name; v.src = URL.createObjectURL(f); clockOffset = null;
+  setStatus(`Loaded <b>${f.name}</b>. Pause on a frame where the round clock is visible and press <kbd>C</kbd> to sync.`);
+  updateAnchor();
+};
+v.addEventListener("loadedmetadata", () => {
+  if (isFinite(v.duration) && v.duration > 0) { drawTimeline(); return; }
+  // some WebM files (screen/MediaRecorder captures) report no duration until seeked to the end
+  const fix = () => { if (isFinite(v.duration) && v.duration > 0) { v.removeEventListener("durationchange", fix); v.currentTime = 0; drawTimeline(); } };
+  v.addEventListener("durationchange", fix); v.currentTime = 1e7;
+});
+function tick() {
+  const t = v.currentTime || 0;
+  $("hVid").textContent = t.toFixed(2);
+  const rt = roundTime(t);
+  $("hRound").textContent = rt == null ? "— (press C)" : fmtClock(rt) + "  (" + r1(rt) + " s)";
+  $("hRemain").textContent = rt == null ? "—" : fmtClock(300 - rt);
+  if (timerStart) { const s = (Date.now() - timerStart) / 1000; $("hTimer").textContent = Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0"); }
+  if (v.duration) $("head").style.left = (100 * t / v.duration) + "%";
+  blindLock();
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+// Blind lock: never show frames after the landmark until factors are coded.
+// Checked on a timer and on video events too, because animation frames stop when the tab isn't drawn.
+function blindLock() {
+  if (cur && !cur.factorsDone && cur.landmarkV != null && v.currentTime > cur.landmarkV - 0.02) {
+    if (!v.paused) v.pause();
+    if (Math.abs(v.currentTime - cur.landmarkV) > 1e-3) v.currentTime = cur.landmarkV;
+    if (!panel) openFactorPanel();
+  }
+}
+setInterval(blindLock, 30);
+["timeupdate", "seeking", "play"].forEach(ev => v.addEventListener(ev, blindLock));
+
+function seek(dt) { if (!v.duration) return; v.currentTime = Math.min(v.duration, Math.max(0, v.currentTime + dt)); }
+const SPEEDS = [0.25, 0.5, 1, 1.5, 2];
+function speed(dir) { let i = SPEEDS.indexOf(v.playbackRate); if (i < 0) i = 2; i = Math.min(SPEEDS.length - 1, Math.max(0, i + dir)); v.playbackRate = SPEEDS[i]; $("hSpeed").textContent = SPEEDS[i] + "×"; }
+
+$("timeline").onclick = e => {
+  if (!v.duration) return; const box = $("timeline").getBoundingClientRect();
+  const t = (e.clientX - box.left) / box.width * v.duration;
+  if (cur && !cur.factorsDone && cur.landmarkV != null && t > cur.landmarkV) return;
+  v.currentTime = t;
+};
+function drawTimeline() {
+  const tl = $("timeline"); tl.querySelectorAll(".seg,.att").forEach(n => n.remove());
+  if (!v.duration) return;
+  const pct = x => (100 * x / v.duration) + "%";
+  for (const h of hints) { const d = document.createElement("div"); d.className = "seg"; d.style.left = pct(h.start); d.style.width = pct(Math.max(0.2, h.end - h.start)); d.title = "back-control hint"; tl.appendChild(d); }
+  for (const r of rows) {
+    if (r.video_url !== videoName || r.video_time_start === "" || r.video_time_start == null) continue;
+    const a = Number(r.video_time_start), b = Number(r.video_time_end);
+    const d = document.createElement("div"); d.className = "att"; d.style.left = pct(a); d.style.width = pct(Math.max(0.2, b - a)); d.title = r.outcome; tl.appendChild(d);
+  }
+  if (cur && cur.startV != null) { const d = document.createElement("div"); d.className = "att"; d.style.left = pct(cur.startV); d.style.width = "3px"; d.style.background = "var(--acc)"; tl.appendChild(d); }
+}
+
+// ---------- fights ----------
+$("fFights").onchange = async e => {
+  let n = 0;
+  for (const f of e.target.files) {
+    const {data} = parseCSV(await f.text());
+    for (const r of data) {
+      if (!r.fight_id) continue;
+      const success = "finish_time_in_round_s" in r;
+      const key = r.fight_id + "|" + r.round + "|" + (success ? "S" : "C");
+      fights.set(key, {
+        fight_id: r.fight_id, round: r.round, event: r.event, date: r.date,
+        attacker: success ? (r.winner_attacker || "") : (r.attacker || ""), defender: r.defender || "",
+        finish_s: success ? Number(r.finish_time_in_round_s) : null, kind: success ? "RNC finish" : "candidate",
+      });
+      n++;
+    }
+  }
+  const sel = $("selFight"); sel.innerHTML = '<option value="">— pick a fight —</option>';
+  [...fights.entries()].sort((a, b) => String(b[1].date).localeCompare(String(a[1].date))).forEach(([k, f]) => {
+    const o = document.createElement("option"); o.value = k;
+    o.textContent = `${f.date} · R${f.round} · ${f.attacker} vs ${f.defender} · ${f.kind}${f.finish_s != null ? " @" + fmtClock(f.finish_s) : ""}`;
+    sel.appendChild(o);
+  });
+  setStatus(`Loaded ${n} fight-rounds. Pick one in the Fight list.`);
+};
+$("selFight").onchange = () => {
+  const f = fights.get($("selFight").value); if (!f) return;
+  $("fight_id").value = f.fight_id; $("round").value = f.round; $("attacker").value = f.attacker; $("defender").value = f.defender;
+  updateAnchor();
+};
+function updateAnchor() {
+  const f = fights.get($("selFight").value);
+  $("anchor").textContent = f && f.finish_s != null ? `ufcstats finish at ${fmtClock(f.finish_s)} elapsed (${f.finish_s} s) — your end should be within ~3 s` : "—";
+}
+
+// ---------- labels file ----------
+$("fLabels").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const {header, data} = parseCSV(await f.text());
+  if (rows.length && !confirm(`Replace the ${rows.length} rows in this browser with the ${data.length} rows from ${f.name}?`)) return;
+  rows = data; extraCols = header.filter(h => !COLUMNS.includes(h)); persist(); renderTable(); drawTimeline();
+  setStatus(`Loaded ${data.length} rows from ${f.name}. New attempts are appended; download or link to save.`);
+};
+$("bLink").onclick = async () => {
+  if (!window.showSaveFilePicker) { alert("This browser can't write files directly. Use Chrome or Edge, or use 'Download labels.csv'."); return; }
+  try {
+    fileHandle = await window.showSaveFilePicker({suggestedName: "labels.csv", types: [{description: "CSV", accept: {"text/csv": [".csv"]}}]});
+    const existing = await (await fileHandle.getFile()).text();
+    if (existing.trim()) {      // keep the file's rows, add browser rows it doesn't have yet
+      const {header, data} = parseCSV(existing);
+      const inFile = new Set(data.map(rowKey));
+      rows = data.concat(rows.filter(r => !inFile.has(rowKey(r))));
+      extraCols = [...new Set(extraCols.concat(header.filter(h => !COLUMNS.includes(h))))];
+    }
+    await writeLinked(); persist(); renderTable();
+    $("fileState").textContent = "linked: " + fileHandle.name; $("fileState").className = "ok";
+  } catch (err) { if (err.name !== "AbortError") alert("Link failed: " + err.message); }
+};
+function rowKey(r) { return [r.fight_id, r.round, r.attempt_start_s].join("|"); }
+async function writeLinked() { if (!fileHandle) return; const w = await fileHandle.createWritable(); await w.write(toCSV()); await w.close(); }
+$("bExport").onclick = () => {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([toCSV()], {type: "text/csv"})); a.download = "labels.csv"; a.click();
+};
+
+// ---------- hints (optional back-control segments) ----------
+$("fHints").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const {data} = parseCSV(await f.text());
+  hints = data.map(r => ({start: Number(r.start_s), end: Number(r.end_s)})).filter(h => !isNaN(h.start) && !isNaN(h.end));
+  drawTimeline(); setStatus(`Loaded ${hints.length} back-control hints (green bars). Click one to jump there.`);
+};
+
+// ---------- attempt flow ----------
+function syncClock() {
+  if (!v.duration) { setStatus("Open a video first.", ""); return; }
+  v.pause();
+  const txt = prompt("Round clock shown on screen RIGHT NOW (time remaining, e.g. 3:12):", "");
+  const remain = parseClock(txt); if (remain == null) return;
+  clockOffset = (300 - remain) - v.currentTime;
+  setStatus(`Clock synced: video ${v.currentTime.toFixed(2)} s = ${fmtClock(300 - remain)} elapsed. Re-sync with <kbd>C</kbd> after replays or clock stoppages. Find the attempt and press <kbd>S</kbd>.`);
+}
+function startAttempt() {
+  if (!v.duration) { setStatus("Open a video first."); return; }
+  if (clockOffset == null) { setStatus("Sync the round clock first: pause on a visible clock and press <kbd>C</kbd>.", "blind"); return; }
+  if (!$("fight_id").value.trim()) { setStatus("Fill fight_id (or pick a fight) first.", "blind"); return; }
+  if (cur && !confirm("Discard the attempt in progress?")) return;
+  const startV = v.currentTime;
+  cur = {startV, landmarkV: Math.min(v.duration, startV + LANDMARK_S), factors: {}, factorsDone: false};
+  timerStart = timerStart || Date.now();
+  drawTimeline();
+  setStatus(`Start marked at ${fmtClock(roundTime(startV))}. Playing to start + ${LANDMARK_S} s, then pausing for <b>blind factor coding</b>…`, "blind");
+  v.playbackRate = 1; $("hSpeed").textContent = "1×"; v.play();
+}
+function openFactorPanel() {
+  openPanel("factors", `Blind factor coding at start + ${LANDMARK_S} s (you haven't seen the ending)`, FACTOR_GROUPS, cur.factors, "");
+  setStatus("Video is locked at the landmark. Code what you see now: <kbd>1</kbd>–<kbd>9</kbd> per field, <kbd>Enter</kbd> when done. You can scrub back, not forward.", "blind");
+}
+function endAttempt() {
+  if (!cur) { setStatus("No attempt in progress. Press <kbd>S</kbd> at the start first."); return; }
+  if (!cur.factorsDone) { openFactorPanel(); return; }
+  v.pause();
+  if (v.currentTime <= cur.startV) { setStatus("End must be after the start.", "blind"); return; }
+  cur.endV = v.currentTime;
+  openPanel("end", `End at ${fmtClock(roundTime(cur.endV))} — outcome`, END_GROUPS, {camera_cut_flag: "none", sub_type: "rnc"},
+    `<div class="grid2" style="margin-top:6px">
+       <span>seconds_to_lock</span><input id="x_stl" type="number" step="0.1" placeholder="optional: back control → choke in">
+       <span>notes</span><textarea id="x_notes" rows="2" placeholder="grip details, replay shown, doubts"></textarea>
+       <span></span><label class="dim"><input id="x_time" type="checkbox" checked> add label time to notes (pilot)</label>
+     </div>`);
+}
+function saveAttempt(endVals) {
+  const s = roundTime(cur.startV), e = roundTime(cur.endV), rnd = Number($("round").value);
+  const notes = [$("x_notes").value.trim()];
+  if ($("x_time").checked && timerStart) notes.push("label_min=" + ((Date.now() - timerStart) / 60000).toFixed(1));
+  const row = {
+    fight_id: $("fight_id").value.trim(), round: rnd, attempt_start_s: r1(s), attempt_end_s: r1(e),
+    attacker: $("attacker").value.trim(), defender: $("defender").value.trim(),
+    sub_type: endVals.sub_type, outcome: endVals.outcome, success: SUCCESS.has(endVals.outcome) ? "True" : "False",
+    camera_cut_flag: endVals.camera_cut_flag, notes: notes.filter(Boolean).join("; "),
+    video_url: videoName, video_time_start: cur.startV.toFixed(2), video_time_end: cur.endV.toFixed(2),
+    reviewer: $("reviewer").value.trim(), confidence: endVals.confidence || "",
+    seconds_to_lock: $("x_stl").value, fight_time_s: r1((rnd - 1) * 300 + s),
+  };
+  for (const [k] of FACTOR_GROUPS) row[k] = cur.factors[k] || "";
+  const f = fights.get($("selFight").value);
+  let warn = "";
+  if (f && f.finish_s != null && SUCCESS.has(row.outcome) && Math.abs(e - f.finish_s) > 3) warn = ` <span class="bad">End is ${r1(e - f.finish_s)} s from the ufcstats finish — check the clock sync.</span>`;
+  rows.push(row); persist(); renderTable(); writeLinked().catch(err => alert("Write failed: " + err.message));
+  cur = null; timerStart = null; drawTimeline();
+  setStatus(`Saved ${row.outcome} (${row.attempt_start_s}–${row.attempt_end_s} s, round ${rnd}).${warn} Next attempt: <kbd>S</kbd>.`);
+}
+
+// ---------- panels ----------
+function openPanel(kind, title, groups, values, extraHTML) {
+  panel = {kind, groups, values: {...values}, active: 0};
+  $("panelTitle").textContent = title; $("extra").innerHTML = extraHTML; $("panel").classList.remove("hidden");
+  renderPanel();
+}
+function renderPanel() {
+  const g = $("groups"); g.innerHTML = "";
+  panel.groups.forEach(([name, opts], gi) => {
+    const box = document.createElement("div"); box.className = "group" + (gi === panel.active ? " active" : "");
+    box.innerHTML = `<div class="name">${name}</div>`;
+    const o = document.createElement("div"); o.className = "opts";
+    opts.forEach((val, oi) => {
+      const b = document.createElement("span"); b.className = "opt" + (panel.values[name] === val ? " sel" : "");
+      b.innerHTML = `<span class="k">${oi + 1}</span>${val}`;
+      b.onclick = () => { panel.values[name] = val; panel.active = Math.min(panel.groups.length - 1, gi + 1); renderPanel(); };
+      o.appendChild(b);
+    });
+    box.onclick = ev => { if (ev.target === box || ev.target.className === "name") { panel.active = gi; renderPanel(); } };
+    box.appendChild(o); g.appendChild(box);
+  });
+}
+function closePanel() { panel = null; $("panel").classList.add("hidden"); }
+function confirmPanel() {
+  if (!panel) return;
+  const missing = panel.groups.map(([n]) => n).filter(n => !panel.values[n]);
+  if (panel.kind === "factors") {
+    if (missing.length && !confirm("Leave blank (not visible): " + missing.join(", ") + "?")) return;
+    cur.factors = panel.values; cur.factorsDone = true; closePanel();
+    setStatus("Factors saved. Play on (<kbd>Space</kbd>) and press <kbd>E</kbd> at the end of the attempt.");
+  } else {
+    if (!panel.values.outcome) { alert("Pick an outcome."); return; }
+    const vals = panel.values; saveAttempt(vals); closePanel();
+  }
+}
+$("bConfirm").onclick = confirmPanel;
+$("bCancel").onclick = () => { if (panel && panel.kind === "factors") { if (!confirm("Cancel this attempt?")) return; cur = null; timerStart = null; drawTimeline(); setStatus("Attempt cancelled."); } closePanel(); };
+
+// ---------- table ----------
+function renderTable() {
+  const cols = ["fight_id","round","attempt_start_s","attempt_end_s","outcome","choke_arm_position","control","rnc_style","camera_cut_flag","notes"];
+  $("tbl").innerHTML = "<tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr>" +
+    rows.slice().reverse().slice(0, 200).map(r => "<tr>" + cols.map(c => `<td>${String(r[c] ?? "").replace(/</g, "&lt;")}</td>`).join("") + "</tr>").join("");
+  $("nRows").textContent = rows.length;
+}
+renderTable();
+
+// ---------- keyboard ----------
+document.addEventListener("keydown", e => {
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && document.activeElement.type !== "checkbox";
+  if (panel) {
+    if (e.key === "Enter" && !(typing && document.activeElement.tagName === "TEXTAREA" && !e.ctrlKey)) { e.preventDefault(); confirmPanel(); return; }
+    if (e.key === "Escape") { e.preventDefault(); $("bCancel").click(); return; }
+    if (typing) return;
+    if (/^[1-9]$/.test(e.key)) {
+      const [name, opts] = panel.groups[panel.active]; const val = opts[Number(e.key) - 1];
+      if (val) { panel.values[name] = val; panel.active = Math.min(panel.groups.length - 1, panel.active + 1); renderPanel(); }
+      e.preventDefault(); return;
+    }
+    if (e.key === "ArrowDown") { panel.active = Math.min(panel.groups.length - 1, panel.active + 1); renderPanel(); e.preventDefault(); return; }
+    if (e.key === "ArrowUp") { panel.active = Math.max(0, panel.active - 1); renderPanel(); e.preventDefault(); return; }
+    if (panel.kind === "factors" && (e.key === "ArrowLeft" || e.key === ",")) { seek(e.key === "," ? -1 / FPS : -1); e.preventDefault(); }
+    return;
+  }
+  if (typing) { if (e.key === "Escape") document.activeElement.blur(); return; }
+  const k = e.key;
+  if (k === " ") { e.preventDefault(); if (cur && !cur.factorsDone && v.currentTime >= cur.landmarkV - 1e-3) { openFactorPanel(); return; } v.paused ? v.play() : v.pause(); }
+  else if (k === "ArrowLeft") { e.preventDefault(); seek(e.shiftKey ? -5 : -1); }
+  else if (k === "ArrowRight") { e.preventDefault(); seek(e.shiftKey ? 5 : 1); }
+  else if (k === ",") seek(-1 / FPS);
+  else if (k === ".") seek(1 / FPS);
+  else if (k === "[") speed(-1);
+  else if (k === "]") speed(1);
+  else if (k === "b" || k === "B") seek(-10);
+  else if (k === "c" || k === "C") syncClock();
+  else if (k === "s" || k === "S") startAttempt();
+  else if (k === "e" || k === "E") endAttempt();
+  else if (k === "u" || k === "U") {
+    if (!rows.length) return;
+    const last = rows[rows.length - 1];
+    if (confirm(`Undo last row (${last.fight_id} R${last.round} ${last.attempt_start_s}–${last.attempt_end_s}, ${last.outcome})?`)) { rows.pop(); persist(); renderTable(); drawTimeline(); writeLinked(); }
+  }
+});
+window.addEventListener("beforeunload", e => { if (cur) { e.preventDefault(); e.returnValue = ""; } });
+</script>
+</body>
+</html>
