@@ -1,0 +1,16 @@
+data/
+models/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Large or regenerable artifacts
+*.mp4
+*.avi
+*.mov
+*.pt
+*.onnx
+phase3_labels/raw_sources/*.csv
+phase3_labels/cache/
