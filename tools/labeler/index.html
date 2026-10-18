@@ -68,6 +68,8 @@
         <span>speed <b id="hSpeed">1×</b></span>
         <span>this attempt <b id="hTimer">0:00</b></span>
       </div>
+      <div id="styleBar" style="margin-top:6px" class="dim">Style sequence: <b id="hSeq">—</b>
+        <span id="stylePick" class="hidden" style="color:var(--warn)"> · add style: <span id="styleKeys"></span></span></div>
     </div>
     <div class="card" style="margin-top:12px">
       <div class="dim" style="margin-bottom:4px">Saved attempts (<span id="nRows">0</span>) — stored in this browser until you download or link a file</div>
@@ -84,7 +86,9 @@
         <span>fight_id</span><input id="fight_id" type="text">
         <span>round</span><input id="round" type="number" min="1" max="5" value="1">
         <span>attacker</span><input id="attacker" type="text">
-        <span>defender</span><input id="defender" type="text">
+        <span>defender</span><div style="display:flex; gap:6px"><input id="defender" type="text"><button id="bSwap" title="swap attacker and defender (W)">⇄</button></div>
+        <span>found_via</span><select id="found_via"><option value="">— pick —</option><option>finish_list</option><option>candidate_round</option><option>random_fight</option></select>
+        <span>watch rounds</span><span id="watch" class="dim">—</span>
         <span>reviewer</span><input id="reviewer" type="text" placeholder="your initials">
         <span>anchor</span><span id="anchor" class="dim">—</span>
       </div>
@@ -106,6 +110,7 @@
         <kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> ±1 s · <kbd>Shift</kbd>+arrows ±5 s · <kbd>,</kbd><kbd>.</kbd> ±1 frame · <kbd>[</kbd><kbd>]</kbd> speed<br>
         <kbd>C</kbd> sync clock · <kbd>S</kbd> mark start (auto-plays to +2 s, then pauses for blind factor coding) · <kbd>E</kbd> mark end → outcome<br>
         In a panel: <kbd>1</kbd>–<kbd>9</kbd> pick option and advance · <kbd>↑</kbd><kbd>↓</kbd> change field · <kbd>Enter</kbd> confirm · <kbd>Esc</kbd> cancel<br>
+        <kbd>T</kbd> then <kbd>1</kbd>–<kbd>7</kbd> add a grip style to the sequence (after the landmark) · <kbd>W</kbd> swap attacker/defender<br>
         <kbd>U</kbd> undo last saved row · <kbd>B</kbd> back 10 s
       </div>
     </div>
@@ -117,20 +122,32 @@
 // ---------- schema (phase3_labels/LABEL_SCHEMA.md; codes from research/rnc_science/FACTORS.md) ----------
 const CORE = ["fight_id","round","attempt_start_s","attempt_end_s","attacker","defender","sub_type","outcome","success","camera_cut_flag","notes"];
 const OPTIONAL = ["video_url","video_time_start","video_time_end","reviewer","confidence",
-  "choke_arm_position","control","opponent_flattened","defender_two_on_one","rnc_style","back_context",
-  "attacker_side","seconds_to_lock","fight_time_s"];
+  "choke_arm_position","control","opponent_flattened","defender_two_on_one","rnc_style_at_L","rnc_style_sequence",
+  "forearm_placement","choking_hand_tucked","second_hand_on_traps","squeeze_direction","chin_tucked","found_via",
+  "back_context","attacker_side","seconds_to_lock","fight_time_s"];
 const COLUMNS = CORE.concat(OPTIONAL);
 const LANDMARK_S = 2.0;
 const FPS = 30;
 
-const FACTOR_GROUPS = [   // coded blind at start + 2 s
-  ["choke_arm_position", ["under_chin","over_jaw","unclear"]],
-  ["control",            ["two_hooks","body_triangle","one_hook","none"]],
-  ["defender_two_on_one",["True","False"]],
-  ["opponent_flattened", ["True","False"]],
-  ["rnc_style",          ["figure_four","palm_to_palm","gable","wrist_pull","short_choke","one_arm","unclear"]],
-  ["back_context",       ["ground_back","turtle_ride","standing_back","scramble"]],
-  ["attacker_side",      ["left","right"]],
+const STYLES = ["figure_four","palm_to_palm","gable","wrist_pull","short_choke","one_arm","unclear"];
+const FOUND_VIA = ["finish_list","candidate_round","random_fight"];
+// pilot_15.csv uses the draw script's own words; map them onto LABEL_SCHEMA codes
+const FOUND_VIA_MAP = {rnc_success: "finish_list", sub_att_candidate: "candidate_round",
+                       "rnc_success+sub_att_candidate": "finish_list", random: "random_fight"};
+const BOOL = ["True","False"];
+const FACTOR_GROUPS = [   // every landmark field, coded blind at start + 2 s
+  ["choke_arm_position",  ["under_chin","over_jaw","unclear"]],
+  ["forearm_placement",   ["blade","v_elbow","across_jaw","unclear"]],
+  ["rnc_style_at_L",      STYLES],
+  ["choking_hand_tucked", BOOL],
+  ["second_hand_on_traps",BOOL],
+  ["squeeze_direction",   ["straight_back","tilt_choke_side","tilt_away","pull_up","unclear"]],
+  ["control",             ["two_hooks","body_triangle","one_hook","none"]],
+  ["defender_two_on_one", BOOL],
+  ["chin_tucked",         BOOL],
+  ["opponent_flattened",  BOOL],
+  ["back_context",        ["ground_back","turtle_ride","standing_back","scramble"]],
+  ["attacker_side",       ["left","right"]],
 ];
 const END_GROUPS = [
   ["outcome",         ["tap","ref_stop","unconscious","escape","position_change","bell"]],
@@ -256,22 +273,38 @@ $("fFights").onchange = async e => {
   let n = 0;
   for (const f of e.target.files) {
     const {data} = parseCSV(await f.text());
+    const tag = f.name.replace(/\.csv$/i, "");
     for (const r of data) {
       if (!r.fight_id) continue;
-      const success = "finish_time_in_round_s" in r;
-      const key = r.fight_id + "|" + r.round + "|" + (success ? "S" : "C");
+      // Works with rnc_successes.csv, failed_attempt_candidates.csv, labeling_queue_*.csv and random_10.csv
+      const [fa, fb] = String(r.fighters || "").split(/\s+vs\.?\s+/);
+      const attacker = r.attacker || r.winner_attacker || fa || "";
+      const defender = r.defender || fb || "";
+      let finish_s = r.known_finish_elapsed_s || r.finish_time_in_round_s || "";
+      finish_s = finish_s === "" ? null : Number(finish_s);
+      let finish_round = finish_s != null ? r.round : null;
+      const m = /R(\d)\s+(\d+):(\d+)/.exec(r.known_rnc_finish || r.known_finish || "");
+      if (finish_s == null && m) { finish_round = m[1]; finish_s = Number(m[2]) * 60 + Number(m[3]); }
+      const isFinishList = "finish_time_in_round_s" in r || "known_finish_elapsed_s" in r;
+      const found_via = FOUND_VIA_MAP[r.found_via] || (FOUND_VIA.includes(r.found_via) ? r.found_via
+                        : isFinishList ? "finish_list" : "sub_att_count" in r ? "candidate_round" : "");
+      const rounds = r.round ? String(r.round) : String(r.rounds_with_scored_sub_att_or_rnc_finish || "1");
+      const key = [tag, r.fight_id, rounds, attacker].join("|");
       fights.set(key, {
-        fight_id: r.fight_id, round: r.round, event: r.event, date: r.date,
-        attacker: success ? (r.winner_attacker || "") : (r.attacker || ""), defender: r.defender || "",
-        finish_s: success ? Number(r.finish_time_in_round_s) : null, kind: success ? "RNC finish" : "candidate",
+        fight_id: r.fight_id, round: rounds.split(/[;,\s]+/)[0] || "1", rounds, date: r.date, attacker, defender,
+        finish_s, finish_round, found_via, order: Number(r.queue_rank) || 0, list: tag,
+        jump_s: r.jump_to_elapsed_s ? Number(r.jump_to_elapsed_s) : null, jump_clock: r.jump_to_clock_remaining || "",
+        scope: r.watch_scope || r.jump_note || "", kind: tag + (r.queue_rank ? " #" + r.queue_rank : ""),
       });
       n++;
     }
   }
   const sel = $("selFight"); sel.innerHTML = '<option value="">— pick a fight —</option>';
-  [...fights.entries()].sort((a, b) => String(b[1].date).localeCompare(String(a[1].date))).forEach(([k, f]) => {
+  const byQueue = (a, b) => a[1].list.localeCompare(b[1].list) || (a[1].order || 1e9) - (b[1].order || 1e9)
+                           || String(b[1].date).localeCompare(String(a[1].date));
+  [...fights.entries()].sort(byQueue).forEach(([k, f]) => {
     const o = document.createElement("option"); o.value = k;
-    o.textContent = `${f.date} · R${f.round} · ${f.attacker} vs ${f.defender} · ${f.kind}${f.finish_s != null ? " @" + fmtClock(f.finish_s) : ""}`;
+    o.textContent = `${f.kind} · ${f.date} · R${f.rounds || f.round} · ${f.attacker} vs ${f.defender}${f.finish_s != null ? " · finish R" + f.finish_round + " " + fmtClock(f.finish_s) : ""}`;
     sel.appendChild(o);
   });
   setStatus(`Loaded ${n} fight-rounds. Pick one in the Fight list.`);
@@ -279,12 +312,19 @@ $("fFights").onchange = async e => {
 $("selFight").onchange = () => {
   const f = fights.get($("selFight").value); if (!f) return;
   $("fight_id").value = f.fight_id; $("round").value = f.round; $("attacker").value = f.attacker; $("defender").value = f.defender;
+  $("found_via").value = f.found_via || "";
+  $("watch").textContent = `rounds ${f.rounds}` + (f.scope ? ` — ${f.scope}` : "") +
+    (f.jump_s != null ? ` — jump to ${fmtClock(f.jump_s)} elapsed (clock ${f.jump_clock})` : "") + " · label EVERY RNC attempt; ⇄ if the other fighter chokes";
   updateAnchor();
 };
+$("round").oninput = updateAnchor;
 function updateAnchor() {
   const f = fights.get($("selFight").value);
-  $("anchor").textContent = f && f.finish_s != null ? `ufcstats finish at ${fmtClock(f.finish_s)} elapsed (${f.finish_s} s) — your end should be within ~3 s` : "—";
+  const ok = f && f.finish_s != null && String(f.finish_round) === String($("round").value);
+  $("anchor").textContent = ok ? `ufcstats finish at ${fmtClock(f.finish_s)} elapsed (${f.finish_s} s) — your end should be within ~3 s` : "—";
 }
+function swapFighters() { const a = $("attacker").value; $("attacker").value = $("defender").value; $("defender").value = a; }
+$("bSwap").onclick = swapFighters;
 
 // ---------- labels file ----------
 $("fLabels").onchange = async e => {
@@ -356,6 +396,7 @@ function endAttempt() {
   cur.endV = v.currentTime;
   openPanel("end", `End at ${fmtClock(roundTime(cur.endV))} — outcome`, END_GROUPS, {camera_cut_flag: "none", sub_type: "rnc"},
     `<div class="grid2" style="margin-top:6px">
+       <span>style sequence</span><input id="x_seq" type="text" value="${cur.seq.join(">")}" placeholder="e.g. wrist_pull>figure_four">
        <span>seconds_to_lock</span><input id="x_stl" type="number" step="0.1" placeholder="optional: back control → choke in">
        <span>notes</span><textarea id="x_notes" rows="2" placeholder="grip details, replay shown, doubts"></textarea>
        <span></span><label class="dim"><input id="x_time" type="checkbox" checked> add label time to notes (pilot)</label>
@@ -373,13 +414,20 @@ function saveAttempt(endVals) {
     video_url: videoName, video_time_start: cur.startV.toFixed(2), video_time_end: cur.endV.toFixed(2),
     reviewer: $("reviewer").value.trim(), confidence: endVals.confidence || "",
     seconds_to_lock: $("x_stl").value, fight_time_s: r1((rnd - 1) * 300 + s),
+    found_via: $("found_via").value,
   };
   for (const [k] of FACTOR_GROUPS) row[k] = cur.factors[k] || "";
+  const seq = $("x_seq").value.split(">").map(x => x.trim()).filter(Boolean);
+  const bad = seq.filter(x => !STYLES.includes(x));
+  if (bad.length) { alert("Unknown style tag(s): " + bad.join(", ") + "\nAllowed: " + STYLES.join(", ")); return false; }
+  row.rnc_style_sequence = seq.join(">");
   const f = fights.get($("selFight").value);
   let warn = "";
-  if (f && f.finish_s != null && SUCCESS.has(row.outcome) && Math.abs(e - f.finish_s) > 3) warn = ` <span class="bad">End is ${r1(e - f.finish_s)} s from the ufcstats finish — check the clock sync.</span>`;
+  if (f && f.finish_s != null && String(f.finish_round) === String(rnd) && SUCCESS.has(row.outcome) && Math.abs(e - f.finish_s) > 3)
+    warn = ` <span class="bad">End is ${r1(e - f.finish_s)} s from the ufcstats finish — check the clock sync.</span>`;
+  if (row.outcome === "bell") warn += " (bell is kept as-is; the analysis treats it as censored)";
   rows.push(row); persist(); renderTable(); writeLinked().catch(err => alert("Write failed: " + err.message));
-  cur = null; timerStart = null; drawTimeline();
+  cur = null; timerStart = null; drawTimeline(); showSeq();
   setStatus(`Saved ${row.outcome} (${row.attempt_start_s}–${row.attempt_end_s} s, round ${rnd}).${warn} Next attempt: <kbd>S</kbd>.`);
 }
 
@@ -412,18 +460,33 @@ function confirmPanel() {
   if (panel.kind === "factors") {
     if (missing.length && !confirm("Leave blank (not visible): " + missing.join(", ") + "?")) return;
     cur.factors = panel.values; cur.factorsDone = true; closePanel();
-    setStatus("Factors saved. Play on (<kbd>Space</kbd>) and press <kbd>E</kbd> at the end of the attempt.");
+    cur.seq = cur.factors.rnc_style_at_L ? [cur.factors.rnc_style_at_L] : [];
+    showSeq();
+    setStatus("Factors saved. Play on (<kbd>Space</kbd>). When the grip changes, press <kbd>T</kbd> then the style number. Press <kbd>E</kbd> at the end.");
   } else {
     if (!panel.values.outcome) { alert("Pick an outcome."); return; }
-    const vals = panel.values; saveAttempt(vals); closePanel();
+    if (!$("found_via").value && !confirm("found_via is blank (PREREG §2 needs it). Save anyway?")) return;
+    if (saveAttempt(panel.values) === false) return;
+    closePanel();
   }
+}
+let stylePicking = false;
+function showSeq() {
+  $("hSeq").textContent = cur && cur.seq && cur.seq.length ? cur.seq.join(" > ") : "—";
+  $("stylePick").classList.toggle("hidden", !stylePicking);
+  $("styleKeys").innerHTML = STYLES.map((s, i) => `<kbd>${i + 1}</kbd> ${s}`).join(" ");
+}
+function addStyle(tag) {
+  if (!cur || !cur.factorsDone) return;
+  if (cur.seq[cur.seq.length - 1] !== tag) cur.seq.push(tag);
+  showSeq();
 }
 $("bConfirm").onclick = confirmPanel;
 $("bCancel").onclick = () => { if (panel && panel.kind === "factors") { if (!confirm("Cancel this attempt?")) return; cur = null; timerStart = null; drawTimeline(); setStatus("Attempt cancelled."); } closePanel(); };
 
 // ---------- table ----------
 function renderTable() {
-  const cols = ["fight_id","round","attempt_start_s","attempt_end_s","outcome","choke_arm_position","control","rnc_style","camera_cut_flag","notes"];
+  const cols = ["fight_id","round","attempt_start_s","attempt_end_s","outcome","found_via","choke_arm_position","control","rnc_style_sequence","camera_cut_flag","notes"];
   $("tbl").innerHTML = "<tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr>" +
     rows.slice().reverse().slice(0, 200).map(r => "<tr>" + cols.map(c => `<td>${String(r[c] ?? "").replace(/</g, "&lt;")}</td>`).join("") + "</tr>").join("");
   $("nRows").textContent = rows.length;
@@ -449,6 +512,16 @@ document.addEventListener("keydown", e => {
   }
   if (typing) { if (e.key === "Escape") document.activeElement.blur(); return; }
   const k = e.key;
+  if (stylePicking) {
+    stylePicking = false;
+    if (/^[1-7]$/.test(k)) { addStyle(STYLES[Number(k) - 1]); e.preventDefault(); return; }
+    showSeq(); if (k === "Escape") return;
+  }
+  if (k === "t" || k === "T") {
+    if (!cur || !cur.factorsDone) { setStatus("Add styles after the landmark factors are coded (<kbd>S</kbd> first)."); return; }
+    stylePicking = true; showSeq(); return;
+  }
+  if (k === "w" || k === "W") { swapFighters(); return; }
   if (k === " ") { e.preventDefault(); if (cur && !cur.factorsDone && v.currentTime >= cur.landmarkV - 1e-3) { openFactorPanel(); return; } v.paused ? v.play() : v.pause(); }
   else if (k === "ArrowLeft") { e.preventDefault(); seek(e.shiftKey ? -5 : -1); }
   else if (k === "ArrowRight") { e.preventDefault(); seek(e.shiftKey ? 5 : 1); }
