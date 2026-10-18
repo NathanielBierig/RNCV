@@ -1,0 +1,53 @@
+[
+ {
+  "clip": "gsp_bisping",
+  "frames": 144,
+  "every": 5,
+  "score_thr": 0.3,
+  "nms_thr": 0.65,
+  "pct_raw_2plus": 93.05555555555556,
+  "pct_2_fighters_selected": 87.5,
+  "pct_2_fighters_upper_ok": 59.02777777777778,
+  "pct_2_tracked_seen": 87.5,
+  "pct_2_tracked_seen_or_filled": 97.22222222222221,
+  "dropped": {
+   "crowd": 170,
+   "dup": 66,
+   "ref": 63
+  }
+ },
+ {
+  "clip": "pantoja_asakura_r2",
+  "frames": 185,
+  "every": 5,
+  "score_thr": 0.3,
+  "nms_thr": 0.65,
+  "pct_raw_2plus": 71.35135135135135,
+  "pct_2_fighters_selected": 50.810810810810814,
+  "pct_2_fighters_upper_ok": 25.945945945945947,
+  "pct_2_tracked_seen": 50.810810810810814,
+  "pct_2_tracked_seen_or_filled": 64.32432432432432,
+  "dropped": {
+   "crowd": 38,
+   "dup": 75,
+   "ref": 16
+  }
+ },
+ {
+  "clip": "sterling_sandhagen",
+  "frames": 384,
+  "every": 5,
+  "score_thr": 0.3,
+  "nms_thr": 0.65,
+  "pct_raw_2plus": 87.5,
+  "pct_2_fighters_selected": 62.760416666666664,
+  "pct_2_fighters_upper_ok": 40.88541666666667,
+  "pct_2_tracked_seen": 62.760416666666664,
+  "pct_2_tracked_seen_or_filled": 73.4375,
+  "dropped": {
+   "crowd": 143,
+   "dup": 135,
+   "ref": 68
+  }
+ }
+]

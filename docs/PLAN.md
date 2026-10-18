@@ -181,6 +181,7 @@ Rules this plan adds on top:
 
 ### 5a. Interpretable factor model (primary analysis), revised after critique §B
 
+- ✅ **PREREG v1.0 frozen and committed: `b8d817d`** (user-approved 2026-10-19, before any pilot outcome was tabulated). Cite this hash in the write-up.
 - **Pre-register first, with a timestamp (S13).** Write `research/rnc_science/PREREG.md` (main session): hypotheses, codings, landmark, model, CI method and decision rules. Commit it **before the first outcomes are labeled**, so the git history proves it came first.
 - **Landmark design instead of "first 3 s or deepest point" (S1, S2).** Score each factor **at a fixed landmark** L = 2 s after the attempt start, among attempts still ongoing at start + L + 2 s. This matches the harness's eligibility rule.
   - No "deepest point" and no "ever reached state X" codings. Those leak the outcome, and longer attempts get more chances to reach a state.
