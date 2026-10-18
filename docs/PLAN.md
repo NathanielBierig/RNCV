@@ -9,7 +9,7 @@
 **Showcase: the live overlay.** It shows the finish probability *plus the factors driving it* right now.
 
 What this changes in the plan:
-- **Phase 3:** the labels must record each factor *over time* (§3.4b). These are the science variables, so labeling them carefully matters more than the attempt count alone.
+- **Phase 3:** the labels must record each factor, coded blind at the 2-s landmark; the code book is [FACTORS.md](../research/rnc_science/FACTORS.md). These are the science variables, so labeling them carefully matters more than the attempt count alone.
 - **Phase 5:** the model must be **interpretable first** (logistic regression → odds ratios with CIs), and predictive second.
 - **Phase 6:** the overlay shows the top factors along with the probability.
 - Study design lives in `research/rnc_science/` and the renderer in `tools/overlay/`, both owned by the main session. This plan only sets the interfaces.
@@ -97,17 +97,10 @@ Run pose plus tracking on **3–5 short UFC ground clips** (at least one RNC eac
 
 **Goal:** About 150 labeled RNC attempts with start/end times and outcomes, from about 100 fights. This is the asset nobody else has.
 
-### 3.1 Footage and copyright (not legal advice)
-- UFC footage is copyrighted. YouTube's and Fight Pass's terms forbid downloading. There's **no clean $0 path** to downloadable UFC video. Pick knowingly:
-  - Watch through legitimate access (UFC YouTube free fights, Fight Pass) and keep any local copies **private and never redistributed**.
-  - Store only **derived data** in the project: keypoints, timestamps and labels. Keep raw video out of git and out of Kaggle public datasets. Kaggle notebooks with private datasets are fine.
-  - For anything public (demo reel, social posts), prefer gym footage you recorded, with every athlete's consent.
-- **Owner: you. Due: before week 2 (critique #2, blocker).** Watching on YouTube is enough to *label* timestamps, but pose extraction (2b, 3.3, 4–6) needs frames, and there's no $0 legal way to get downloadable UFC copies. Decide one, in writing, in `docs/FOOTAGE.md`:
-  1. **Labels-only science.** Label from legal streams; factors are labeled by hand. This fully supports the core science result (5a) at $0 with no copies. The live overlay is then shown on gym footage or grappling footage you have permission to use.
-  2. **Private local copies** for pose work: a personal-research risk you accept knowingly (not legal advice).
-  3. **A promotion that owns its footage gives permission** (see research/venture/: Polaris, Brave CF, CJI-style events).
-  - Option 1 is the default because it makes the core result independent of footage access.
-- ✅ **Decided 2026-10-18: UFC only** (options 1 + 2). Hand labeling from legal streams; private local attempt clips for pose work, run on the laptop CPU, never uploaded to Kaggle. No gym footage. Details: [FOOTAGE.md](FOOTAGE.md).
+### 3.1 Footage (decided 2026-10-18: UFC only; see [FOOTAGE.md](FOOTAGE.md))
+- **Labeling** (timestamps, outcome, factors, style tags) is done from legitimate streams (UFC Fight Pass, UFC's official free fights on YouTube). No copies are needed.
+- **Pose work** (2b, 4, 5b, 6) uses private local clips of single attempts, kept on the laptop and run on the CPU. This is a personal-research risk the user accepts knowingly (not legal advice). Raw video never goes to git, Kaggle, cloud drives or social media.
+- **Public output is derived only:** labels, stats, plots, and skeleton-only renders on a blank background. Overlays on real UFC frames stay private (shown live in interviews). No gym footage or other promotions for now.
 
 ### 3.2 Finding candidates from stats
 1. Scrape ufcstats.com fight pages and get: `method`, `round`, `time`, and per-round `sub_att` and `ctrl` (control time) for each fighter.
@@ -127,7 +120,7 @@ Run pose → tracker → Phase 2 position model over every candidate round. Outp
 
 The earlier draft of this section disagreed with the labeling files on the start rule, the escape rule and the outcome codes (critique #4). **The authoritative definitions are now:**
 - **Attempts:** [`phase3_labels/LABEL_SCHEMA.md`](../phase3_labels/LABEL_SCHEMA.md). Columns are `fight_id, round, attempt_start_s, attempt_end_s` on the round clock, plus `attacker, defender, outcome, camera_cut_flag`. Outcome codes are `tap, ref_stop, unconscious, escape, position_change, bell`. Start requires back control *and* the arm across the neck *and* the second hand locking.
-- **Science factors:** [`research/rnc_science/FACTORS.md`](../research/rnc_science/FACTORS.md). If it disagrees with LABEL_SCHEMA, FACTORS.md wins.
+- **Science factors: [`research/rnc_science/FACTORS.md`](../research/rnc_science/FACTORS.md) is the single code book** (factor names, codes, style tags, landmark rule). PLAN keeps no code list of its own (critique S12). If FACTORS disagrees with LABEL_SCHEMA, FACTORS wins.
 - **Code:** `tools/eval_harness/horizons.normalize_labels()` reads that schema and **fails loudly** on unknown columns or codes.
 
 Rules this plan adds on top:
@@ -233,7 +226,7 @@ Rules this plan adds on top:
 | | |
 |---|---|
 | Eval | Watch it next to the ground truth on 5 locked-test fights. Write down any confusing moments. |
-| Risks | Flickering probability (fix with smoothing). Copyright if you publish UFC clips. Keep the public demo on your own gym footage, or only show UFC clips privately or briefly in interviews. |
+| Risks | Flickering probability (fix with smoothing). Copyright if you publish UFC clips: overlays on UFC frames stay private (interviews). Public versions are skeleton-only renders on a blank background (FOOTAGE.md). |
 | Time (est.) | 6–10 h |
 | **Go/no-go** | Someone who doesn't train BJJ can follow the overlay without you explaining it |
 
@@ -245,7 +238,7 @@ Rules this plan adds on top:
 
 - Next types by frequency: guillotine, arm-triangle, d'arce, triangle, armbar, kimura. Each needs about 80–150 attempts (est.).
 - Reuse the Phase 3 tooling. The schema only gains a `sub_type` column.
-- Tests: (a) a **temporal split**: train on events up to 2023, test on 2024 and later; (b) unseen weight classes; (c) a different camera style (another promotion, or gym footage).
+- Tests: (a) a **temporal split**: train on events up to 2023, test on 2024 and later; (b) unseen weight classes; (c) different broadcast eras and camera styles within the UFC (e.g. pre-2016 vs now).
 - Expect a metric drop on each shift, and report it.
 
 | | |
@@ -258,30 +251,44 @@ Rules this plan adds on top:
 ## 8. Critical path
 
 ```
-Footage access ──► 2b pose smoke test ──► Phase 3 labeling (≥100) ──► Phase 4 ──► Phase 5 ──► Phase 6
-        ▲                                   ▲
-Phase 2 (VICOS) ────── "Back" pre-labeler ──┘   (Phase 2 speeds up Phase 3 but doesn't block it)
-ufcstats scrape ───────── candidate list ───┘
+Labeler + PREREG ──► pilot (15) ──► labeling (≈150, hand-coded factors) ──► 5a science result   ← the core; needs NO pose
+                          │
+private clips ──► 2b pose ──► Phase 4 detector ──► 5b live model ──► Phase 6 overlay   ← the showcase; runs in parallel
+stats data ──► leak-free B2 baseline (the bar 5b must clear)
 ```
 **Your labeling hours drive the schedule.** GPU quota, model choice and code speed barely matter by comparison.
 
-## 9. Weekly schedule (part-time, about 6–8 h/week, est.)
+## 9. Schedule: weeks, not months (est.)
 
-| Week | Milestone | Owner |
+**What actually limits speed: your labeling hours.** Everything else runs in parallel or unattended:
+
+| Work | Who | Hours (est.) |
 |---|---|---|
-| 1 | Phase 2 CPU baseline on VICOS keypoints, with time-block-fold results | build session |
-| 2–3 | **Critique experiments:** (1) stopwatch pose + back-control test on 3 clips; (2) a 15-attempt pilot from randomly chosen fights, double-coded, with timing logged; (3) leak-free B2 on stats only. These set the real labeling cost, the success:failure ratio and the bar Phase 5 must clear. Footage decision (§3.1) by week 2. | you + build |
-| 2 | **2b broadcast pose smoke test (go/no-go)**; ufcstats scrape → RNC candidate list | build + you |
-| 3 | Phase 2 RTMO re-extraction; pre-labeler; finalize the rules from the pilot | you + build |
-| 4 | **Pre-register the science analysis** (factors, codings, model) in `research/rnc_science/` before fitting any outcomes | you + main |
-| 4–10 | Label to 100–150 attempts (pace set by the pilot, about 8/week est.); κ check in week 5; the hash rule for the test set is frozen in week 4 | you |
-| 6–7 | Phase 4 v0 on the first 60 attempts (built while you keep labeling) | build |
-| 10–11 | Phase 4 final on the locked test set | build + you review |
-| 11–12 | Phase 5a science (odds ratios, forest plot, hazard check), then 5b live predictor vs baselines | build + you |
-| 13–14 | Phase 6 overlay with factor explanations, plus the write-up: "What makes an RNC finish?" with CIs, and failure cases | both |
-| 15+ | Phase 7: guillotine | you |
+| Labeling ~150 attempts | **you** | about 4 min in the labeler + 5–25 min to find the attempt (successes fast, failures slow) → **30–50 h** total. The 15-attempt pilot gives the real number. |
+| Pose on private clips (laptop CPU, 1–3 fps) | machine, overnight | about 5–10 h unattended |
+| Code (Phases 4–6, stats baseline, analysis) | build/main sessions | Runs in parallel while you label; not the bottleneck |
 
-**Total to a working RNC demo: about 14 weeks part-time (est.; revised up after the critique's labeling-cost estimate).** If you can put in 15 h/week, it drops to about 7–8 weeks, but labeling still sets the pace.
+| At your pace of… | Labeling done in | Working demo + write-up |
+|---|---|---|
+| 10 h/week | about 4 weeks | about **5 weeks** |
+| 20 h/week | about 2 weeks | about **3 weeks** |
+
+### Parallel tracks, week by week (at about 15–20 h/week of labeling)
+
+| Week | You | Build session | Main session |
+|---|---|---|---|
+| **1** | Footage set up (FOOTAGE.md ✅); clip and label the **15-attempt pilot** in `tools/labeler` (blind factor coding at +2 s); ask a training partner to double-label ~30 | Phase 2 fixes (swap augmentation); **leak-free B2 stats baseline** (no video); CPU pose smoke test on the pilot clips (2b go/no-go) | Commit `PREREG.md` **before** the pilot outcomes are coded; review the pilot timing → final labeling budget |
+| **2** | Label to about 70–80 attempts (fight-sampled, `found_via` recorded) | Pose on all clips overnight; Phase 4 v0 detector on labeled clips; harness wired to `labels.csv` | Rules tweaks from the pilot (no code changes after PREREG); κ check on the first double-labeled batch |
+| **3** | Label to about 150; partner finishes double-labeling | Phase 4 final; Phase 5b refit on detected states; overlay renders (private) + skeleton-only public renders | **Freeze labels → run 5a** (Firth ORs, forest plot, hazard check) |
+| **4** (buffer) | Review failure cases; record the interview demo | Polish; locked-test run (single shot) | Write-up: "What finishes the RNC in the UFC: N attempts" |
+
+**Rules for going fast without cheating:**
+- PREREG is committed before outcomes are seen.
+- The test-set hash rule is frozen at the start of week 1.
+- The 5a analysis runs **once**, on frozen labels.
+- The locked test set is run once, at the end.
+
+**Go/no-go points stay the same:** 2b pose (end of week 1), the pilot cost and κ (end of week 1), Phase 4 F1 (week 3).
 
 ## 10. Top risks
 
@@ -290,5 +297,5 @@ ufcstats scrape ───────── candidate list ───┘
 | 1 | Pose collapses on tangled broadcast ground footage | Medium–high | Week-2 smoke test; fine-tune on corrected frames; appearance-feature fallback |
 | 2 | Not enough labeled attempts (especially failures) | High | Stats-driven candidates + pre-labeler; minimum viable 100; RNC only |
 | 3 | Success prediction doesn't beat the stats-only baseline | Medium | Report it honestly; that's still a strong evaluation story |
-| 4 | Copyright and license on UFC footage and the NC data | Certain (for public/commercial use) | Keep everything private and derived-only; public demo on your own footage |
+| 4 | Copyright and license on UFC footage and the NC data | Certain (for public/commercial use) | Keep video private; publish derived data and skeleton-only renders (FOOTAGE.md) |
 | 5 | Leakage making results look better than they are | Medium | Fight-level splits, a locked test set, the leak-free horizon protocol |
