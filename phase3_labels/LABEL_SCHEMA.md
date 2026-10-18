@@ -30,7 +30,8 @@ Added for the study of which details predict a finish. All are **reviewer-labele
 | `control` | `two_hooks`, `body_triangle`, `one_hook`, `none` | leg control at attempt start |
 | `opponent_flattened` | bool | defender's back/chest flat on the mat |
 | `defender_two_on_one` | bool | both defender hands on the choking arm |
-| `second_hand` | `behind_head`, `palm_to_palm`, `gable`, `none` | attacker's non-choking hand |
+| `rnc_style` | `figure_four`, `palm_to_palm`, `gable`, `wrist_pull`, `short_choke`, `one_arm`, `unclear` | grip style at the landmark (replaces the old `second_hand`). Definitions in FACTORS.md "RNC style tags"; `wrist_pull` = the "Dagestani" forearm/wrist grip with no figure-four |
+| `back_context` | `ground_back`, `turtle_ride`, `standing_back`, `scramble` | where the back attack happens |
 | `attacker_side` | `left`, `right` | which arm is the choking arm |
 | `seconds_to_lock` | float | seconds from back control established to the choke going in |
 | `round` | int | already a core column; repeated here only for the analysis table |
