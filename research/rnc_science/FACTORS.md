@@ -1,56 +1,69 @@
 # Science-based RNC: what makes a rear-naked choke finish?
 
-Study design for direction #1. Goal: measure which RNC details go with a finish in UFC fights, and say honestly how sure we are.
+Study design for direction #1, **UFC only** (see [docs/FOOTAGE.md](../../docs/FOOTAGE.md)). The analysis rules follow [PLAN.md §5a](../../docs/PLAN.md) (revised after the critic's science review). If this file and PLAN §5a disagree, PLAN wins until `PREREG.md` is written and committed.
 
 ## Unit of analysis
 
-One **attempt** = from the moment the attacker has back control with the choking arm across the neck, to a finish, an escape or the bell (full rules in `phase3_labels/LABEL_SCHEMA.md`).
-**Outcome:** `success` = tap, ref stoppage or unconscious. Everything else = failure.
+One **attempt** as defined in [LABEL_SCHEMA.md](../../phase3_labels/LABEL_SCHEMA.md). `success` = tap, ref stoppage or unconscious. `bell` = **censored** (not a failure).
 
-## Candidate factors
+**Landmark coding:** every factor is coded at **L = 2 s after the attempt start**, paused, *before* watching the ending (blind coding). No "deepest point" or "ever reached" codings, and no "time held" predictor: duration is a result of the outcome.
 
-| Factor | Values | How measured | Hypothesis (to test, not assume) |
-|---|---|---|---|
-| Choke arm position | under_chin / over_jaw / unclear | Reviewer label | Under the chin finishes more often, but "over the jaw" still finishes some fighters (a jaw crank or pain tap) |
-| Back control | two_hooks / body_triangle / one_hook / none | Reviewer label | Body triangle keeps control longer, so more time to sink the choke |
-| Opponent flattened | yes / no | Reviewer label; later from pose (defender's hip height vs shoulders) | Flattened opponents can't turn in, so higher finish rate |
-| Defender two-on-one | yes / no | Reviewer label | Two hands on the choking arm lowers finish rate strongly |
-| Second hand | behind_head / palm_to_palm / gable / none | Reviewer label | Behind the head (the "figure-four") finishes most |
-| Attacker side | left / right | Reviewer label | Probably no effect. Kept as a sanity check: if this "matters", suspect noise |
-| Seconds to lock | number | From timestamps | A fast lock (before the defender sets up hand fighting) finishes more |
-| Round / fight time | number | From UFC stats | Fatigue: later rounds finish more |
-| Weight class | category | From UFC stats | Lighter classes: more scrambles, lower conversion? |
+## Primary factors (at most 4 df; these are the pre-registered hypotheses)
 
-Pose-derived features come later (Phase 4+): neck–elbow distance, the angle between the attacker's forearm and the defender's jaw line, defender hip height. These turn reviewer labels into measurements.
+| Factor | Coding | Hypothesis |
+|---|---|---|
+| `arm` | under_chin vs not | Under the chin finishes more often |
+| `lower_body` | body_triangle or two hooks vs less | Stronger leg control finishes more often |
+| `defender_two_on_one` | yes / no | Both defender hands on the choking arm lowers the finish rate |
+| `round_time_left` | seconds | Adjusts for bell censoring (not a technique claim) |
 
-## Analysis plan
+## Secondary / exploratory factors (reported as exploratory)
 
-1. **Descriptive first:** the finish rate per factor level, with **Wilson 95% confidence intervals** (an interval that behaves well for small counts and rates near 0% or 100%).
-2. **Model:** logistic regression (predicts the log-odds of a finish from the factors) with **standard errors clustered by fighter**. The same fighter appears in several attempts, and those attempts aren't independent.
-3. **Optional Bayesian version** (a model that starts from a mild prior belief and updates it with data). Gives "probability the body triangle helps" statements, which read naturally in a write-up.
-4. **Pre-register** the hypotheses above in this file *before* looking at the labeled outcomes. That prevents "p-hacking" (trying many cuts until something looks significant).
-5. **Multiple comparisons:** about 9 factors are tested, so treat any single p ≈ 0.04 as weak. Report effect sizes and intervals rather than "significant / not".
+| Factor | Coding | Question |
+|---|---|---|
+| `rnc_style` | see style tags below | Does grip style change finish rate? E.g. figure-four vs the Dagestani wrist pull |
+| `back_context` | ground_back / turtle_ride / standing_back / scramble | Do chokes from rides and standing finish differently than from classic back mount? |
+| `opponent_flattened` | yes / no | Flattened = can't turn in |
+| `round`, weight class | stats | Fatigue and division effects |
+| `attacker_side` | left / right | Sanity check: should show no effect |
 
-## How much data do we need? (estimates)
+Excluded as predictors (part of the escape definition, so tautological): `defender_turning`, `arm = off`.
 
-Two-group comparison, about 150 attempts split roughly 75/75, alpha = 0.05:
+## RNC style tags
 
-| True difference in finish rate | Example | Chance we detect it (power) |
+Coded at the landmark from what the attacker's two hands are doing. If the style changes mid-attempt, code the landmark style and write the change in `notes`.
+
+| Tag | What it looks like | Typical of |
+|---|---|---|
+| `figure_four` | Choking hand grips the opposite biceps, other hand behind the defender's head (classic mata leão) | BJJ-style back takes |
+| `palm_to_palm` | Hands clasped palm to palm, choking forearm across the throat | Common when the head is defended |
+| `gable` | Hands clasped thumbless (gable or S-grip) behind the neck | Wrestlers, scrambles |
+| `wrist_pull` | Second hand grabs the choking arm's **wrist or forearm** and pulls it across; no hand behind the head, no figure-four | The "Dagestani" style, often from a ride or body lock (e.g. Khabib / Islam-style back attacks) |
+| `short_choke` | Choking arm only partly across: hand ends at the attacker's own shoulder or the defender's far collar line, blade of the forearm on the throat, second hand pushes the elbow or head | Sneaky finish over the jaw / when a full lock is denied |
+| `one_arm` | No second hand engaged; squeezing with one arm while the other controls the body or wrist | Transitional, scrambles |
+| `unclear` | Grip not visible (angle, cut, gloves hidden) | Report the unclear rate per tag |
+
+**Exploratory question:** do `wrist_pull` (Dagestani) attempts finish at a different rate than `figure_four`, adjusted for the primary factors? With about 150 attempts, only a large difference is detectable (see the power table). Treat any result as "suggestive" and a reason to collect more.
+
+## Analysis (from PLAN §5a)
+
+- **Firth logistic regression** (removes small-sample bias) with profile-likelihood 95% CIs. Sensitivity check: a cluster bootstrap by attacker.
+- Descriptive finish rates per level with **Wilson 95% CIs**.
+- Secondary: a discrete-time hazard model (1-s bins; finish vs escape as competing outcomes; bell = censored).
+- **Second rater** (a training partner) on at least 30 attempts → Cohen's κ (agreement above chance; aim for > 0.6), reported per factor. Style tags are likely the hardest to agree on, so measure them.
+- Associations, not causes. Wide CIs are a result. Exploratory findings are labeled exploratory.
+
+## How much data? (estimates; two groups of 75, alpha = 0.05)
+
+| True difference in finish rate | Example | Power |
 |---|---|---|
 | 25 points | 55% vs 30% | about 90% |
 | 15 points | 45% vs 30% | about 50% |
 | 10 points | 40% vs 30% | about 25% |
 
-**Takeaway:** about 150 attempts finds only *big* effects. Smaller effects need 400+ attempts, or pooling with other chokes later (Phase 7). The write-up must say "suggestive" for anything smaller.
+Style tags split the data into 6 groups, so per-tag counts are small: expect only the most common contrast (probably figure-four vs wrist_pull) to be estimable.
 
-## Threats to validity
+## Next
 
-- **Selection bias:** fights that are easy to find and watch (free YouTube, main events) overrepresent stars. Record the source of every attempt.
-- **Label bias:** the reviewer knows the outcome while labeling the details. Mitigation: label details on the clip cut *before* the finish where possible, and have a second person re-label a 20% sample to measure agreement (Cohen's kappa: agreement above chance; aim for > 0.6).
-- **Confounding:** better grapplers both use body triangles *and* finish more. Add fighter skill proxies (career submission rate from UFC stats) as controls.
-- **Camera cuts:** mark `camera_cut_flag`. Run the analysis with and without flagged attempts.
-
-## Output
-
-- `analysis.ipynb`: tables plus a forest plot (each factor's effect with its interval on one chart).
-- A short public write-up: "What actually finishes the RNC in the UFC: N attempts analysed". Derived data only, no footage.
+- Write and commit `PREREG.md` (hypotheses, codings, landmark, model, decision rules) **before** the 15-attempt pilot.
+- Output: `analysis.ipynb` with tables and a forest plot, plus a public write-up using derived data only ("What actually finishes the RNC in the UFC: N attempts analysed").
