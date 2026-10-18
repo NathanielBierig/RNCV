@@ -1,9 +1,13 @@
 {
   "model": "gbm",
+  "swap_aug": false,
+  "annotations": "annotations.json",
   "split": "time-block folds: 5 blocks per sequence, all cameras together, purge=300 frames",
   "n_frames": 120279,
   "n_features": 178,
   "pooled_macro_f1": 0.4625477959412641,
+  "pooled_swap_macro_f1": 0.6021410350849432,
+  "pooled_macro_f1_10_positions_roles_merged": 0.5164836014612835,
   "pooled_balanced_acc": 0.46508740691935735,
   "pooled_accuracy": 0.5473108356404692,
   "majority_class_baseline_acc": 0.13902676277654452,
@@ -13,45 +17,50 @@
       "n_train": 45450,
       "n_test": 25596,
       "test_classes_unseen_in_train": [],
-      "macro_f1": 0.45531062204720846,
+      "macro_f1": 0.2529503455817825,
+      "swap_macro_f1": 0.34807582228736367,
       "balanced_acc": 0.4926403169446825,
-      "seconds": 393.0
+      "seconds": 275.5
     },
     {
       "fold": 1,
       "n_train": 43683,
       "n_test": 24408,
       "test_classes_unseen_in_train": [],
-      "macro_f1": 0.48742697981815214,
+      "macro_f1": 0.32495131987876813,
+      "swap_macro_f1": 0.37270789920077196,
       "balanced_acc": 0.5012286662093787,
-      "seconds": 309.9
+      "seconds": 261.9
     },
     {
       "fold": 2,
       "n_train": 43808,
       "n_test": 24107,
       "test_classes_unseen_in_train": [],
-      "macro_f1": 0.6577362905334113,
+      "macro_f1": 0.47503176538524156,
+      "swap_macro_f1": 0.45551586022327506,
       "balanced_acc": 0.6814541732750826,
-      "seconds": 234.2
+      "seconds": 244.9
     },
     {
       "fold": 3,
       "n_train": 44275,
       "n_test": 23561,
       "test_classes_unseen_in_train": [],
-      "macro_f1": 0.5290082414343794,
+      "macro_f1": 0.3526721609562529,
+      "swap_macro_f1": 0.353011217990267,
       "balanced_acc": 0.5359864196344263,
-      "seconds": 226.3
+      "seconds": 247.4
     },
     {
       "fold": 4,
       "n_train": 46769,
       "n_test": 22607,
       "test_classes_unseen_in_train": [],
-      "macro_f1": 0.4498212429564669,
+      "macro_f1": 0.2249106214782334,
+      "swap_macro_f1": 0.28279668406769304,
       "balanced_acc": 0.49084552460999364,
-      "seconds": 243.6
+      "seconds": 3802.0
     }
   ]
 }
