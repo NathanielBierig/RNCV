@@ -23,7 +23,7 @@ Owned by the secretary session, which keeps this list current. Tick a box when d
 ## 🟡 Soon (this week)
 
 - [ ] **4. Kaggle account + phone verification** (10 min). Phone verification is needed for free GPU. [Sign up](https://www.kaggle.com/account/login?phase=startRegisterTab), then verify your phone at [kaggle.com/settings](https://www.kaggle.com/settings).
-- [ ] **5. Pilot: label 15 RNC attempts** (about 1–1.5 h) with the labeling tool (`tools/labeler/`, being built). The secretary will send the exact fight list with direct links and timestamps. Keep a stopwatch running: it measures the real cost per attempt.
+- [ ] **5. Pilot: label 15 RNC attempts** (about 1–1.5 h) with the labeling tool (`tools/labeler/`, not built yet as of 2026-10-18; also waits for task 2). The secretary will send the exact fight list with direct links and timestamps. Keep a stopwatch running: it measures the real cost per attempt.
 - [ ] **6. Phase 5 and 6 decision** (15 min read): a review memo with options is being written (`docs/DECISION_PHASE5_6.md`). You pick before we commit heavily.
 
 ## ⚪ Later
