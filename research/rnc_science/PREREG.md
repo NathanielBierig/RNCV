@@ -10,7 +10,7 @@
 Among UFC RNC attempts, which technical states at a fixed early moment are associated with the attempt finishing?
 
 ## 2. Data
-- **Population:** UFC fights 2018–2026 with at least one RNC attempt.
+- **Population:** UFC fights 2018–2026 with at least one RNC attempt. *(Amended A1, 2026-10-19: men's divisions only; see §9.)*
 - **Sampling (hybrid; watching full fights at random is too slow):**
   - **Successes:** chosen from the 677-finish list (the finish time is known, so jump straight to it). Choosing by outcome keeps the factor comparisons (odds ratios) valid; it only distorts the *overall* finish %, which comes from the random subset below.
   - **Failures:** from rounds that UFC stats flag with submission attempts, and later from back-control moments flagged by the pose pre-labeler. No full-fight watching.
@@ -57,4 +57,12 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 - Power (two groups of about 75, alpha = 0.05): about 90% for a 25-point difference in finish rate, about 50% for 15 points, about 25% for 10 points. Small effects are expected to come out inconclusive.
 
 ## 9. Amendments
-_(none yet)_
+
+### A1 (2026-10-19): population restricted to men's divisions
+- **Change:** §2 Population becomes "UFC **men's** fights 2018–2026 with at least one RNC attempt". Fights whose `weight_class` contains "Women's" are out of scope for every analysis (primary, exploratory and base rate).
+- **Why:** the owner decided to study men's divisions only. Women's and men's RNC finishing may differ (body size, grip strength, division depth), and with about 150 attempts the study can't power a sex-by-factor comparison. Mixing them would add unexplained variation instead.
+- **Timing:** made before any attempt was saved (`phase3_labels/labels.csv` did not exist yet) and before any pilot outcome was tabulated. No hypothesis, coding, model or decision rule changes.
+- **Sampling consequences:**
+  - The success and failure queues: women's rows are skipped at labeling time and recorded as `status = out_of_scope_womens` (not `unwatchable`). The per-fighter caps are unchanged.
+  - `random_10.csv`: women's fights in the fixed draw are excluded and **not replaced**, so the draw stays exactly as fixed before watching. The base finish rate is computed from the remaining men's fights, and the write-up reports how many were excluded.
+- **Limitation (stated in the write-up):** findings apply to men's UFC divisions only.
