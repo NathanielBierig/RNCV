@@ -60,6 +60,8 @@ yt-dlp --download-sections "*41:15-41:50" --force-keyframes-at-cuts -f "bv*+ba/b
 7. Look at the stopwatch note: timing is logged automatically. You don't need to time yourself.
 
 ## D. Edge cases
+- **View blocked (ref or camera in the way):** in the factor panel press **X**. Every field is left blank, the panel closes and the attempt is flagged `view_blocked`. Press X during the attempt to toggle the flag. Reload `index.html` (F5) first; saved rows are kept.
+- **Picture cheat sheet for the 12 questions:** https://claude.ai/artifact/6nubSqJW1YPKfeZy13ECBE
 - Atypical choke (one-armed, chin-linked): code it as normal and choose the **one_arm** style. It is excluded from the main model later, but you still label it.
 - Two fighters named wrong way round: press **W**.
 - Clock sync warning (end is more than 3 s from the stats time): redo step C1.

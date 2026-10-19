@@ -17,3 +17,4 @@ Newest last. Owned by the secretary session.
 |---|---|---|
 | Freeze PREREG v1.0 (commit) | 🟡 approved by user 2026-10-19, waiting on main session | Commit with the atypical-choke rule |
 | Phase 5/6 option choice | ⚪ memo coming at `docs/DECISION_PHASE5_6.md` | Decide after reading the memo |
+| Men's fights only? (pilot is men only so far) | 🔴 needs your call; needs a dated PREREG amendment before main labeling | Decide before the 150-attempt labeling; state it in the write-up |
