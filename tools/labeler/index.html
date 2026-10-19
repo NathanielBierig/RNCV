@@ -342,6 +342,12 @@ $("bLink").onclick = async () => {
     const existing = await (await fileHandle.getFile()).text();
     if (existing.trim()) {      // keep the file's rows, add browser rows it doesn't have yet
       const {header, data} = parseCSV(existing);
+      // Guard: linking a queue/fight-list CSV by mistake would overwrite it with labels.
+      if (!["fight_id", "attempt_start_s", "outcome"].every(c => header.includes(c))) {
+        fileHandle = null;
+        alert("This file isn't a labels file (no attempt_start_s/outcome columns), so it was NOT linked and nothing was written. Pick phase3_labels\\labels.csv, or type labels.csv as a new file name.");
+        return;
+      }
       const inFile = new Set(data.map(rowKey));
       rows = data.concat(rows.filter(r => !inFile.has(rowKey(r))));
       extraCols = [...new Set(extraCols.concat(header.filter(h => !COLUMNS.includes(h))))];
