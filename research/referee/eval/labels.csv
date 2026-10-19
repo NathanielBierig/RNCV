@@ -1,0 +1,400 @@
+clip,frame,person_idx,x0,y0,x1,y1,label,small_box,mean_kpt_score,notes
+gsp_bisping,0,0,337,77,461,151,crowd_or_junk,1,0.411,1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,0,1,348,320,1398,655,fighter,0,0.695,1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,0,2,127,63,285,124,crowd_or_junk,1,0.371,1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,0,3,449,0,695,252,crowd_or_junk,0,0.675,1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,0,4,1404,205,1589,368,crowd_or_junk,1,0.556,1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,0,5,588,0,735,195,crowd_or_junk,1,0.364,1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,0,6,1366,43,1535,314,crowd_or_junk,1,0.446,1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,0,7,770,0,1272,467,duplicate,0,0.339,duplicate of 8; 1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,0,8,824,0,1266,320,referee,0,0.246,1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,0,9,0,0,84,169,crowd_or_junk,1,0.075,1 = bottom fighter + top fighter leg; top fighter not separately detected; 7 mixes ref legs + top fighter
+gsp_bisping,5,0,452,0,691,259,crowd_or_junk,1,0.663,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,1,322,75,463,152,crowd_or_junk,1,0.396,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,2,117,69,278,114,crowd_or_junk,1,0.361,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,3,768,0,1269,593,referee,0,0.345,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,4,1394,196,1597,372,crowd_or_junk,1,0.496,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,5,1366,39,1534,296,crowd_or_junk,1,0.486,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,6,363,224,1334,697,fighter,0,0.724,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,7,587,0,744,154,crowd_or_junk,1,0.319,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,8,228,3,443,122,crowd_or_junk,1,0.261,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,9,0,0,71,172,crowd_or_junk,1,0.075,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,10,100,24,178,59,crowd_or_junk,1,0.219,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,11,807,0,1259,353,duplicate,0,0.319,duplicate of 3; ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,12,1243,26,1379,135,crowd_or_junk,1,0.379,ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,5,13,695,0,1271,598,duplicate,0,0.419,duplicate of 3; ref legs-only skeletons spill onto top fighter; top fighter not separately detected
+gsp_bisping,20,0,448,13,689,281,crowd_or_junk,1,0.644,
+gsp_bisping,20,1,323,94,468,174,crowd_or_junk,1,0.388,
+gsp_bisping,20,2,114,87,276,143,crowd_or_junk,1,0.374,
+gsp_bisping,20,3,776,27,1326,843,fighter,0,0.803,
+gsp_bisping,20,4,1405,204,1617,384,crowd_or_junk,1,0.543,
+gsp_bisping,20,5,247,0,419,147,crowd_or_junk,1,0.313,
+gsp_bisping,20,6,1413,54,1548,334,crowd_or_junk,1,0.409,
+gsp_bisping,20,7,11,10,60,181,crowd_or_junk,1,0.179,
+gsp_bisping,20,8,1254,23,1414,330,crowd_or_junk,1,0.406,
+gsp_bisping,20,9,1669,212,1868,427,crowd_or_junk,1,0.426,
+gsp_bisping,20,10,699,39,1070,548,referee,0,0.368,
+gsp_bisping,20,11,694,367,1374,709,fighter,0,0.707,
+gsp_bisping,20,12,1260,30,1413,241,crowd_or_junk,1,0.389,
+gsp_bisping,25,0,568,100,1393,941,fighter,0,0.867,
+gsp_bisping,25,1,429,22,661,292,crowd_or_junk,1,0.646,
+gsp_bisping,25,2,308,109,444,186,crowd_or_junk,1,0.391,
+gsp_bisping,25,3,94,100,259,162,crowd_or_junk,1,0.381,
+gsp_bisping,25,4,782,163,918,242,crowd_or_junk,1,0.333,
+gsp_bisping,25,5,225,2,401,161,crowd_or_junk,1,0.343,
+gsp_bisping,25,6,643,0,1119,560,referee,0,0.308,
+gsp_bisping,25,7,1420,220,1581,389,crowd_or_junk,1,0.513,
+gsp_bisping,25,8,1347,69,1531,340,crowd_or_junk,1,0.461,
+gsp_bisping,25,9,495,502,1417,725,fighter,0,0.685,
+gsp_bisping,25,10,1644,266,1863,435,crowd_or_junk,1,0.480,
+gsp_bisping,25,11,4,27,55,203,crowd_or_junk,1,0.089,
+gsp_bisping,25,12,237,99,416,127,crowd_or_junk,1,0.314,
+gsp_bisping,35,0,385,48,635,331,crowd_or_junk,1,0.653,
+gsp_bisping,35,1,543,93,1276,968,fighter,0,0.856,
+gsp_bisping,35,2,604,0,1038,592,referee,0,0.400,
+gsp_bisping,35,3,262,137,413,220,crowd_or_junk,1,0.405,
+gsp_bisping,35,4,170,0,369,205,crowd_or_junk,1,0.666,
+gsp_bisping,35,5,48,130,216,185,crowd_or_junk,1,0.353,
+gsp_bisping,35,6,1602,288,1829,527,crowd_or_junk,1,0.513,
+gsp_bisping,35,7,407,405,1544,836,fighter,0,0.792,
+gsp_bisping,35,8,1354,101,1504,371,crowd_or_junk,1,0.452,
+gsp_bisping,35,9,0,5,155,195,crowd_or_junk,1,0.291,
+gsp_bisping,35,10,740,193,872,279,crowd_or_junk,1,0.330,
+gsp_bisping,35,11,1411,251,1605,477,crowd_or_junk,1,0.540,
+gsp_bisping,35,12,0,68,125,173,crowd_or_junk,1,0.294,
+gsp_bisping,35,13,1208,71,1359,347,crowd_or_junk,1,0.452,
+gsp_bisping,55,0,307,77,570,354,crowd_or_junk,1,0.668,
+gsp_bisping,55,1,701,208,1421,991,fighter,0,0.769,
+gsp_bisping,55,2,196,163,328,234,crowd_or_junk,1,0.383,
+gsp_bisping,55,3,439,0,1009,625,referee,0,0.359,
+gsp_bisping,55,4,94,0,307,233,crowd_or_junk,1,0.575,
+gsp_bisping,55,5,0,145,133,216,crowd_or_junk,1,0.329,
+gsp_bisping,55,6,1522,311,1741,570,crowd_or_junk,1,0.542,
+gsp_bisping,55,7,1247,135,1415,296,crowd_or_junk,1,0.416,
+gsp_bisping,55,8,1094,104,1262,274,crowd_or_junk,1,0.402,
+gsp_bisping,55,9,586,591,1468,782,fighter,0,0.747,
+gsp_bisping,55,10,700,582,1451,794,duplicate,0,0.688,duplicate of 9
+gsp_bisping,55,11,579,551,1432,806,duplicate,0,0.804,duplicate of 9
+gsp_bisping,75,0,16,0,577,841,referee,0,0.576,full-body referee
+gsp_bisping,75,1,837,0,1419,977,fighter,0,0.864,full-body referee
+gsp_bisping,75,2,696,69,872,327,crowd_or_junk,1,0.515,full-body referee
+gsp_bisping,75,3,605,214,839,336,crowd_or_junk,1,0.450,full-body referee
+gsp_bisping,75,4,529,47,676,343,crowd_or_junk,1,0.486,full-body referee
+gsp_bisping,75,5,0,158,106,227,crowd_or_junk,1,0.285,full-body referee
+gsp_bisping,75,6,780,419,1404,852,fighter,0,0.718,full-body referee
+gsp_bisping,75,7,1465,278,1678,588,crowd_or_junk,1,0.531,full-body referee
+gsp_bisping,75,8,1418,53,1642,381,crowd_or_junk,1,0.544,full-body referee
+gsp_bisping,75,9,830,39,938,131,crowd_or_junk,1,0.366,full-body referee
+gsp_bisping,90,0,728,0,1694,847,fighter,0,0.699,reverse angle through the cage; second fighter not separately detected
+gsp_bisping,110,0,565,0,926,485,referee,0,0.343,"0 = ref legs behind cage, overlaps top fighter's head"
+gsp_bisping,110,1,748,440,1698,1007,fighter,0,0.824,"0 = ref legs behind cage, overlaps top fighter's head"
+gsp_bisping,130,0,654,106,1845,1061,fighter,0,0.688,one skeleton for both fighters
+gsp_bisping,145,0,502,0,904,518,referee,0,0.406,
+gsp_bisping,145,1,827,121,1819,791,fighter,0,0.680,
+gsp_bisping,165,0,507,0,874,490,referee,0,0.437,
+gsp_bisping,165,1,816,2,1772,903,fighter,0,0.741,
+gsp_bisping,165,2,652,529,1743,1021,fighter,0,0.751,
+gsp_bisping,165,3,654,528,1674,1005,duplicate,0,0.731,duplicate of 2
+gsp_bisping,185,0,828,167,1583,1058,fighter,0,0.780,
+gsp_bisping,185,1,733,0,1031,476,referee,0,0.369,
+gsp_bisping,185,2,780,548,1597,860,fighter,0,0.791,
+gsp_bisping,200,0,685,0,1049,487,referee,0,0.437,top fighter not separately detected
+gsp_bisping,200,1,839,533,1533,839,fighter,0,0.749,top fighter not separately detected
+gsp_bisping,220,0,770,208,1641,826,fighter,0,0.789,bottom fighter not detected
+gsp_bisping,220,1,588,13,1198,516,referee,0,0.410,bottom fighter not detected
+gsp_bisping,220,2,773,241,1659,813,duplicate,0,0.763,duplicate of 0; bottom fighter not detected
+gsp_bisping,240,0,547,0,916,511,referee,0,0.426,
+gsp_bisping,240,1,810,194,1577,710,fighter,0,0.756,
+gsp_bisping,240,2,830,470,1400,886,fighter,0,0.589,
+gsp_bisping,255,0,408,0,932,566,referee,0,0.400,1 merges both fighters
+gsp_bisping,255,1,947,218,1363,881,fighter,0,0.771,1 merges both fighters
+gsp_bisping,275,0,665,6,1281,682,duplicate,0,0.682,duplicate of 1; one fighter (top); bottom fighter not detected
+gsp_bisping,275,1,652,0,1374,664,fighter,0,0.723,one fighter (top); bottom fighter not detected
+gsp_bisping,295,0,1117,0,1566,524,referee,0,0.563,bottom fighter not detected
+gsp_bisping,295,1,682,0,1076,666,fighter,0,0.615,bottom fighter not detected
+gsp_bisping,310,0,634,42,1073,639,duplicate,0,0.701,duplicate of 3
+gsp_bisping,310,1,1319,2,1800,680,referee,0,0.584,
+gsp_bisping,310,2,759,333,1226,847,fighter,0,0.726,
+gsp_bisping,310,3,632,56,1052,622,fighter,0,0.776,
+gsp_bisping,310,4,720,353,1225,876,duplicate,0,0.750,duplicate of 2
+gsp_bisping,330,0,1359,39,1894,883,referee,0,0.533,bottom fighter not detected
+gsp_bisping,330,1,696,0,1246,711,duplicate,0,0.699,duplicate of 2; bottom fighter not detected
+gsp_bisping,330,2,698,0,1247,731,fighter,0,0.668,bottom fighter not detected
+gsp_bisping,350,0,1571,0,1920,871,referee,0,0.375,no fighter detected at all
+gsp_bisping,365,0,633,344,1305,846,duplicate,0,0.734,duplicate of 2; 2 mixes both fighters
+gsp_bisping,365,1,1588,0,1920,617,referee,0,0.226,2 mixes both fighters
+gsp_bisping,365,2,642,333,1293,834,fighter,0,0.796,2 mixes both fighters
+gsp_bisping,385,0,523,254,1230,925,fighter,0,0.705,
+gsp_bisping,385,1,1567,0,1920,629,referee,0,0.408,
+gsp_bisping,405,0,584,119,1184,901,fighter,0,0.683,
+gsp_bisping,405,1,1617,0,1920,820,referee,0,0.320,
+gsp_bisping,405,2,551,298,1229,1037,fighter,0,0.620,
+gsp_bisping,420,0,1811,14,1912,857,referee,0,0.361,0 = sliver of referee at the right edge
+gsp_bisping,420,1,525,261,1048,992,fighter,0,0.800,0 = sliver of referee at the right edge
+gsp_bisping,420,2,720,271,1267,759,fighter,0,0.705,0 = sliver of referee at the right edge
+gsp_bisping,440,0,625,139,1497,939,fighter,0,0.709,second fighter not detected
+gsp_bisping,440,1,104,189,228,325,crowd_or_junk,1,0.462,second fighter not detected
+gsp_bisping,460,0,1487,0,1796,401,referee,0,0.307,second fighter not detected
+gsp_bisping,460,1,844,258,1858,988,fighter,0,0.696,second fighter not detected
+gsp_bisping,460,2,800,275,1891,921,duplicate,0,0.676,duplicate of 1; second fighter not detected
+gsp_bisping,475,0,713,10,1013,240,referee,1,0.145,1 = black camera occluder; 0 = referee legs (small box)
+gsp_bisping,475,1,810,199,1842,702,crowd_or_junk,0,0.263,1 = black camera occluder; 0 = referee legs (small box)
+gsp_bisping,495,0,705,198,1056,983,fighter,0,0.864,"2,3,6 = cage-side officials (crowd); attacker behind defender not detected"
+gsp_bisping,495,1,1148,0,1381,668,duplicate,0,0.652,"duplicate of 4; 2,3,6 = cage-side officials (crowd); attacker behind defender not detected"
+gsp_bisping,495,2,6,6,241,396,crowd_or_junk,0,0.690,"2,3,6 = cage-side officials (crowd); attacker behind defender not detected"
+gsp_bisping,495,3,247,0,484,401,crowd_or_junk,0,0.614,"2,3,6 = cage-side officials (crowd); attacker behind defender not detected"
+gsp_bisping,495,4,1147,0,1377,669,referee,0,0.622,"2,3,6 = cage-side officials (crowd); attacker behind defender not detected"
+gsp_bisping,495,5,250,24,436,234,crowd_or_junk,1,0.515,"2,3,6 = cage-side officials (crowd); attacker behind defender not detected"
+gsp_bisping,495,6,8,12,240,308,crowd_or_junk,0,0.595,"2,3,6 = cage-side officials (crowd); attacker behind defender not detected"
+gsp_bisping,515,0,700,179,1045,1043,fighter,0,0.887,"3,4 = cage-side officials (crowd)"
+gsp_bisping,515,1,1031,0,1341,790,referee,0,0.653,"3,4 = cage-side officials (crowd)"
+gsp_bisping,515,2,210,2,401,206,crowd_or_junk,1,0.481,"3,4 = cage-side officials (crowd)"
+gsp_bisping,515,3,0,0,179,375,crowd_or_junk,0,0.518,"3,4 = cage-side officials (crowd)"
+gsp_bisping,515,4,0,5,144,295,crowd_or_junk,0,0.518,"3,4 = cage-side officials (crowd)"
+gsp_bisping,530,0,951,0,1416,813,referee,0,0.682,
+gsp_bisping,530,1,698,173,1047,1060,fighter,0,0.828,
+gsp_bisping,530,2,173,0,371,196,crowd_or_junk,1,0.472,
+gsp_bisping,530,3,0,0,139,350,crowd_or_junk,1,0.361,
+gsp_bisping,530,4,5,0,93,282,crowd_or_junk,1,0.394,
+gsp_bisping,530,5,387,37,607,122,crowd_or_junk,1,0.274,
+gsp_bisping,550,0,992,0,1454,841,referee,0,0.672,post-stoppage; attacker under defender not detected
+gsp_bisping,550,1,807,249,1095,1080,fighter,0,0.833,post-stoppage; attacker under defender not detected
+gsp_bisping,550,2,668,216,1036,930,duplicate,0,0.710,duplicate of 1; post-stoppage; attacker under defender not detected
+gsp_bisping,550,3,119,0,370,188,crowd_or_junk,1,0.472,post-stoppage; attacker under defender not detected
+gsp_bisping,570,0,1099,0,1545,930,referee,0,0.692,
+gsp_bisping,570,1,640,184,1168,1080,fighter,0,0.859,
+gsp_bisping,570,2,630,202,1147,1080,duplicate,0,0.831,duplicate of 1
+gsp_bisping,570,3,66,0,295,191,crowd_or_junk,1,0.346,
+gsp_bisping,585,0,1029,40,1591,987,referee,0,0.711,
+gsp_bisping,585,1,635,180,1261,1080,fighter,0,0.868,
+gsp_bisping,605,0,1068,42,1653,1031,referee,0,0.737,
+gsp_bisping,605,1,596,181,1308,1080,fighter,0,0.857,
+gsp_bisping,625,0,1026,54,1632,1072,referee,0,0.733,
+gsp_bisping,625,1,569,221,1328,1080,fighter,0,0.733,
+gsp_bisping,640,0,560,219,1350,1080,fighter,0,0.820,
+gsp_bisping,640,1,1033,105,1686,1080,referee,0,0.697,
+gsp_bisping,640,2,559,221,1375,1080,duplicate,0,0.768,duplicate of 0
+gsp_bisping,660,0,798,20,1706,1080,referee,0,0.700,referee pulling the attacker off
+gsp_bisping,660,1,758,524,1272,1080,fighter,0,0.571,referee pulling the attacker off
+gsp_bisping,680,0,730,29,1551,1023,referee,0,0.694,
+gsp_bisping,680,1,777,379,1180,1010,duplicate,0,0.592,duplicate of 2
+gsp_bisping,680,2,769,372,1213,1080,fighter,0,0.584,
+gsp_bisping,695,0,579,0,1581,1053,referee,0,0.690,
+gsp_bisping,695,1,764,360,1194,1080,fighter,0,0.587,
+gsp_bisping,695,2,780,394,1140,1010,duplicate,0,0.514,duplicate of 1
+gsp_bisping,715,0,792,23,1515,1068,referee,0,0.689,
+gsp_bisping,715,1,257,278,1216,928,duplicate,0,0.869,duplicate of 2
+gsp_bisping,715,2,268,276,1189,958,fighter,0,0.837,
+gsp_bisping,715,3,852,459,1369,1080,fighter,0,0.497,
+pantoja_asakura_r2,0,0,646,164,1125,1034,duplicate,0,0.883,duplicate of 2; three near-identical skeletons mixing both fighters
+pantoja_asakura_r2,0,1,642,160,1104,1022,duplicate,0,0.901,duplicate of 2; three near-identical skeletons mixing both fighters
+pantoja_asakura_r2,0,2,644,166,1096,1011,fighter,0,0.874,three near-identical skeletons mixing both fighters
+pantoja_asakura_r2,25,0,427,0,1654,1080,fighter,0,0.727,"close-up, one skeleton mixing both fighters"
+pantoja_asakura_r2,45,0,11,0,1332,808,duplicate,0,0.828,"duplicate of 1; close-up, mixed"
+pantoja_asakura_r2,45,1,1,0,1282,828,fighter,0,0.741,"close-up, mixed"
+pantoja_asakura_r2,70,0,0,0,0,0,crowd_or_junk,1,0.000,referee's back fills the frame but is not detected; 0 = tiny junk box
+pantoja_asakura_r2,95,0,291,286,1257,772,fighter,0,0.911,one skeleton for both
+pantoja_asakura_r2,120,0,266,266,1253,744,fighter,0,0.929,one skeleton for both
+pantoja_asakura_r2,140,0,288,267,1261,739,fighter,0,0.886,0 = both fighters in one skeleton
+pantoja_asakura_r2,140,1,1639,542,1920,1080,referee,0,0.372,0 = both fighters in one skeleton
+pantoja_asakura_r2,165,0,1439,545,1834,1080,referee,0,0.524,
+pantoja_asakura_r2,165,1,286,265,1252,738,fighter,0,0.915,
+pantoja_asakura_r2,190,0,320,221,1224,908,fighter,0,0.882,"1 = referee at frame edge (small box, grey)"
+pantoja_asakura_r2,190,1,1810,484,1905,1080,referee,1,0.289,"1 = referee at frame edge (small box, grey)"
+pantoja_asakura_r2,210,0,784,219,1113,871,fighter,0,0.740,
+pantoja_asakura_r2,235,0,654,222,1178,894,fighter,0,0.904,
+pantoja_asakura_r2,235,1,661,243,1179,622,duplicate,0,0.857,duplicate of 0
+pantoja_asakura_r2,260,0,367,272,1216,839,fighter,0,0.909,
+pantoja_asakura_r2,285,0,329,269,1229,787,fighter,0,0.901,
+pantoja_asakura_r2,305,0,324,273,1238,773,fighter,0,0.897,
+pantoja_asakura_r2,305,1,415,258,1230,722,duplicate,0,0.887,duplicate of 0
+pantoja_asakura_r2,330,0,290,272,1252,778,fighter,0,0.862,
+pantoja_asakura_r2,330,1,1655,557,1920,1080,referee,0,0.292,
+pantoja_asakura_r2,355,0,1357,565,1821,1080,referee,0,0.405,
+pantoja_asakura_r2,355,1,325,286,1260,696,fighter,0,0.829,
+pantoja_asakura_r2,375,0,433,254,1242,704,fighter,0,0.808,
+pantoja_asakura_r2,375,1,1688,527,1920,1080,referee,0,0.312,
+pantoja_asakura_r2,375,2,1687,552,1920,1080,duplicate,0,0.319,duplicate of 1
+pantoja_asakura_r2,375,3,1683,552,1920,1080,duplicate,0,0.300,duplicate of 1
+pantoja_asakura_r2,375,4,1690,527,1920,1080,duplicate,0,0.322,duplicate of 1
+pantoja_asakura_r2,400,0,429,252,1240,744,fighter,0,0.838,
+pantoja_asakura_r2,425,0,427,291,1235,751,fighter,0,0.782,
+pantoja_asakura_r2,450,0,507,201,1299,536,fighter,0,0.883,"0 ~ back fighter, 1 ~ front fighter; mixed"
+pantoja_asakura_r2,450,1,349,252,1212,740,fighter,0,0.710,"0 ~ back fighter, 1 ~ front fighter; mixed"
+pantoja_asakura_r2,450,2,384,185,1311,632,duplicate,0,0.818,"duplicate of 0; 0 ~ back fighter, 1 ~ front fighter; mixed"
+pantoja_asakura_r2,470,0,362,101,1265,719,fighter,0,0.716,
+pantoja_asakura_r2,495,0,602,47,1137,849,fighter,0,0.712,
+pantoja_asakura_r2,520,0,1155,411,1852,1080,referee,0,0.598,"referee walking in, foreground"
+pantoja_asakura_r2,520,1,1157,413,1847,1080,duplicate,0,0.610,"duplicate of 0; referee walking in, foreground"
+pantoja_asakura_r2,520,2,334,244,788,1016,fighter,0,0.535,"referee walking in, foreground"
+pantoja_asakura_r2,520,3,476,111,1034,763,fighter,0,0.687,"referee walking in, foreground"
+pantoja_asakura_r2,520,4,519,118,1029,661,duplicate,0,0.653,"duplicate of 3; referee walking in, foreground"
+pantoja_asakura_r2,530,0,698,461,1360,1030,referee,0,0.540,referee in front of fighters
+pantoja_asakura_r2,530,1,702,454,1358,1080,duplicate,0,0.547,duplicate of 0; referee in front of fighters
+pantoja_asakura_r2,530,2,323,135,1123,948,fighter,0,0.764,referee in front of fighters
+pantoja_asakura_r2,530,3,665,176,1097,762,fighter,0,0.673,referee in front of fighters
+pantoja_asakura_r2,545,0,152,285,717,1080,referee,0,0.575,only one fighter skeleton
+pantoja_asakura_r2,545,1,586,190,1082,851,fighter,0,0.726,only one fighter skeleton
+pantoja_asakura_r2,545,2,143,274,712,1080,duplicate,0,0.624,duplicate of 0; only one fighter skeleton
+pantoja_asakura_r2,550,0,0,245,590,1055,referee,0,0.584,
+pantoja_asakura_r2,550,1,557,171,1089,705,fighter,0,0.711,
+pantoja_asakura_r2,550,2,543,445,852,1018,fighter,0,0.657,
+pantoja_asakura_r2,555,0,0,205,366,1080,referee,0,0.400,
+pantoja_asakura_r2,555,1,120,118,351,931,duplicate,0,0.383,duplicate of 0
+pantoja_asakura_r2,555,2,617,216,1108,613,fighter,0,0.690,
+pantoja_asakura_r2,555,3,549,291,809,1027,fighter,0,0.634,
+pantoja_asakura_r2,565,0,555,174,976,746,fighter,0,0.690,referee cut off at left edge
+pantoja_asakura_r2,565,1,3,0,155,569,referee,0,0.229,referee cut off at left edge
+pantoja_asakura_r2,565,2,12,170,155,551,duplicate,0,0.217,duplicate of 1; referee cut off at left edge
+pantoja_asakura_r2,565,3,10,167,154,551,duplicate,0,0.233,duplicate of 1; referee cut off at left edge
+pantoja_asakura_r2,590,0,502,182,967,1002,fighter,0,0.672,0/5 = bottom fighter legs; 1/3/4 = top fighter; 2 = referee legs (small)
+pantoja_asakura_r2,590,1,654,148,1012,531,fighter,0,0.622,0/5 = bottom fighter legs; 1/3/4 = top fighter; 2 = referee legs (small)
+pantoja_asakura_r2,590,2,62,41,153,274,referee,1,0.154,0/5 = bottom fighter legs; 1/3/4 = top fighter; 2 = referee legs (small)
+pantoja_asakura_r2,590,3,631,146,1018,536,duplicate,0,0.570,duplicate of 1; 0/5 = bottom fighter legs; 1/3/4 = top fighter; 2 = referee legs (small)
+pantoja_asakura_r2,590,4,656,90,1021,548,duplicate,0,0.497,duplicate of 1; 0/5 = bottom fighter legs; 1/3/4 = top fighter; 2 = referee legs (small)
+pantoja_asakura_r2,590,5,543,120,886,916,duplicate,0,0.661,duplicate of 0; 0/5 = bottom fighter legs; 1/3/4 = top fighter; 2 = referee legs (small)
+pantoja_asakura_r2,615,0,94,33,1405,1071,referee,0,0.364,referee back fills the frame
+pantoja_asakura_r2,635,0,0,104,1009,1069,referee,0,0.351,
+pantoja_asakura_r2,635,1,573,333,1557,815,fighter,0,0.757,
+pantoja_asakura_r2,660,0,333,153,1505,800,fighter,0,0.904,0/2 mix both fighters (mostly front fighter)
+pantoja_asakura_r2,660,1,0,112,445,955,referee,0,0.224,0/2 mix both fighters (mostly front fighter)
+pantoja_asakura_r2,660,2,351,234,1483,777,duplicate,0,0.802,duplicate of 0; 0/2 mix both fighters (mostly front fighter)
+pantoja_asakura_r2,685,0,8,0,651,1080,referee,0,0.334,
+pantoja_asakura_r2,685,1,639,162,1385,679,fighter,0,0.693,
+pantoja_asakura_r2,685,2,547,194,1403,569,duplicate,0,0.672,duplicate of 1
+pantoja_asakura_r2,710,0,461,331,1482,909,fighter,0,0.766,1 = referee legs at top edge
+pantoja_asakura_r2,710,1,785,0,1266,190,referee,0,0.160,1 = referee legs at top edge
+pantoja_asakura_r2,730,0,517,343,1442,765,fighter,0,0.755,1 = referee feet at top edge (small)
+pantoja_asakura_r2,730,1,1245,0,1454,234,referee,1,0.134,1 = referee feet at top edge (small)
+pantoja_asakura_r2,755,0,439,238,1475,872,fighter,0,0.788,
+pantoja_asakura_r2,755,1,1585,0,1832,536,referee,0,0.379,
+pantoja_asakura_r2,780,0,318,246,1414,881,fighter,0,0.826,
+pantoja_asakura_r2,780,1,1613,0,1920,1053,referee,0,0.447,
+pantoja_asakura_r2,800,0,422,213,1400,740,fighter,0,0.731,
+pantoja_asakura_r2,800,1,1532,83,1920,811,referee,0,0.459,
+pantoja_asakura_r2,800,2,1539,84,1843,806,duplicate,0,0.444,duplicate of 1
+pantoja_asakura_r2,800,3,302,359,1412,881,duplicate,0,0.734,duplicate of 0
+pantoja_asakura_r2,800,4,1530,158,1920,795,duplicate,0,0.501,duplicate of 1
+pantoja_asakura_r2,825,0,437,198,1368,964,fighter,0,0.874,
+pantoja_asakura_r2,825,1,1592,0,1896,839,referee,0,0.425,
+pantoja_asakura_r2,825,2,1594,0,1875,844,duplicate,0,0.435,duplicate of 1
+pantoja_asakura_r2,850,0,484,220,1360,773,fighter,0,0.811,"0 ~ top/attacker, 2 ~ defender legs; mixed"
+pantoja_asakura_r2,850,1,1785,65,1918,889,referee,0,0.337,"0 ~ top/attacker, 2 ~ defender legs; mixed"
+pantoja_asakura_r2,850,2,411,369,1294,940,fighter,0,0.698,"0 ~ top/attacker, 2 ~ defender legs; mixed"
+pantoja_asakura_r2,875,0,416,254,1331,968,fighter,0,0.892,"1 = referee (small box, grey)"
+pantoja_asakura_r2,875,1,1755,101,1880,722,referee,1,0.358,"1 = referee (small box, grey)"
+pantoja_asakura_r2,895,0,391,181,1346,944,fighter,0,0.895,
+pantoja_asakura_r2,895,1,1737,94,1851,891,referee,1,0.356,
+pantoja_asakura_r2,920,0,396,157,1326,836,fighter,0,0.903,
+pantoja_asakura_r2,920,1,1649,0,1854,902,referee,0,0.426,
+sterling_sandhagen,0,0,513,152,1114,957,fighter,0,0.723,one skeleton for both fighters (standing at the cage)
+sterling_sandhagen,50,0,587,196,1119,978,fighter,0,0.722,one skeleton for both
+sterling_sandhagen,100,0,708,374,1861,922,duplicate,0,0.194,"duplicate of 1; referee (bald, black shirt) close-up blocks fighters; skeletons mostly on referee arm/back"
+sterling_sandhagen,100,1,582,370,1763,1080,referee,0,0.305,"referee (bald, black shirt) close-up blocks fighters; skeletons mostly on referee arm/back"
+sterling_sandhagen,145,0,596,428,1289,818,fighter,0,0.708,crouching referee
+sterling_sandhagen,145,1,1430,0,1920,1031,duplicate,0,0.643,duplicate of 2; crouching referee
+sterling_sandhagen,145,2,1434,0,1920,1037,referee,0,0.619,crouching referee
+sterling_sandhagen,165,0,353,364,1380,1058,fighter,0,0.863,"0 ~ Sandhagen legs + mixed, 2 ~ Sterling"
+sterling_sandhagen,165,1,1670,0,1909,890,referee,0,0.468,"0 ~ Sandhagen legs + mixed, 2 ~ Sterling"
+sterling_sandhagen,165,2,615,355,1367,814,fighter,0,0.763,"0 ~ Sandhagen legs + mixed, 2 ~ Sterling"
+sterling_sandhagen,195,0,298,298,1362,997,fighter,0,0.705,only one fighter skeleton (mixes Sterling legs + Sandhagen torso); referee crouching top-right
+sterling_sandhagen,195,1,1586,59,1874,629,referee,0,0.330,only one fighter skeleton (mixes Sterling legs + Sandhagen torso); referee crouching top-right
+sterling_sandhagen,195,2,1611,29,1868,730,duplicate,0,0.346,duplicate of 1; only one fighter skeleton (mixes Sterling legs + Sandhagen torso); referee crouching top-right
+sterling_sandhagen,245,0,231,72,1405,1080,fighter,0,0.728,"3 = referee (small box, grey)"
+sterling_sandhagen,245,1,1682,90,1907,454,crowd_or_junk,1,0.228,"3 = referee (small box, grey)"
+sterling_sandhagen,245,2,166,56,1408,1080,duplicate,0,0.693,"duplicate of 0; 3 = referee (small box, grey)"
+sterling_sandhagen,295,0,487,71,1459,1070,fighter,0,0.803,"0 ~ Sterling (head), 2 ~ Sandhagen; 1 = referee glove (small)"
+sterling_sandhagen,295,1,1641,58,1815,406,referee,1,0.196,"0 ~ Sterling (head), 2 ~ Sandhagen; 1 = referee glove (small)"
+sterling_sandhagen,295,2,502,255,1494,1080,fighter,0,0.687,"0 ~ Sterling (head), 2 ~ Sandhagen; 1 = referee glove (small)"
+sterling_sandhagen,295,3,839,311,1517,1035,duplicate,0,0.637,"duplicate of 2; 0 ~ Sterling (head), 2 ~ Sandhagen; 1 = referee glove (small)"
+sterling_sandhagen,335,0,426,167,1401,987,fighter,0,0.746,
+sterling_sandhagen,335,1,1527,85,1797,322,referee,1,0.293,
+sterling_sandhagen,335,2,158,361,1455,1072,fighter,0,0.794,
+sterling_sandhagen,335,3,66,351,1459,1061,duplicate,0,0.764,duplicate of 2
+sterling_sandhagen,335,4,915,346,1361,1043,duplicate,0,0.527,duplicate of 2
+sterling_sandhagen,345,0,425,158,1391,990,fighter,0,0.778,
+sterling_sandhagen,345,1,1524,78,1823,327,referee,1,0.279,
+sterling_sandhagen,345,2,334,329,1461,1080,fighter,0,0.755,
+sterling_sandhagen,345,3,271,349,1472,1080,duplicate,0,0.657,duplicate of 2
+sterling_sandhagen,345,4,770,349,1423,1005,duplicate,0,0.608,duplicate of 2
+sterling_sandhagen,360,0,459,376,1485,1072,fighter,0,0.625,
+sterling_sandhagen,360,1,512,152,1448,1043,fighter,0,0.752,
+sterling_sandhagen,360,2,1527,67,1803,319,referee,1,0.303,
+sterling_sandhagen,360,3,979,436,1415,1040,duplicate,0,0.494,duplicate of 0
+sterling_sandhagen,395,0,1392,0,1920,404,referee,0,0.420,"1 ~ Sandhagen, 2 ~ Sterling"
+sterling_sandhagen,395,1,539,337,1447,1080,fighter,0,0.677,"1 ~ Sandhagen, 2 ~ Sterling"
+sterling_sandhagen,395,2,477,178,1423,1072,fighter,0,0.771,"1 ~ Sandhagen, 2 ~ Sterling"
+sterling_sandhagen,440,0,1332,0,1920,673,referee,0,0.419,
+sterling_sandhagen,440,1,681,293,1511,1034,fighter,0,0.693,
+sterling_sandhagen,440,2,876,329,1630,1079,fighter,0,0.621,
+sterling_sandhagen,490,0,613,82,1148,611,fighter,0,0.768,0 merges both fighters
+sterling_sandhagen,490,1,591,569,1001,1080,referee,0,0.612,0 merges both fighters
+sterling_sandhagen,490,2,594,510,990,1080,duplicate,0,0.659,duplicate of 1; 0 merges both fighters
+sterling_sandhagen,540,0,589,641,967,1080,referee,0,0.441,
+sterling_sandhagen,540,1,725,61,1223,660,fighter,0,0.810,
+sterling_sandhagen,590,0,0,273,1455,1080,fighter,0,0.819,"0 ~ Sterling, 1 ~ Sandhagen; referee legs not detected"
+sterling_sandhagen,590,1,774,187,1647,1080,fighter,0,0.695,"0 ~ Sterling, 1 ~ Sandhagen; referee legs not detected"
+sterling_sandhagen,590,2,11,267,1483,1080,duplicate,0,0.770,"duplicate of 0; 0 ~ Sterling, 1 ~ Sandhagen; referee legs not detected"
+sterling_sandhagen,640,0,607,168,1294,1080,fighter,0,0.761,1 = referee shoe (small)
+sterling_sandhagen,640,1,1733,0,1827,93,referee,1,0.079,1 = referee shoe (small)
+sterling_sandhagen,640,2,623,173,1296,1080,duplicate,0,0.757,duplicate of 0; 1 = referee shoe (small)
+sterling_sandhagen,685,0,613,243,1322,962,fighter,0,0.811,1 = referee legs (small)
+sterling_sandhagen,685,1,1699,0,1903,264,referee,1,0.095,1 = referee legs (small)
+sterling_sandhagen,735,0,422,135,1314,966,fighter,0,0.778,1 = referee leg (small)
+sterling_sandhagen,735,1,1800,14,1917,203,referee,1,0.074,1 = referee leg (small)
+sterling_sandhagen,785,0,432,246,1271,1071,fighter,0,0.730,1 = referee shoes (small)
+sterling_sandhagen,785,1,1791,0,1919,257,referee,1,0.056,1 = referee shoes (small)
+sterling_sandhagen,835,0,701,249,1322,1080,fighter,0,0.601,1 = referee shoes (small)
+sterling_sandhagen,835,1,1814,36,1920,179,referee,1,0.031,1 = referee shoes (small)
+sterling_sandhagen,885,0,51,702,285,949,referee,0,0.189,1 merges both fighters (top view)
+sterling_sandhagen,885,1,691,253,1081,796,fighter,0,0.818,1 merges both fighters (top view)
+sterling_sandhagen,935,0,48,839,342,1080,referee,0,0.184,
+sterling_sandhagen,935,1,799,109,1271,690,fighter,0,0.774,
+sterling_sandhagen,980,0,193,802,531,1068,referee,0,0.205,
+sterling_sandhagen,980,1,524,80,1051,588,fighter,0,0.769,
+sterling_sandhagen,1030,0,317,789,647,1063,referee,0,0.215,
+sterling_sandhagen,1030,1,649,279,1211,708,fighter,0,0.853,
+sterling_sandhagen,1030,2,413,229,1102,679,duplicate,0,0.779,duplicate of 1
+sterling_sandhagen,1080,0,563,200,1387,505,fighter,0,0.807,"0 ~ Sandhagen, 2 ~ Sterling"
+sterling_sandhagen,1080,1,358,720,675,1041,referee,0,0.226,"0 ~ Sandhagen, 2 ~ Sterling"
+sterling_sandhagen,1080,2,901,274,1474,641,fighter,0,0.646,"0 ~ Sandhagen, 2 ~ Sterling"
+sterling_sandhagen,1130,0,573,301,1795,1052,fighter,0,0.765,only Sandhagen; Sterling underneath not detected
+sterling_sandhagen,1130,1,582,390,1920,1061,duplicate,0,0.738,duplicate of 0; only Sandhagen; Sterling underneath not detected
+sterling_sandhagen,1180,0,564,298,1744,1070,fighter,0,0.691,Sandhagen only; Sterling underneath not detected
+sterling_sandhagen,1180,1,537,297,1920,1072,duplicate,0,0.654,duplicate of 0; Sandhagen only; Sterling underneath not detected
+sterling_sandhagen,1180,2,561,350,1394,734,duplicate,0,0.612,duplicate of 0; Sandhagen only; Sterling underneath not detected
+sterling_sandhagen,1230,0,433,328,1565,1080,fighter,0,0.761,1 = referee legs (small)
+sterling_sandhagen,1230,1,31,0,136,167,referee,1,0.099,1 = referee legs (small)
+sterling_sandhagen,1275,0,430,255,1709,1010,fighter,0,0.749,1 = referee leg (small)
+sterling_sandhagen,1275,1,177,0,312,210,referee,1,0.098,1 = referee leg (small)
+sterling_sandhagen,1275,2,0,0,321,217,crowd_or_junk,1,0.094,1 = referee leg (small)
+sterling_sandhagen,1325,0,461,209,1753,897,fighter,0,0.842,
+sterling_sandhagen,1375,0,715,84,1737,976,fighter,0,0.906,1 = referee leg (small)
+sterling_sandhagen,1375,1,100,8,347,284,referee,1,0.117,1 = referee leg (small)
+sterling_sandhagen,1425,0,796,318,1917,982,fighter,0,0.815,"0 ~ Sandhagen, 2 ~ Sterling (both mixed)"
+sterling_sandhagen,1425,1,139,6,375,283,referee,1,0.122,"0 ~ Sandhagen, 2 ~ Sterling (both mixed)"
+sterling_sandhagen,1425,2,508,254,1670,798,fighter,0,0.666,"0 ~ Sandhagen, 2 ~ Sterling (both mixed)"
+sterling_sandhagen,1475,0,904,219,1875,1080,fighter,0,0.655,
+sterling_sandhagen,1520,0,480,16,1694,828,duplicate,0,0.894,duplicate of 1; Sandhagen only
+sterling_sandhagen,1520,1,446,182,1696,812,fighter,0,0.741,Sandhagen only
+sterling_sandhagen,1570,0,615,206,1801,774,fighter,0,0.867,1 = referee legs (small)
+sterling_sandhagen,1570,1,37,468,156,952,referee,1,0.196,1 = referee legs (small)
+sterling_sandhagen,1620,0,777,254,1862,1080,fighter,0,0.847,
+sterling_sandhagen,1620,1,801,293,1920,1050,duplicate,0,0.740,duplicate of 0
+sterling_sandhagen,1620,2,0,0,649,1046,referee,0,0.496,
+sterling_sandhagen,1670,0,578,46,1386,1078,fighter,0,0.789,
+sterling_sandhagen,1670,1,0,13,928,672,referee,0,0.511,
+sterling_sandhagen,1720,0,48,0,1060,638,referee,0,0.430,
+sterling_sandhagen,1720,1,408,121,1140,1071,fighter,0,0.556,
+sterling_sandhagen,1770,0,408,0,1321,506,referee,0,0.558,2 = Sterling legs only; Sandhagen not detected
+sterling_sandhagen,1770,1,384,0,1339,519,duplicate,0,0.572,duplicate of 0; 2 = Sterling legs only; Sandhagen not detected
+sterling_sandhagen,1770,2,174,579,1040,959,fighter,0,0.243,2 = Sterling legs only; Sandhagen not detected
+sterling_sandhagen,1815,0,390,0,1333,522,referee,0,0.713,no fighter detected
+sterling_sandhagen,1815,1,415,0,1294,519,duplicate,0,0.711,duplicate of 0; no fighter detected
+sterling_sandhagen,1865,0,831,81,1920,999,fighter,0,0.747,"referee pulling Sterling off, overlaps fighters"
+sterling_sandhagen,1865,1,0,0,1221,1080,referee,0,0.502,"referee pulling Sterling off, overlaps fighters"
+sterling_sandhagen,1915,0,0,71,1406,1080,referee,0,0.798,"referee touching fighters, big box overlaps both"
+sterling_sandhagen,1915,1,947,0,1835,555,fighter,0,0.714,"referee touching fighters, big box overlaps both"
+sterling_sandhagen,1915,2,984,441,1857,854,fighter,0,0.772,"referee touching fighters, big box overlaps both"
+sterling_sandhagen,1915,3,993,477,1805,847,duplicate,0,0.755,"duplicate of 2; referee touching fighters, big box overlaps both"
+sterling_sandhagen,1915,4,952,85,1840,490,duplicate,0,0.638,"duplicate of 1; referee touching fighters, big box overlaps both"
