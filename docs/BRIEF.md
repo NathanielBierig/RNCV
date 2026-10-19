@@ -1,34 +1,23 @@
-# RNCV brief (2026-10-18, first brief)
+# RNCV brief (2026-10-19)
 
-🟢 done · 🟡 in progress · 🔴 needs you · ⚪ not started. Times are estimates.
+🟢 done · 🟡 in progress · 🔴 needs you · ⚪ not started. Times are estimates. You asked to park human tasks for later, so nothing below is urgent tonight and no notification is sent.
 
 ## 🔴 Decisions waiting on you
+1. **Corner (red/blue) labeling:** (a) one click per clip in the UI, or (b) pull red/blue from fight data and match by appearance. Main session will recommend one.
+2. **May helper sessions commit to git?** CLAUDE.md says main only. Recommended: keep main-only (fewer conflicts) unless it becomes a bottleneck.
+3. **Phase 5/6 option:** [memo](DECISION_PHASE5_6.md). Recommended: 5-B + 6-A.
 
-1. **Approve the pre-registration** → [research/rnc_science/PREREG.md](../research/rnc_science/PREREG.md) (10 min).
-   - What it is: 3 yes/no predictions written *before* looking at results (H1 arm under chin → more finishes; H2 body triangle/hooks → more finishes; H3 defender's two-hands-on-one-arm → fewer finishes).
-   - **Recommended: approve.** It's what makes the science credible. Say "approve PREREG" or what to change.
-   - Honest note: with ~150 attempts only big effects (≥25-point difference in finish rate) are reliably detected; small ones will come out "inconclusive".
-2. **Phase 5/6 option choice** → memo not written yet ([docs/DECISION_PHASE5_6.md](DECISION_PHASE5_6.md), ⚪ pending). Nothing to do until it exists; I'll flag it here.
-
-## 🔴 Your tasks (top 3, most urgent first)
-
-Full list: [HUMAN_TASKS.md](../HUMAN_TASKS.md)
-
-1. **Ask a training partner to be second rater** (5 min). Longest lead time. Message is in HUMAN_TASKS.
-2. **Approve PREREG** (10 min), see above.
-3. **Save 3 UFC RNC clips locally** (20 min) → `data\clips\`, links in [HUMAN_TASKS.md](../HUMAN_TASKS.md). This tests the biggest technical risk: does pose tracking survive tangled cage footage?
+## 🔴 Your tasks (top 3, full list in [HUMAN_TASKS.md](../HUMAN_TASKS.md))
+1. **Pilot labeling in short sittings:** 3–5 attempts, 15–20 min each, with `tools/labeler/index.html` ([PILOT.md](../phase3_labels/PILOT.md): 8 successes + 7 failures).
+2. **Read [CODE_TOUR.md](CODE_TOUR.md)** (30 min).
+3. **Corner decision** (above).
 
 ## What changed since last brief
-- 🟢 Footage decision: **UFC only** ([FOOTAGE.md](FOOTAGE.md)).
-- 🟢 RNC style tags added (figure-four, palm-to-palm, gable, wrist-pull, short choke, one-arm).
-- 🟢 Phase 2 baseline finished ([reports/TRAINING_STATUS.md](../reports/TRAINING_STATUS.md)): macro-F1 **0.46** (guessing the most common class: 0.14). Works: standing 0.92, turtle 0.73–0.81, back 0.59–0.65. Fails: half guard (0.05/0.08) and "who is on top" pairs. Likely it finds the position but swaps the roles (hypothesis, not yet tested). Scores are optimistic: same athletes in train and test.
-- 🟢 Pre-registration draft v0.1 written. 🟢 Eval harness hardened (11 tests pass).
-- 🔴 Behind/at risk: the labeling tool (`tools/labeler/`) doesn't exist yet, so the 15-attempt pilot can't start. PREREG approval comes first anyway.
+- 🟢 PREREG frozen (b8d817d). `gh` installed and signed in. 3 clips saved. Red/blue previews watched and looked good.
+- 🟢 Pose sweep on UFC clips done; the score threshold was the culprit and pose_smoke was re-tuned (score 0.3 / nms 0.65) with two-fighter tracking. See `reports/pose_smoke.md` for numbers.
+- 🟢 Code tour written.
 
 ## What the agents are doing
-- 🟡 **chief-of-staff**: plan, critique fixes, coordination. Working.
-- 🟡 **build-phase2**: VICOS classifier (next: save predictions, merge roles, role-invariant features; MLP not run). Working.
-- 🟡 **ufc-labels**: RNC candidate list (677 finishes, 3,330 fighter-rounds). Working.
-- 🟡 **entrepreneur**: business angles (20 ideas, shortlist of 5). Working.
-- 🟢 **critic**: 22 issues found, fixes applied. Idle.
-- ⚪ Not started: pilot labeling, Kaggle pose run, Phases 4–7.
+- 🟡 **ref-appearance, ref-detector:** working on the referee fix (so the referee isn't mistaken for a fighter).
+- 🟢 Idle, safe to archive: chief-of-staff, critic, entrepreneur, ufc-labels, code-tour, build-phase2.
+- ⚪ Not started: the 150-attempt labeling, Kaggle pose run, Phases 4–7.

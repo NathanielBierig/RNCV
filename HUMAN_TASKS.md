@@ -1,44 +1,72 @@
 # Your tasks (most urgent first)
 
-Owned by the secretary session, which keeps this list current. Tick a box when done and tell the secretary. Times are estimates.
+Owned by the secretary session. Tick a box when done and tell the secretary. Times are estimates. Nothing here is urgent tonight; it is queued for when you have time.
 
-## 🔴 Now (unblocks everything else)
+## 🟢 Done
+- [x] PREREG frozen (commit b8d817d)
+- [x] `gh` installed and signed in
+- [x] 3 clips saved in `data\clips\` (Pantoja–Asakura, Sterling–Sandhagen, GSP–Bisping)
+- [x] Red/blue corner previews watched, they looked good
 
-- [ ] **1. Ask a training partner to be the second rater** (5 min): someone who knows BJJ and can code about 30 attempts later (about 1–2 h of their time). Ask now, since it has the longest lead time. Message to send:
-  > "I'm doing a data project on UFC rear-naked chokes. Could you label ~30 short clips for me (hooks vs body triangle, arm under chin, etc.)? About an hour, I'll show you the tool."
-- [ ] **2. Read and approve the pre-registration** (10 min): [research/rnc_science/PREREG.md](research/rnc_science/PREREG.md). Reply "approve PREREG" or say what to change. It gets frozen (committed with a timestamp) before any labeling, which makes the science credible.
-- [ ] **3. Save 3 UFC RNC clips locally for the pose smoke test** (20 min). This is Phase 2b, the biggest technical risk: does pose survive tangled cage footage?
-  - Watch through [UFC Fight Pass](https://ufcfightpass.com/) or [UFC on YouTube](https://www.youtube.com/@ufc). Save **only the attempt**: about 30 s before the finish to the tap. One way is screen recording with [OBS](https://obsproject.com/) (free).
-  - Put the clips in `C:\Users\netan\projects\RNCV\data\clips\` (git ignores this folder). Never upload them anywhere (see [docs/FOOTAGE.md](docs/FOOTAGE.md)).
-  - **Clips already saved in `data\clips\` (2026-10-19):**
+## 🔴 Open tasks, in order
 
-    | File | Fight | Finish (round, time) | Source |
-    |---|---|---|---|
-    | `pantoja_asakura_r2.mp4` | Pantoja vs Asakura, UFC 310 | R2, 2:05 | our fight list |
-    | `sterling_sandhagen.mp4` | Sterling vs Sandhagen, UFC 250 (2020-06-06) | R1, 1:28 | [Tapology](https://www.tapology.com/fightcenter/bouts/502954-ufc-250-aljamain-funk-master-sterling-vs-cory-sandhagen) |
-    | `gsp_bisping.mp4` | St-Pierre vs Bisping, UFC 217 (2017-11-04) | R3, 4:23 | [Tapology](https://www.tapology.com/fightcenter/events/46980-ufc) |
+- [ ] **1. Pilot labeling, in short sittings** (3–5 attempts per sitting, 15–20 min). Open `tools/labeler/index.html` in Chrome or Edge, click "Link labels.csv" so every save is written, and follow [phase3_labels/PILOT.md](phase3_labels/PILOT.md) (8 successes + 7 failures). Timing is logged automatically. **Step-by-step: see "How to label" at the bottom of this file.**
+- [ ] **2. Read [docs/CODE_TOUR.md](docs/CODE_TOUR.md)** (30 min).
+- [ ] **3. Decide corner (red/blue) labeling:** (a) one click per clip in the UI ("this skeleton is red"), or (b) pull red/blue from fight data (ufcstats/Tapology) and match by appearance. The main session will recommend one.
+- [ ] **4. Housekeeping:** archive idle helper sessions in the RNCV sidebar group (chief-of-staff, critic, entrepreneur, ufc-labels, code-tour, build-phase2). Keep Main and Secretary.
+- [ ] **5. Second rater:** ask a training partner, if not done yet (5 min). Suggested message: "I'm doing a data project on UFC rear-naked chokes. Could you label ~30 short clips for me (hooks vs body triangle, arm under chin, etc.)? About an hour, I'll show you the tool."
+- [ ] **6. Decide whether helper sessions may commit** (CLAUDE.md currently says main session only).
 
-    Note: GSP–Bisping is from 2017 (outside the 2018+ study window), fine for the pose test only. Older fights are also lower resolution.
-
-  - Suggested fights: all **main events**, so they are easy to find on Paramount+ (finish time is the time in the round; record from ~30 s before it to the tap):
-
-    | Fight | Event | Round (time) | Stats page |
-    |---|---|---|---|
-    | Dricus Du Plessis vs Israel Adesanya | UFC 305, 2024-08-17 | R4 (3:38) | [ufcstats](http://ufcstats.com/fight-details/6c44af21414e4143) |
-    | Charles Oliveira vs Mateusz Gamrot | UFC Fight Night, 2025-10-11 | R2 (2:48) | [ufcstats](http://ufcstats.com/fight-details/79865287be90e4be) |
-    | Brendan Allen vs Christian Leroy Duncan | UFC Fight Night, 2026-10-10 | R5 (2:46) | [ufcstats](http://ufcstats.com/fight-details/7db1a3dac7e343e7) |
-
-    Backups (also main events): Pantoja vs Asakura (UFC 310, R2 2:05), Bautista vs Oliveira (2026-02-07, R2 4:46). Skipped on purpose: Silva vs Delgado (one-armed choke, atypical).
-
-  - Name them `duplessis_adesanya_r4.mp4`, `oliveira_gamrot_r2.mp4`, `allen_duncan_r5.mp4`.
-
-## 🟡 Soon (this week)
-
-- [ ] **4. Kaggle account + phone verification** (10 min). Phone verification is needed for free GPU. [Sign up](https://www.kaggle.com/account/login?phase=startRegisterTab), then verify your phone at [kaggle.com/settings](https://www.kaggle.com/settings).
-- [ ] **5. Pilot: label 15 RNC attempts** (about 1–1.5 h) with the labeling tool (`tools/labeler/` is built; waits for task 2). Fight draw: [phase3_labels/PILOT.md](phase3_labels/PILOT.md). The secretary will send the exact fight list with direct links and timestamps. Keep a stopwatch running: it measures the real cost per attempt.
-- [ ] **6. Phase 5 and 6 decision** (15 min read): read [docs/DECISION_PHASE5_6.md](docs/DECISION_PHASE5_6.md). My recommendation there: 5-B (factor model + live hazard model) and 6-A (offline renderer on recorded clips). Reply with your pick.
+## 🟡 Soon
+- [ ] Kaggle account + phone verification (10 min): [sign up](https://www.kaggle.com/account/login?phase=startRegisterTab), then [kaggle.com/settings](https://www.kaggle.com/settings).
+- [ ] Read [docs/DECISION_PHASE5_6.md](docs/DECISION_PHASE5_6.md) and pick (recommended: 5-B + 6-A).
 
 ## ⚪ Later
+- [ ] Label about 150 attempts total (about 8–12 h, an estimate measured in the pilot).
+- [ ] Second rater codes about 30 attempts.
 
-- [ ] 7. Label about 150 attempts total (about 8–12 h at about 4 min each with the pre-labeler; estimate, measured in the pilot).
-- [ ] 8. Second rater codes about 30 attempts.
+---
+
+# How to label (repeat these steps each sitting)
+
+You label **one clip at a time**. A sitting = 3–5 clips (15–20 min). Do the same steps every time.
+
+## A. Get one clip (about 3 min)
+1. Open [phase3_labels/labeling_queue_successes.csv](phase3_labels/labeling_queue_successes.csv) (Excel is fine). Take the next row without `status` filled in. Columns you need: `attacker`, `defender`, `round`, `known_finish_elapsed` (the finish time in the round), `ufc_youtube_channel_search` (a link: click it).
+2. Find the fight on the official UFC YouTube channel (or the free-fight video on Paramount+/Fight Pass). If you can't find it legally in **10 minutes**, write `unwatchable` in the `status` column and take the next row. Never skip a row because it looks hard.
+3. In the video, find the **round** and note two times (video timestamps, like 41:25): where the choke attempt starts (or about 60 s before the finish if unsure) and a few seconds after the end.
+4. Send me: the YouTube link and the two timestamps, e.g. `https://youtu.be/XXXX 41:15 to 41:50, Allen vs Duncan R5`. I send you back one command.
+5. Paste that command into PowerShell (open it in the RNCV folder). The clip appears in `data\clips\`. It stays on your laptop only, never uploaded.
+
+(The command I send looks like this; you only change nothing):
+```powershell
+yt-dlp --download-sections "*41:15-41:50" --force-keyframes-at-cuts -f "bv*+ba/b" --merge-output-format mp4 -o "data/clips/allen_duncan_r5.%(ext)s" "https://www.youtube.com/watch?v=XXXX"
+```
+
+## B. Open the labeler (once per sitting, 1 min)
+1. Double-click `tools\labeler\index.html`. Use **Chrome or Edge**.
+2. Click **Load fight list(s) CSV** and select `labeling_queue_successes.csv`, `labeling_queue_failures.csv` and `random_10.csv` (hold Ctrl to pick all three).
+3. Click **Link labels.csv**, choose `phase3_labels\labels.csv` (it's created if missing). Now every save is written to the file.
+4. Pick your fight in the **Fight** dropdown. If the *other* fighter is the one choking, press **W**.
+5. Click **Open video** and pick your clip from `data\clips\`.
+
+## C. Label the attempt (about 4 min)
+1. **C**: pause on a frame where the round clock is visible, type the time **remaining** (like `3:12`), Enter. This syncs the clock.
+2. Scrub to where the choke starts: back control, arm across the neck, second hand locking. Press **S** (start).
+3. The video **plays 2 seconds and freezes**. You haven't seen the ending, on purpose. A panel opens: for each field press the number key that matches what you see, then **Enter**. Leave a field blank if you can't see it. Don't guess.
+4. Press **Space** to play on. If the grip changes, press **T** then a number.
+5. At the tap, stoppage, escape or bell, press **Space** to pause then **E** (end).
+6. Outcome panel: pick the outcome (number key), Enter. If you made a mistake, press **U** to undo the last row.
+7. Look at the stopwatch note: timing is logged automatically. You don't need to time yourself.
+
+## D. Edge cases
+- Atypical choke (one-armed, chin-linked): code it as normal and choose the **one_arm** style. It is excluded from the main model later, but you still label it.
+- Two fighters named wrong way round: press **W**.
+- Clock sync warning (end is more than 3 s from the stats time): redo step C1.
+- Unsure about a field: leave blank. "Unclear" is a valid answer.
+
+## E. Where do more clips come from?
+Same method, from the queues in `phase3_labels/`: `labeling_queue_successes.csv` (finishes, most recent first), `labeling_queue_failures.csv` (rounds with failed attempts), and `random_10.csv` (10 random full fights, a separate job). Pilot session 1 = successes ranks 1–8 and failures ranks 1–7.
+- Recent (2025–26) fights may be Paramount+ only, not on YouTube. If so, record from Paramount+ instead, or mark `unwatchable` and move on.
+- The three test clips (Pantoja, Sterling, GSP) are for the pose test, not labeling, unless they're in the queue.
+- Silva vs Delgado is in session 1 and was one-armed: label it, tag it `one_arm`.
