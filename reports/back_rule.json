@@ -54,6 +54,12 @@
     "f1": 0.6872968091511138,
     "recall_both_visible": 0.699076923076923
   },
+  "oof_gbm_rolinv": {
+    "recall": 0.7705575308268402,
+    "precision": 0.8231776305155972,
+    "f1": 0.7959989059508459,
+    "recall_both_visible": 0.906
+  },
   "oof_gbm_swapaug": {
     "recall": 0.78303956426356,
     "precision": 0.8462922083231134,
@@ -65,6 +71,18 @@
     "precision": 0.7414078134516663,
     "f1": 0.6896244739397863,
     "recall_both_visible": 0.7386153846153846
+  },
+  "oof_mlp_rolinv": {
+    "recall": 0.7402224071412361,
+    "precision": 0.8053497942386831,
+    "f1": 0.7714139303874807,
+    "recall_both_visible": 0.8773846153846154
+  },
+  "oof_mlp_rolinv_swapaug": {
+    "recall": 0.7380285952038732,
+    "precision": 0.8080841547254204,
+    "f1": 0.7714692392851494,
+    "recall_both_visible": 0.8743076923076923
   },
   "oof_mlp_swapaug": {
     "recall": 0.7410545427036841,

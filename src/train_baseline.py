@@ -9,6 +9,7 @@ Usage:
     python -I src/train_baseline.py --model gbm       # gradient boosting (default)
     python -I src/train_baseline.py --model mlp       # small MLP for comparison
     python -I src/train_baseline.py --swap-aug --tag _swapaug   # athlete-order augmentation
+    python -I src/train_baseline.py --features rolinv --tag _rolinv  # role-invariant features
 
 Every run also reports the "swap" macro-F1: the same test frames with pose1/pose2
 swapped and the label suffix 1<->2 swapped. A model that uses geometry, not
@@ -84,14 +85,26 @@ def main():
     ap.add_argument("--tag", default="", help="suffix for report filenames")
     ap.add_argument("--swap-aug", action="store_true",
                     help="train on each frame twice: as-is and with athletes + label suffix swapped")
+    ap.add_argument("--features", choices=["ordered", "rolinv"], default="ordered",
+                    help="rolinv: canonical top/bottom order + symmetric pair features; the model "
+                         "learns canonical labels, so it is exactly swap-equivariant")
     args = ap.parse_args()
 
     meta, poses = vicos_data.load(args.annotations)
-    X, names = features.build(poses)
-    X_sw, _ = features.build(poses[:, ::-1])          # athletes swapped
     classes = sorted(meta["position"].unique())
     y = meta["position"].map({c: i for i, c in enumerate(classes)}).to_numpy()
     sw = swap_label_index(classes)
+    if args.features == "rolinv":
+        # Canonical label: suffix 1/2 re-expressed as "suffix athlete is top / bottom".
+        # canon() is its own inverse, so it maps labels in and predictions back out.
+        X, names, top = features.build_role_invariant(poses)
+        X_sw, _, top_sw = features.build_role_invariant(poses[:, ::-1])
+        canon = lambda idx, a1_top: np.where(a1_top, idx, sw[idx])
+    else:
+        X, names = features.build(poses)
+        X_sw, _ = features.build(poses[:, ::-1])      # athletes swapped
+        top = top_sw = np.ones(len(y), dtype=bool)
+        canon = lambda idx, a1_top: idx
     base = np.array([c.rstrip("12") for c in classes])  # 10 role-free positions
     k = args.blocks
     print(f"{len(y)} frames, {X.shape[1]} features, {len(classes)} classes, "
@@ -105,11 +118,12 @@ def main():
         t0 = time.time()
         model = make_model(args.model, len(classes))
         if args.swap_aug:
-            model.fit(np.vstack([X[tr], X_sw[tr]]), np.concatenate([y[tr], sw[y[tr]]]))
+            model.fit(np.vstack([X[tr], X_sw[tr]]),
+                      np.concatenate([canon(y[tr], top[tr]), canon(sw[y[tr]], top_sw[tr])]))
         else:
-            model.fit(X[tr], y[tr])
-        oof[te] = model.predict(X[te])
-        oof_sw[te] = model.predict(X_sw[te])
+            model.fit(X[tr], canon(y[tr], top[tr]))
+        oof[te] = canon(model.predict(X[te]), top[te])
+        oof_sw[te] = canon(model.predict(X_sw[te]), top_sw[te])
         fold_rows.append({
             "fold": fold, "n_train": int(len(tr)), "n_test": int(len(te)),
             "test_classes_unseen_in_train": sorted(set(classes[c] for c in np.unique(y[te])) -
@@ -123,7 +137,7 @@ def main():
     out = ROOT / "reports"
     out.mkdir(exist_ok=True)
     summary = {
-        "model": args.model, "swap_aug": args.swap_aug, "annotations": Path(args.annotations).name,
+        "model": args.model, "features": args.features, "swap_aug": args.swap_aug, "annotations": Path(args.annotations).name,
         "split": f"time-block folds: {k} blocks per sequence, all cameras together, purge={args.purge} frames",
         "n_frames": int(len(y)), "n_features": int(X.shape[1]),
         "pooled_macro_f1": f1_score(y, oof, average="macro"),

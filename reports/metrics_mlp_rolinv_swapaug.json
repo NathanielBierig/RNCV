@@ -1,0 +1,67 @@
+{
+  "model": "mlp",
+  "features": "rolinv",
+  "swap_aug": true,
+  "annotations": "annotations.json",
+  "split": "time-block folds: 5 blocks per sequence, all cameras together, purge=300 frames",
+  "n_frames": 120279,
+  "n_features": 350,
+  "pooled_macro_f1": 0.5806923811397239,
+  "pooled_swap_macro_f1": 0.5806923811397239,
+  "pooled_macro_f1_10_positions_roles_merged": 0.6258093239026199,
+  "pooled_balanced_acc": 0.5832845441256672,
+  "pooled_accuracy": 0.6512109345771082,
+  "majority_class_baseline_acc": 0.13902676277654452,
+  "per_fold": [
+    {
+      "fold": 0,
+      "n_train": 45450,
+      "n_test": 25596,
+      "test_classes_unseen_in_train": [],
+      "macro_f1": 0.306345517689987,
+      "swap_macro_f1": 0.3063455176899871,
+      "balanced_acc": 0.5722530588698013,
+      "seconds": 63.0
+    },
+    {
+      "fold": 1,
+      "n_train": 43683,
+      "n_test": 24408,
+      "test_classes_unseen_in_train": [],
+      "macro_f1": 0.37202671083958083,
+      "swap_macro_f1": 0.37202671083958083,
+      "balanced_acc": 0.5586912828131024,
+      "seconds": 62.6
+    },
+    {
+      "fold": 2,
+      "n_train": 43808,
+      "n_test": 24107,
+      "test_classes_unseen_in_train": [],
+      "macro_f1": 0.4655113521190127,
+      "swap_macro_f1": 0.4655113521190127,
+      "balanced_acc": 0.6717978768264715,
+      "seconds": 61.7
+    },
+    {
+      "fold": 3,
+      "n_train": 44275,
+      "n_test": 23561,
+      "test_classes_unseen_in_train": [],
+      "macro_f1": 0.40676771752386176,
+      "swap_macro_f1": 0.40676771752386176,
+      "balanced_acc": 0.6090816866895361,
+      "seconds": 66.8
+    },
+    {
+      "fold": 4,
+      "n_train": 46769,
+      "n_test": 22607,
+      "test_classes_unseen_in_train": [],
+      "macro_f1": 0.2927004407073033,
+      "swap_macro_f1": 0.2927004407073033,
+      "balanced_acc": 0.5924872141951965,
+      "seconds": 76.5
+    }
+  ]
+}

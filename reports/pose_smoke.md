@@ -1,16 +1,16 @@
 # Pose smoke test (Phase 2b)
 
-Model: RTMO-m (rtmlib + onnxruntime, CPU). Machine: Intel64 Family 6 Model 140 Stepping 1, GenuineIntel. Joint counted as confident if score >= 0.3; a person 'passes' with >= 12 of 17.
+Latest run of `src/pose_smoke.py`. Model: RTMO-m (rtmlib + onnxruntime, CPU), score_thr 0.3, nms_thr 0.65, then two-fighter selection + 2-slot tracking with gap fill up to 0.5 s. Machine: Intel64 Family 6 Model 140 Stepping 1, GenuineIntel.
 
-| Clip | Frames processed (stride) | CPU fps | % frames 2+ people pass | 1+ | 3+ (ref visible?) | Mean people (>= 1 confident joint) |
-|---|---|---|---|---|---|---|
-| gsp_bisping | 240 of 720 (3) | 2.56 | 22.9% | 61.7% | 0.8% | 1.24 |
-| pantoja_asakura_r2 | 309 of 925 (3) | 2.57 | 0.0% | 72.8% | 0.0% | 1.08 |
-| sterling_sandhagen | 640 of 1919 (3) | 2.34 | 1.1% | 58.3% | 0.0% | 0.91 |
+| Clip | Frames processed (stride) | CPU fps | 2+ raw detections | 2 fighters kept, both >= 12/17 joints | 2 kept, both upper bodies OK | 2 tracked (seen) | 2 tracked (seen or filled) | Dropped crowd / dup / ref |
+|---|---|---|---|---|---|---|---|---|
+| gsp_bisping | 240 of 720 (3) | 2.13 | 92% | 52% | 60% | 87% | 96% | 308 / 122 / 105 |
+| pantoja_asakura_r2 | 309 of 925 (3) | 1.94 | 74% | 16% | 29% | 54% | 75% | 58 / 123 / 22 |
+| sterling_sandhagen | 640 of 1919 (3) | 2.00 | 88% | 30% | 42% | 64% | 78% | 244 / 223 / 113 |
 
-**How to read it:** '2+ people pass' is an upper bound on 'both fighters tracked', since the referee can be one of the two.
-Open `data/pose/<clip>_preview.mp4` and check that the skeletons sit on the fighters during the RNC.
-At 2.5 fps, a 60 s clip at 30 fps with stride 3 takes about 4 min on this CPU.
+**How to read it:** "kept" and "tracked" are upper bounds on *fighter* coverage. Referee removal is not solved, so some kept people are the referee. Open `data/pose/<clip>_preview.mp4` (orange/cyan = fighter slots, thin = filled from the last pose, red dots = dropped people) and check by eye.
+Upper body OK = at least 5 of 7 upper-body joints (nose, shoulders, elbows, wrists) confident, which is what an RNC needs.
+Before this change (RTMO defaults 0.7 / 0.45, no selection), the >= 12/17 column was 23% / 0% / 1% for gsp_bisping / pantoja_asakura_r2 / sterling_sandhagen (see the notes below).
 
 ## First UFC run, 2026-10-19 (chief-of-staff, overnight)
 

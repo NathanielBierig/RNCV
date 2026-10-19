@@ -71,3 +71,42 @@ def build(poses):
     cols.append(np.isnan(poses[:, 1, 0, 0]).astype(np.float32)); names.append("a2_missing")
     X = np.stack(cols, axis=1).astype(np.float32)
     return X, names
+
+
+N_ATH = 62            # per-athlete block in build(): 17*3 coords/conf + 8 angles + 3 torso
+N_K = len(KEY_JOINTS)
+
+
+def build_role_invariant(poses):
+    """Features identical under pose1 <-> pose2 swap (critique #13).
+
+    Athletes are put in a canonical order, "top" first (hip centre higher in the
+    image; a missing athlete goes second), and pair features are symmetrized.
+    Returns (X, names, a1_is_top): a1_is_top says which original athlete came
+    first, so identity-tied labels (mount1/mount2) can be mapped to and from
+    canonical "suffix athlete is top / bottom" labels.
+    """
+    X, _ = build(poses)
+    a1, a2 = X[:, :N_ATH], X[:, N_ATH:2 * N_ATH]
+    hip_dx, hip_dy, hip_dist = X[:, 2 * N_ATH], X[:, 2 * N_ATH + 1], X[:, 2 * N_ATH + 2]
+    D = X[:, 2 * N_ATH + 3: 2 * N_ATH + 3 + N_K * N_K].reshape(-1, N_K, N_K)   # a1 joint i vs a2 joint j
+    miss = X[:, -2:]
+    # hip_dy = y(a1) - y(a2); image y grows downward, so a1 is top when hip_dy < 0
+    a1_is_top = np.where(np.isnan(hip_dy), miss[:, 1] == 1, hip_dy < 0)
+
+    top = np.where(a1_is_top[:, None], a1, a2)
+    bot = np.where(a1_is_top[:, None], a2, a1)
+    Dc = np.where(a1_is_top[:, None, None], D, D.transpose(0, 2, 1))              # rows = top athlete
+    iu, iu1 = np.triu_indices(N_K), np.triu_indices(N_K, 1)
+    sym = ((D + D.transpose(0, 2, 1)) / 2)[:, iu[0], iu[1]]
+    asym = np.abs(D - D.transpose(0, 2, 1))[:, iu1[0], iu1[1]]
+    cols = [top, bot, Dc.reshape(len(X), -1), sym, asym,
+            np.where(a1_is_top, hip_dx, -hip_dx)[:, None], np.abs(hip_dy)[:, None], hip_dist[:, None],
+            np.fmin(a1, a2), np.fmax(a1, a2), miss.sum(1, keepdims=True)]
+    kn = list(KEY_JOINTS)
+    names = ([f"top_{i}" for i in range(N_ATH)] + [f"bot_{i}" for i in range(N_ATH)] +
+             [f"d_top{kn[i]}_bot{kn[j]}" for i in range(N_K) for j in range(N_K)] +
+             [f"dsym_{kn[i]}_{kn[j]}" for i, j in zip(*iu)] + [f"dasym_{kn[i]}_{kn[j]}" for i, j in zip(*iu1)] +
+             ["hip_dx_top_minus_bot", "hip_dy_abs", "hip_dist"] +
+             [f"min_{i}" for i in range(N_ATH)] + [f"max_{i}" for i in range(N_ATH)] + ["n_missing"])
+    return np.concatenate(cols, axis=1).astype(np.float32), names, a1_is_top

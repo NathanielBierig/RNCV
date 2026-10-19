@@ -8,10 +8,11 @@ This is the foundation for later phases: submissions happen *from* positions (RN
 | File | What it does |
 |---|---|
 | `src/vicos_data.py` | Loads `annotations.json`, maps the 16 videos to 6 sparring sequences, builds leak-free time-block folds. Run it alone for dataset stats. |
-| `src/features.py` | Turns 2×17 COCO keypoints into 178 features: normalized coordinates, joint angles, torso direction, inter-athlete distances. |
+| `src/features.py` | Turns 2×17 COCO keypoints into 178 features (normalized coordinates, joint angles, torso direction, inter-athlete distances), or 350 role-invariant features (`build_role_invariant`: canonical top-athlete-first order + symmetrized pair features, identical under athlete swap). |
 | `src/train_baseline.py` | Trains + evaluates the classifier (`--model gbm` gradient boosting or `--model mlp`; `--swap-aug` = athlete-order augmentation). Writes metrics (incl. swap macro-F1 and a 10-position score with roles merged), per-class report, out-of-fold predictions and confusion matrix to `reports/`. |
 | `src/back_rule.py` | Training-free back-control detector from two skeletons (facing the same way, close, chest on back, head by neck), evaluated on VICOS next to the classifiers → `reports/back_rule.md`. |
-| `src/pose_smoke.py` | Phase 2b: RTMO-m pose on the laptop CPU over `data/clips/*.mp4` → keypoints + preview video in `data/pose/`, fps and coverage in `reports/pose_smoke.md`. |
+| `src/pose_smoke.py` | Phase 2b: RTMO-m pose on the laptop CPU (score_thr 0.3 / nms 0.65) over `data/clips/*.mp4`, then two-fighter selection + tracking → tracked keypoints + preview video in `data/pose/`, fps and coverage in `reports/pose_smoke.md`. |
+| `src/two_fighters.py` | Picks the two fighters among detections (drops crowd, duplicates; overlap rule for the referee, *not reliable yet*) and tracks 2 identities with 0.5 s gap fill. Ported from `research/pose_sweep/select2.py`. |
 | `notebooks/kaggle_yolo_pose_vicos.ipynb` | Kaggle GPU notebook: re-extracts VICOS keypoints with YOLO11-pose (optionally RTMO) in the same JSON format. |
 | `DOWNLOADS.md` | Copy-paste download commands, sizes and licenses for every dataset/model. |
 
@@ -47,6 +48,8 @@ Full detail: `reports/TRAINING_STATUS.md`, plus `metrics_*.json`, `per_class_*.c
 | GBM | 0.46 | 0.60 | 0.47 |
 | **GBM + swap augmentation (default)** | **0.63** | **0.63** | **0.63** |
 | MLP + swap augmentation | 0.58 | 0.58 | 0.58 |
+| GBM, role-invariant features (`--features rolinv`) | 0.62 | 0.62 (exact) | 0.62 |
+| MLP, role-invariant features | 0.59 | 0.59 (exact) | 0.59 |
 | Majority-class accuracy | | | 0.14 |
 
 - **Swap augmentation** (train on every frame twice: as-is and with the two athletes and the 1/2 label suffix swapped) gave +0.17 macro-F1 and made the model independent of athlete order, which UFC tracking needs.
