@@ -1,32 +1,30 @@
-# RNCV progress (as of 2026-10-18)
+# RNCV progress (as of 2026-10-19)
 
-🟢 done · 🟡 in progress · 🔴 blocker / needs your decision · ⚪ not started
+🟢 done · 🟡 in progress · 🔴 blocker / needs the owner · ⚪ not started
 
-## Done
-- 🟢 **Phase 1, resource search:** datasets, models and repos compared with their licenses. Stack: YOLO11-pose / RTMO, FightersMMA detector data, VICOS positions.
-- 🟢 **Direction chosen:** #1 Science-based RNC (which details make a choke finish) + #2 live overlay demo.
-- 🟢 **Plan + directions:** `docs/PLAN.md`, `docs/DIRECTIONS.md`.
-- 🟢 **RNC candidate list:** 677 UFC RNC finishes (452 since 2015) with round and time, plus 3,330 fighter-rounds with unfinished attempts (`phase3_labels/`).
-- 🟢 **Label schema + study design:** `phase3_labels/LABEL_SCHEMA.md`, `research/rnc_science/FACTORS.md` (with a power check: ~150 attempts detect only big effects).
-- 🟢 **Overlay renderer:** works on a synthetic clip (`tools/overlay/`).
-- 🟢 **Eval harness:** fight splits, time horizons, event matching (`tools/eval_harness/`).
-- 🟢 **Venture ideas:** 20 ideas, shortlist of 5 (`research/venture/`).
-- 🟢 **Repo:** dedicated git repo, committed piece by piece.
+## Decisions
+- 🟢 Direction: science-based RNC (what makes a choke finish) + live finish-probability overlay.
+- 🟢 UFC only (`docs/FOOTAGE.md`): clips stay local, only derived data is kept.
+- 🟢 **PREREG v1.0 frozen** at commit `b8d817d`: 3 hypotheses (arm under chin, body triangle/two hooks, defender two-on-one), hybrid sampling with max 3 attempts per fighter, bell = censored.
+- 🟢 Code book v2 (`research/rnc_science/FACTORS.md`): RNC style tags (incl. Dagestani `wrist_pull`), multi-tag style sequence, exploratory factors.
 
-## In progress
-- 🟡 **Phase 2 VICOS classifier:** pipeline written. Training was still running at shutdown; re-run `src/train_baseline.py`.
-- 🟡 **Critique:** 22 issues found (`research/critique/CRITIQUE.md`).
+## Phase status
+| Phase | Status |
+|---|---|
+| 1. Resource search | 🟢 done |
+| 2. Position classifier (VICOS) | 🟢 GBM + swap augmentation, macro-F1 **0.63** (default). Role-invariant variant 0.62. VICOS "Back" comes from one session only, so it can't validate UFC. |
+| 2b. Pose on UFC clips | 🟡 RTMO-m at score 0.3 / nms 0.65 + two-fighter tracker + **skin/clothing referee filter** (referee wrongly kept 58% → 10% on a 399-person eval set). Real two-fighter coverage (seen or filled) is 65 / 42 / 66% on the 3 test clips. That's below the 60% gate on Pantoja, so the next step is **fine-tuning on grappling data** (Kaggle notebook in prep). |
+| 3. Labeling | 🟡 Queues ready (315 successes capped per fighter, failures, random 10). Labeler built. **Pilot not started: needs the owner.** |
+| 4. Attempt detection | ⚪ waits on labels |
+| 5. Finish prediction + science | ⚪ design frozen (PREREG); Phase 5/6 options memo in `docs/DECISION_PHASE5_6.md` |
+| 6. Overlay | 🟡 renderer + red/blue corner preview with pose scores (`tools/overlay/`, `tools/preview/`) |
+| 7. Expansion | ⚪ |
 
-## Blockers (from the critique; need your decision)
-- 🟢 **Footage decided: UFC only** (`docs/FOOTAGE.md`). Label from legal streams; private local attempt clips for pose, laptop CPU only, never uploaded.
-- 🔴 **VICOS "Back" exists in only one sequence:** its score can't validate RNC detection. Gate on hand-tagged UFC frames instead.
-- 🟡 **Fix before labeling:** merge the two label schemas into one, sample by fight (not by outcome), treat the bell as censored rather than a failure, compute fighter stats as of fight date, split test by fighter graph / hash.
+## Open
+- 🔴 Pilot labeling (owner; short sittings, see `HUMAN_TASKS.md`).
+- 🔴 Kaggle account + phone verification (owner), which unlocks the pose fine-tune.
+- 🟡 Corners: recommended fight data + one click per clip. Glove color alone is unreliable (UFC gloves are mostly black).
+- 🟡 Remaining referee errors (~10%) and frames where the second fighter is never detected.
 
-- 🟢 **FACTORS.md aligned with PLAN §5a** + **RNC style tags** added (figure_four, palm_to_palm, gable, wrist_pull = Dagestani forearm grip, short_choke, one_arm) and `back_context` (ground / turtle ride / standing / scramble).
-- ⚪ Write and commit `research/rnc_science/PREREG.md` before the pilot.
-- 🟢 Eval harness hardened per the critique (11 tests pass).
-
-## Next
-- ⚪ Write PREREG → freeze the label schema → pilot-label 15 RNC attempts with a stopwatch.
-- ⚪ Run the Kaggle pose notebook (`notebooks/kaggle_yolo_pose_vicos.ipynb`).
-- ⚪ Phases 4–7: attempt detection → success prediction → overlay on real clips → more submissions.
+## Where to read more
+`docs/CODE_TOUR.md` (how the code fits together) · `docs/BRIEF.md` (latest brief) · `HUMAN_TASKS.md` (owner to-dos) · `research/referee/*/RESULTS.md` · `research/pose_sweep/FINDINGS.md`
