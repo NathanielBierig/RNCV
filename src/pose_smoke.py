@@ -71,7 +71,7 @@ def run_clip(path, model, args):
     tracker = tf.TwoSlotTracker(fps / args.stride, args.max_gap)
     writer = None
     kpts_all, state_all, raw_n, sel_joints, sel_upper, idx_all, infer_s = [], [], [], [], [], [], []
-    drops = {"crowd": 0, "dup": 0, "ref": 0}
+    drops = {"crowd": 0, "dup": 0, "ref_look": 0, "ref": 0}
     i = 0
     while True:
         ok, frame = cap.read()
@@ -83,7 +83,7 @@ def run_clip(path, model, args):
             infer_s.append(time.perf_counter() - t0)
             kps = np.asarray(kps, dtype=np.float32).reshape(-1, 17, 2)
             scs = np.asarray(scs, dtype=np.float32).reshape(-1, 17)
-            ks, ss, dropped, counts = tf.select(kps, scs)
+            ks, ss, dropped, counts = tf.select(kps, scs, frame)
             for key in drops:
                 drops[key] += counts[key]
             poses, states = tracker.update(ks, ss)

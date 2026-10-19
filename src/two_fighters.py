@@ -6,15 +6,20 @@ score_thr 0.3 finds the tangled second fighter far more often than the default
   1. crowd: drop people whose box is < 15% of the largest box's area
   2. duplicates: drop a person whose confident joints mostly coincide with a
      better-scored person's (same body detected twice)
-  3. referee: with 3+ candidates keep the most-overlapping pair (fighters in a
-     choke overlap; the referee stands apart). NOT reliable: checked by eye it
-     sometimes keeps the referee and drops a sprawled fighter. A black-shirt
-     colour rule was worse (dropped fighters in shadow) and is not ported.
+  3. referee by appearance (when the frame is given): drop people whose
+     torso/arms/legs show little skin (src/referee.py; fighters are shirtless,
+     the referee is in black). On the 128-frame eval set this cut "referee
+     kept" from 58% to 10% with 1 fighter wrongly flagged
+     (research/referee/appearance/RESULTS.md). It may leave only one person.
+  4. with 3+ candidates left, keep the most-overlapping pair (fighters in a
+     choke overlap; the referee stands apart).
 Then a 2-slot tracker (Hungarian on joint positions) keeps identities and fills
 a missing fighter from its last pose for up to 0.5 s, flagged as "filled".
 """
 import numpy as np
 from scipy.optimize import linear_sum_assignment
+
+from referee import referee_score
 
 THR = 0.3
 UPPER = [0, 5, 6, 7, 8, 9, 10]          # nose, shoulders, elbows, wrists
@@ -49,9 +54,13 @@ def _iou(a, b):
     return inter / union if union > 0 else 0.0
 
 
-def select(kpts, scores):
-    """kpts [N,17,2], scores [N,17] -> (kept kpts, kept scores, dropped kpts, counts)."""
-    counts = {"crowd": 0, "dup": 0, "ref": 0}
+REF_THR = 0.5
+
+
+def select(kpts, scores, img=None):
+    """kpts [N,17,2], scores [N,17], img = BGR frame (optional, enables the
+    appearance referee filter) -> (kept kpts, kept scores, dropped kpts, counts)."""
+    counts = {"crowd": 0, "dup": 0, "ref_look": 0, "ref": 0}
     if not len(scores):
         return kpts, scores, [], counts
     order = np.argsort(-scores.mean(1))
@@ -65,6 +74,10 @@ def select(kpts, scores):
         if any(_same_body(k, s, kpts[j], scores[j], scale) for j in keep):
             counts["dup"] += 1; dropped.append(i); continue
         keep.append(i)
+    if img is not None:
+        looks_ref = [i for i in keep if referee_score(img, kpts[i], scores[i]) > REF_THR]
+        counts["ref_look"] += len(looks_ref); dropped += looks_ref
+        keep = [i for i in keep if i not in looks_ref]
     if len(keep) > 2:
         boxes = {i: _box(kpts[i], scores[i]) for i in keep}
         best = max(((a, b) for x, a in enumerate(keep) for b in keep[x + 1:]),

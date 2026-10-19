@@ -97,7 +97,7 @@ def run_clip(path, model, args):
         kps, scs = model(frame, nms_thr=args.nms, score_thr=args.score)
         kps = np.asarray(kps, np.float32).reshape(-1, 17, 2)
         scs = np.asarray(scs, np.float32).reshape(-1, 17)
-        ks, ss, dropped, _ = select(kps, scs)
+        ks, ss, dropped, _ = select(kps, scs, frame)
         poses, states = tracker.update(ks, ss)
         for k in dropped:
             draw_person(frame, k, np.ones(17), GRAY, 1)

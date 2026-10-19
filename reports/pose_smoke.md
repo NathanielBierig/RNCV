@@ -4,9 +4,9 @@ Latest run of `src/pose_smoke.py`. Model: RTMO-m (rtmlib + onnxruntime, CPU), sc
 
 | Clip | Frames processed (stride) | CPU fps | 2+ raw detections | 2 fighters kept, both >= 12/17 joints | 2 kept, both upper bodies OK | 2 tracked (seen) | 2 tracked (seen or filled) | Dropped crowd / dup / ref |
 |---|---|---|---|---|---|---|---|---|
-| gsp_bisping | 240 of 720 (3) | 2.13 | 92% | 52% | 60% | 87% | 96% | 308 / 122 / 105 |
-| pantoja_asakura_r2 | 309 of 925 (3) | 1.94 | 74% | 16% | 29% | 54% | 75% | 58 / 123 / 22 |
-| sterling_sandhagen | 640 of 1919 (3) | 2.00 | 88% | 30% | 42% | 64% | 78% | 244 / 223 / 113 |
+| gsp_bisping | 240 of 720 (3) | 2.43 | 92% | 26% | 30% | 38% | 65% | 308 / 122 / 30 |
+| pantoja_asakura_r2 | 309 of 925 (3) | 2.58 | 74% | 14% | 15% | 16% | 42% | 58 / 123 / 0 |
+| sterling_sandhagen | 640 of 1919 (3) | 3.17 | 88% | 27% | 33% | 42% | 66% | 244 / 223 / 47 |
 
 **How to read it:** "kept" and "tracked" are upper bounds on *fighter* coverage. Referee removal is not solved, so some kept people are the referee. Open `data/pose/<clip>_preview.mp4` (orange/cyan = fighter slots, thin = filled from the last pose, red dots = dropped people) and check by eye.
 Upper body OK = at least 5 of 7 upper-body joints (nose, shoulders, elbows, wrists) confident, which is what an RNC needs.
