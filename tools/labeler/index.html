@@ -110,6 +110,7 @@
         <kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> ±1 s · <kbd>Shift</kbd>+arrows ±5 s · <kbd>,</kbd><kbd>.</kbd> ±1 frame · <kbd>[</kbd><kbd>]</kbd> speed<br>
         <kbd>C</kbd> sync clock · <kbd>S</kbd> mark start (auto-plays to +2 s, then pauses for blind factor coding) · <kbd>E</kbd> mark end → outcome<br>
         In a panel: <kbd>1</kbd>–<kbd>9</kbd> pick option and advance · <kbd>↑</kbd><kbd>↓</kbd> change field · <kbd>Enter</kbd> confirm · <kbd>Esc</kbd> cancel<br>
+        <kbd>X</kbd> in the factor panel: view blocked (referee, cut, angle), so all factors are left blank and the attempt is flagged · <kbd>X</kbd> during an attempt: toggle the "view blocked" flag<br>
         <kbd>T</kbd> then <kbd>1</kbd>–<kbd>7</kbd> add a grip style to the sequence (after the landmark) · <kbd>W</kbd> swap attacker/defender<br>
         <kbd>U</kbd> undo last saved row · <kbd>B</kbd> back 10 s
       </div>
@@ -124,7 +125,7 @@ const CORE = ["fight_id","round","attempt_start_s","attempt_end_s","attacker","d
 const OPTIONAL = ["video_url","video_time_start","video_time_end","reviewer","confidence",
   "choke_arm_position","control","opponent_flattened","defender_two_on_one","rnc_style_at_L","rnc_style_sequence",
   "forearm_placement","choking_hand_tucked","second_hand_on_traps","squeeze_direction","chin_tucked","found_via",
-  "back_context","attacker_side","seconds_to_lock","fight_time_s"];
+  "back_context","attacker_side","seconds_to_lock","fight_time_s","view_blocked"];
 const COLUMNS = CORE.concat(OPTIONAL);
 const LANDMARK_S = 2.0;
 const FPS = 30;
@@ -414,7 +415,7 @@ function saveAttempt(endVals) {
     video_url: videoName, video_time_start: cur.startV.toFixed(2), video_time_end: cur.endV.toFixed(2),
     reviewer: $("reviewer").value.trim(), confidence: endVals.confidence || "",
     seconds_to_lock: $("x_stl").value, fight_time_s: r1((rnd - 1) * 300 + s),
-    found_via: $("found_via").value,
+    found_via: $("found_via").value, view_blocked: cur.viewBlocked ? "True" : "",
   };
   for (const [k] of FACTOR_GROUPS) row[k] = cur.factors[k] || "";
   const seq = $("x_seq").value.split(">").map(x => x.trim()).filter(Boolean);
@@ -486,7 +487,7 @@ $("bCancel").onclick = () => { if (panel && panel.kind === "factors") { if (!con
 
 // ---------- table ----------
 function renderTable() {
-  const cols = ["fight_id","round","attempt_start_s","attempt_end_s","outcome","found_via","choke_arm_position","control","rnc_style_sequence","camera_cut_flag","notes"];
+  const cols = ["fight_id","round","attempt_start_s","attempt_end_s","outcome","found_via","choke_arm_position","control","rnc_style_sequence","camera_cut_flag","view_blocked","notes"];
   $("tbl").innerHTML = "<tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr>" +
     rows.slice().reverse().slice(0, 200).map(r => "<tr>" + cols.map(c => `<td>${String(r[c] ?? "").replace(/</g, "&lt;")}</td>`).join("") + "</tr>").join("");
   $("nRows").textContent = rows.length;
@@ -508,6 +509,12 @@ document.addEventListener("keydown", e => {
     if (e.key === "ArrowDown") { panel.active = Math.min(panel.groups.length - 1, panel.active + 1); renderPanel(); e.preventDefault(); return; }
     if (e.key === "ArrowUp") { panel.active = Math.max(0, panel.active - 1); renderPanel(); e.preventDefault(); return; }
     if (panel.kind === "factors" && (e.key === "ArrowLeft" || e.key === ",")) { seek(e.key === "," ? -1 / FPS : -1); e.preventDefault(); }
+    if (panel.kind === "factors" && (e.key === "x" || e.key === "X")) {
+      // View blocked at the landmark: blank every factor (blank = not visible, not "unclear") and flag the attempt.
+      cur.viewBlocked = true; cur.factors = {}; cur.factorsDone = true; cur.seq = []; closePanel(); showSeq();
+      setStatus("View blocked: factors left blank, attempt flagged. Play on (<kbd>Space</kbd>), press <kbd>E</kbd> at the end.");
+      e.preventDefault(); return;
+    }
     return;
   }
   if (typing) { if (e.key === "Escape") document.activeElement.blur(); return; }
@@ -516,6 +523,11 @@ document.addEventListener("keydown", e => {
     stylePicking = false;
     if (/^[1-7]$/.test(k)) { addStyle(STYLES[Number(k) - 1]); e.preventDefault(); return; }
     showSeq(); if (k === "Escape") return;
+  }
+  if ((k === "x" || k === "X") && cur) {
+    cur.viewBlocked = !cur.viewBlocked;
+    setStatus(cur.viewBlocked ? "Attempt flagged: view blocked." : "View-blocked flag removed.");
+    e.preventDefault(); return;
   }
   if (k === "t" || k === "T") {
     if (!cur || !cur.factorsDone) { setStatus("Add styles after the landmark factors are coded (<kbd>S</kbd> first)."); return; }

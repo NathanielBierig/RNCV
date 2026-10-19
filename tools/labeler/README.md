@@ -21,6 +21,8 @@ This is one offline HTML file. There's no server, nothing is installed and nothi
 
 **Other keys:** <kbd>W</kbd> swap attacker/defender · <kbd>Space</kbd> play/pause · <kbd>←</kbd>/<kbd>→</kbd> ±1 s (<kbd>Shift</kbd> ±5 s) · <kbd>,</kbd>/<kbd>.</kbd> ±1 frame · <kbd>[</kbd>/<kbd>]</kbd> speed · <kbd>B</kbd> back 10 s · <kbd>U</kbd> undo last row · <kbd>↑</kbd>/<kbd>↓</kbd> change field in a panel · <kbd>Esc</kbd> cancel · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> confirm while typing notes.
 
+**View blocked:** if the referee, a camera cut or the angle hides the choke at the 2 s pause, press <kbd>X</kbd> in the factor panel. Every factor is left blank in one go and the attempt gets `view_blocked=True`, so you skip the 12 fields. During an attempt, <kbd>X</kbd> toggles the flag on or off.
+
 ## What it fills automatically
 - `success` (from the outcome)
 - `fight_time_s` = (round − 1) × 300 + start

@@ -38,6 +38,7 @@ Added for the study of which details predict a finish. All are **reviewer-labele
 | `squeeze_direction` | `straight_back`, `tilt_choke_side`, `tilt_away`, `pull_up`, `unclear` | at the landmark |
 | `chin_tucked` | bool | defender, at the landmark |
 | `found_via` | `finish_list`, `candidate_round`, `random_fight` | how this attempt was found (PREREG §2) |
+| `view_blocked` | bool (blank = no) | the landmark view was blocked (referee, camera cut, angle): all factor fields are blank because they could not be seen, not because they were "unclear". Set with **X** in the labeler. Analysis treats these rows as missing factors, never as a factor level |
 | `back_context` | `ground_back`, `turtle_ride`, `standing_back`, `scramble` | where the back attack happens |
 | `attacker_side` | `left`, `right` | which arm is the choking arm |
 | `seconds_to_lock` | float | seconds from back control established to the choke going in |
