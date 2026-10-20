@@ -1,4 +1,8 @@
-# UFC submission CV — Phase 2: BJJ position classification (VICOS)
+# RNCV: UFC rear-naked choke CV
+
+**Quick links:** [Labeling guide](docs/LABELING_GUIDE.md) (how to label + how to judge each field) · [Labeler tool](tools/labeler/index.html) (open in Chrome) · [Progress](PROGRESS.md) · [Your tasks](HUMAN_TASKS.md) · [Code tour](docs/CODE_TOUR.md)
+
+## Phase 2: BJJ position classification (VICOS)
 
 Classify the grappling position (18 classes: e.g. `mount1` = athlete 1 on top in mount) from two athletes' pose keypoints.
 This is the foundation for later phases: submissions happen *from* positions (RNC from `back`), so a position model is the first filter.
