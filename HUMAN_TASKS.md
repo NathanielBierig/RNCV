@@ -81,6 +81,7 @@ Owned by the secretary session. Tick a box when done and tell the secretary. Tim
 
 ## 🔴 Open tasks, in order
 
+- [ ] **0a. Two quick answers for Main** (2 min): (1) keep Elkins row 1 (113.4-140.9) or rows 2+3? (2) OK to add `compilation` to the 3 Sterling rows and `pilot` to the first 15 rows at commit time? Close the labeler tab first, then Main edits `labels.csv`. Check: [reports/labels_qa.md](reports/labels_qa.md).
 - [ ] **0. Approve PREREG amendment A2** (new `upper_body` variable: body_lock / seatbelt / none). Main is asking you. Recommended: approve, it is descriptive only.
 
 - [ ] **1. Pilot labeling, in short sittings** (3–5 attempts per sitting, 15–20 min). Open `tools/labeler/index.html` in Chrome or Edge, click "Link labels.csv" so every save is written, and follow [phase3_labels/PILOT.md](phase3_labels/PILOT.md) (8 successes + 7 failures). Timing is logged automatically. **Step-by-step: see "How to label" at the bottom of this file.**
