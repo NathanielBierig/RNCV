@@ -1,24 +1,89 @@
-# RNCV: UFC rear-naked choke CV
+# RNCV: what makes a UFC rear-naked choke finish?
 
-**Quick links:** [Labeling guide](docs/LABELING_GUIDE.md) (how to label + how to judge each field) · [Picture code book](docs/rnc_codebook.html) · [Labeler tool](tools/labeler/index.html) (open in Chrome) · [Progress](PROGRESS.md) · [Your tasks](HUMAN_TASKS.md) · [Code tour](docs/CODE_TOUR.md)
+RNCV = **RNC + CV** (computer vision). A UFC-only study of which rear-naked choke details predict a finish (pre-registered science), plus a live finish-probability overlay built on pose estimation.
 
-## Phase 2: BJJ position classification (VICOS)
+**Quick links:** [Progress](PROGRESS.md) · [Your tasks](HUMAN_TASKS.md) · [Labeling guide](docs/LABELING_GUIDE.md) · [Picture code book](docs/rnc_codebook.html) · [Labeler](tools/labeler/index.html) · [Kaggle fine-tune guide](docs/KAGGLE_FINETUNE.md) · [Code tour](docs/CODE_TOUR.md) · [Plan](docs/PLAN.md) · [Pre-registration](research/rnc_science/PREREG.md)
 
-Classify the grappling position (18 classes: e.g. `mount1` = athlete 1 on top in mount) from two athletes' pose keypoints.
-This is the foundation for later phases: submissions happen *from* positions (RNC from `back`), so a position model is the first filter.
+---
 
-## Scripts
+## Where things stand
 
-| File | What it does |
+- 🟢 **Science design frozen:** [PREREG.md](research/rnc_science/PREREG.md) (v1.0 + amendments A1 men's only, A2 upper body / change log). Code book: [FACTORS.md](research/rnc_science/FACTORS.md).
+- 🟡 **Labeling:** see [reports/labels_qa.md](reports/labels_qa.md) for the current count and checks. Data: [phase3_labels/labels.csv](phase3_labels/labels.csv).
+- 🟡 **Pose on UFC clips:** RTMO-m + two-fighter tracking + referee filter. Coverage inside labeled attempts: [reports/pose_attempts.md](reports/pose_attempts.md). Finishes are the weak spot. The fix in progress is a pose model fine-tuned on grappling ([docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md)).
+- 🟢 **Position classifier (VICOS):** macro-F1 0.63 on original keypoints, 0.47 on standard YOLO keypoints. Details: [reports/TRAINING_STATUS.md](reports/TRAINING_STATUS.md).
+
+Full status: [PROGRESS.md](PROGRESS.md).
+
+---
+
+## How to: label attempts (your main job)
+
+Full guide: **[docs/LABELING_GUIDE.md](docs/LABELING_GUIDE.md)**. Pictures for each answer: **[docs/rnc_codebook.html](docs/rnc_codebook.html)**.
+
+1. **Pick a fight:** [successes queue](phase3_labels/labeling_queue_successes.csv) or [failures queue](phase3_labels/labeling_queue_failures.csv), next row with status `todo` (men's only).
+2. **Get the clip** into `data\clips\` (local only, never uploaded). Ask Main for the download command if needed.
+3. **Open the labeler:** `tools\labeler\index.html` in Chrome → **Ctrl+Shift+R** → *Load fight list(s) CSV* (the 3 queue files) → *Load labels.csv* → *Link labels.csv file* (both: `phase3_labels\labels.csv`).
+4. **Label:** **S** start → answer the frozen 2-second panel (**X** if the view is blocked) → **G** whenever something changes → **E** at the end → outcome → Enter.
+5. **Round with no RNC at all?** Tell Main "rank N watched, no RNC".
+6. **Check your work:** ask Main to "run the labels QA", or run it yourself:
+   ```powershell
+   C:\Users\netan\.venvs\ufc-cv\Scripts\python -I phase3_labels\qa_labels.py
+   ```
+   Then open [reports/labels_qa.md](reports/labels_qa.md).
+
+## How to: train the pose model on Kaggle (free GPU)
+
+Full guide: **[docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md)**.
+
+1. kaggle.com → your notebook **finetune_pose** (or import [notebooks/kaggle_finetune_pose/finetune.ipynb](notebooks/kaggle_finetune_pose/finetune.ipynb)).
+2. Right sidebar → *Session options*: **GPU T4**, **Internet on**.
+3. **Save Version → Save & Run All (Commit) → Save.** It runs on Kaggle's servers (about 4 h, estimate); you can close Chrome.
+4. Check it any time (the Kaggle CLI is set up with your token in `C:\Users\netan\.kaggle\`):
+   ```powershell
+   C:\Users\netan\.venvs\ufc-cv\Scripts\kaggle kernels status nathanielbierig/finetune-pose
+   ```
+5. When it says **COMPLETE**, tell Main **"pull the fine-tune"**. Main downloads `rncv_pose_v1.onnx` into `models\` and re-runs the pose checks, before vs after.
+
+Never put UFC video on Kaggle (its rules forbid it). Only open datasets (VICOS, Harmony4D) go there.
+
+## How to: train the position classifier (laptop, CPU)
+
+```powershell
+C:\Users\netan\.venvs\rncv\Scripts\python -I src\train_baseline.py --model gbm --swap-aug --tag _swapaug
+```
+- Other keypoints: add `--annotations data\raw\vicos\annotations_yolo11m-pose_stride1.json --tag _swapaug_yolo11m`.
+- About 30–40 min. Results land in `reports\metrics_*.json`, `per_class_*.csv`, `confusion_*.png`.
+
+## How to: run pose on clips
+
+```powershell
+C:\Users\netan\.venvs\rncv\Scripts\python -I src\pose_attempts.py                # pose inside every labeled attempt → reports\pose_attempts.md
+C:\Users\netan\.venvs\rncv\Scripts\python -I src\pose_smoke.py                   # whole clips → reports\pose_smoke.md
+C:\Users\netan\.venvs\rncv\Scripts\python -I tools\preview\corner_preview.py     # red/blue skeleton preview videos → data\pose\*_corners.mp4
+```
+
+## How to: work with Claude sessions
+
+- **Main session** (in this folder) does the work and is the only one that commits and pushes. Start a fresh one any time: it reads [CLAUDE.md](CLAUDE.md), [PROGRESS.md](PROGRESS.md) and [HUMAN_TASKS.md](HUMAN_TASKS.md) and catches up.
+- **Secretary** keeps [HUMAN_TASKS.md](HUMAN_TASKS.md), [docs/BRIEF.md](docs/BRIEF.md) and [docs/DECISIONS.md](docs/DECISIONS.md) current.
+- Useful phrases for Main: "run the labels QA" · "pull the fine-tune" · "swap in the fine-tuned pose model" · "next 3 failure rounds" · "rank N watched, no RNC".
+
+---
+
+## Repo map
+
+| Folder | What's in it |
 |---|---|
-| `src/vicos_data.py` | Loads `annotations.json`, maps the 16 videos to 6 sparring sequences, builds leak-free time-block folds. Run it alone for dataset stats. |
-| `src/features.py` | Turns 2×17 COCO keypoints into 178 features (normalized coordinates, joint angles, torso direction, inter-athlete distances), or 350 role-invariant features (`build_role_invariant`: canonical top-athlete-first order + symmetrized pair features, identical under athlete swap). |
-| `src/train_baseline.py` | Trains + evaluates the classifier (`--model gbm` gradient boosting or `--model mlp`; `--swap-aug` = athlete-order augmentation). Writes metrics (incl. swap macro-F1 and a 10-position score with roles merged), per-class report, out-of-fold predictions and confusion matrix to `reports/`. |
-| `src/back_rule.py` | Training-free back-control detector from two skeletons (facing the same way, close, chest on back, head by neck), evaluated on VICOS next to the classifiers → `reports/back_rule.md`. |
-| `src/pose_smoke.py` | Phase 2b: RTMO-m pose on the laptop CPU (score_thr 0.3 / nms 0.65) over `data/clips/*.mp4`, then two-fighter selection + tracking → tracked keypoints + preview video in `data/pose/`, fps and coverage in `reports/pose_smoke.md`. |
-| `src/two_fighters.py` | Picks the two fighters among detections (drops crowd, duplicates; overlap rule for the referee, *not reliable yet*) and tracks 2 identities with 0.5 s gap fill. Ported from `research/pose_sweep/select2.py`. |
-| `notebooks/kaggle_yolo_pose_vicos.ipynb` | Kaggle GPU notebook: re-extracts VICOS keypoints with YOLO11-pose (optionally RTMO) in the same JSON format. |
-| `DOWNLOADS.md` | Copy-paste download commands, sizes and licenses for every dataset/model. |
+| [docs/](docs/) | Plan, decisions, brief, guides (labeling, Kaggle, footage, code tour) |
+| [research/rnc_science/](research/rnc_science/) | PREREG (frozen hypotheses) and FACTORS (code book) |
+| [phase3_labels/](phase3_labels/) | Fight queues, `labels.csv`, label schema, QA script |
+| [src/](src/) | Pose, two-fighter tracking, referee filter, position classifier |
+| [tools/](tools/) | Labeler, overlay renderer, red/blue preview, eval harness |
+| [notebooks/](notebooks/) | Kaggle GPU notebooks |
+| [reports/](reports/) | Every result, as markdown, JSON and plots |
+| [research/](research/) | Referee study, pose sweep, critique, venture ideas |
+| `data/`, `models/` | Local only (git-ignored): clips, datasets, weights |
 
 ## Setup (Windows, no GPU)
 
@@ -26,55 +91,25 @@ This is the foundation for later phases: submissions happen *from* positions (RN
 py -3.12 -m venv C:\Users\netan\.venvs\rncv
 C:\Users\netan\.venvs\rncv\Scripts\python -m pip install -r requirements.txt
 curl.exe -L --fail -o data/raw/vicos/annotations.json https://data.vicos.si/datasets/JuiJuitsu/annotations.json
-C:\Users\netan\.venvs\rncv\Scripts\python -I src/train_baseline.py --model gbm --swap-aug --tag _swapaug
-C:\Users\netan\.venvs\rncv\Scripts\python -I src/back_rule.py
-C:\Users\netan\.venvs\rncv\Scripts\python -I src/pose_smoke.py
 ```
+> Venvs live at short paths (`C:\Users\netan\.venvs\...`) because a long folder path breaks some Windows DLLs. `rncv` = pose and training, `ufc-cv` = OpenCV, pandas and the Kaggle CLI.
 
-> **Windows path-length gotcha:** a venv inside a long folder path fails to load some DLLs (`WinError 206`), so the venv lives at the short path `C:\Users\netan\.venvs\rncv`.
-> The trainer uses scikit-learn's `HistGradientBoostingClassifier` (same algorithm family as LightGBM) so there's one fewer native dependency.
+## Position-classifier evaluation (why the numbers are honest)
 
-## How the evaluation works (and why)
+- VICOS = 6 sparring sequences × up to 3 cameras. Each sequence's timeline is cut into 5 **time blocks**; each fold tests one block of every sequence (all cameras together) and drops training frames within 300 frames of it, so near-duplicate frames can't leak.
+- Metrics: **macro-F1** and **balanced accuracy** (rare classes count as much as common ones); **swap macro-F1** checks the model doesn't care which athlete is "1" or "2".
+- Limit: same athletes and gym in train and test, so these numbers aren't UFC performance. Only UFC data split by fight can measure that.
 
-- **What VICOS really is:** image id `VVFFFFF` = video `VV`, frame `FFFFF`. 16 videos = **6 sparring sequences × up to 3 phone cameras** (same-sequence cameras agree on the label at the same frame 84–100% of the time; unrelated videos 0.5%).
-- **Each sequence drills only 2–4 positions** (sequence 5 is only back control, sequence 3 only turtle). So "leave one sequence out" is impossible: the test positions would never appear in training.
-- **Splitting by video would leak:** the other cameras show the exact same moment.
-- **What we do instead:** cut every sequence's timeline into 5 contiguous **time blocks**. Fold *k* tests on block *k* of every sequence, from all cameras at once, and drops training frames within 300 frames (~10 s) of the test block (**purge**, so near-duplicate neighbouring frames can't leak).
-- **Metrics:** macro-F1 (F1 averaged equally over classes, so rare classes count as much as common ones) and balanced accuracy (average per-class recall). Both are honest under class imbalance; plain accuracy is reported only for reference.
-- **Limitation:** train and test still share the same athletes, gym and session. These numbers say "the features can separate positions", **not** "this works on UFC footage". Only Phase 3+ data, split by fight, can measure that.
+| Model (5 time-block folds) | Macro-F1 | Balanced acc. |
+|---|---|---|
+| GBM | 0.46 | 0.47 |
+| **GBM + swap augmentation (default)** | **0.63** | **0.63** |
+| GBM + swap aug on YOLO11m keypoints | 0.47 | 0.47 |
+| MLP + swap augmentation | 0.58 | 0.58 |
+| GBM, role-invariant features | 0.62 | 0.62 |
+| Majority class | 0.14 accuracy | |
 
-## Results
+## Footage and licenses
 
-Full detail: `reports/TRAINING_STATUS.md`, plus `metrics_*.json`, `per_class_*.csv`, `confusion_*.png` and `back_rule.md` in `reports/`.
-
-| Model (5 time-block folds) | Macro-F1 | Swap macro-F1 | Balanced acc. |
-|---|---|---|---|
-| GBM | 0.46 | 0.60 | 0.47 |
-| **GBM + swap augmentation (default)** | **0.63** | **0.63** | **0.63** |
-| MLP + swap augmentation | 0.58 | 0.58 | 0.58 |
-| GBM, role-invariant features (`--features rolinv`) | 0.62 | 0.62 (exact) | 0.62 |
-| MLP, role-invariant features | 0.59 | 0.59 (exact) | 0.59 |
-| Majority-class accuracy | | | 0.14 |
-
-- **Swap augmentation** (train on every frame twice: as-is and with the two athletes and the 1/2 label suffix swapped) gave +0.17 macro-F1 and made the model independent of athlete order, which UFC tracking needs.
-- **Swap macro-F1** = score on test frames with athletes swapped. If it differs from normal macro-F1, the model is keying on *which* athlete is which (their build, the detector's ordering) instead of geometry.
-- **Back control:** recall 0.78, precision 0.85. A training-free geometry rule reaches 0.83 recall where both skeletons exist (only 49% of VICOS back frames have both). Both get compared on hand-tagged UFC frames next.
-- Still weak: half guard (~0.3), takedowns (~0.4), side control/mount (~0.5).
-
-## Kaggle steps (re-extract keypoints with YOLO11-pose)
-
-1. kaggle.com → sign in → verify your phone (Settings) so GPU + Internet are allowed.
-2. **Create → New Notebook → File → Import Notebook** → upload `notebooks/kaggle_yolo_pose_vicos.ipynb`.
-3. Right sidebar: **Accelerator = GPU T4 x1**, **Internet = On**.
-4. **Run All**. The notebook downloads the 10 GB images itself (no upload needed). Expect ~1–1.5 h total (estimate).
-5. Output panel → download `annotations_yolo11m-pose_stride1.json` → save to `data/raw/vicos_yolo/`.
-6. `.venv\Scripts\python -I src/train_baseline.py --annotations data/raw/vicos_yolo/annotations_yolo11m-pose_stride1.json --tag _yolo11m`
-
-## Reused vs built
-
-- Checked `talhaahussain/grappling-pose-identification` (MIT): it's a binary "pin / no pin" MLP on raw keypoints with a **random frame-level split** (leaky) and YOLO-NAS weights (non-commercial license). Used as a reference only; not reused.
-- No public repo trains the 18-class VICOS task with a leak-free split, so this pipeline is new.
-
-## Licenses
-
-VICOS: CC BY-NC-SA 4.0 (non-commercial; cite Hudovernik & Skočaj, MMSports'22). YOLO11: AGPL-3.0. RTMO/MMPose/rtmlib: Apache-2.0. Full table in `DOWNLOADS.md`.
+- UFC footage: private local clips only, never uploaded; only derived data (keypoints, timestamps, labels) is committed. See [docs/FOOTAGE.md](docs/FOOTAGE.md).
+- VICOS: CC BY-NC-SA 4.0 (cite Hudovernik & Skočaj, MMSports'22). YOLO11: AGPL-3.0. RTMO/MMPose/rtmlib: Apache-2.0. Full table: [DOWNLOADS.md](DOWNLOADS.md).
