@@ -171,7 +171,7 @@ const CHANGE_GROUPS = [
   ["back_context",        ["ground_back","turtle_ride","standing_back","scramble"]],
   ["rnc_style",           STYLES],
 ];
-const UNCHANGED = "unchanged";   // default in the G panel (key 0); never stored
+const BLANK = "blank";           // G panel: shown (key 0) when a field has no value yet; never stored
 const END_GROUPS = [
   ["outcome",         ["tap","ref_stop","unconscious","escape","position_change","bell"]],
   ["camera_cut_flag", ["none","cut_in","cut_out"]],
@@ -474,10 +474,10 @@ function renderPanel() {
     const box = document.createElement("div"); box.className = "group" + (gi === panel.active ? " active" : "");
     box.innerHTML = `<div class="name">${name}</div>`;
     const o = document.createElement("div"); o.className = "opts";
-    if (panel.kind === "change") {   // explicit "unchanged" choice, key 0
-      const u = document.createElement("span"); u.className = "opt" + (panel.values[name] === UNCHANGED ? " sel" : "");
-      u.innerHTML = `<span class="k">0</span>${UNCHANGED}`;
-      u.onclick = () => { panel.values[name] = UNCHANGED; panel.active = Math.min(panel.groups.length - 1, gi + 1); renderPanel(); };
+    if (panel.kind === "change" && panel.base && panel.base[name] === BLANK) {   // no value yet: show it as an explicit state
+      const u = document.createElement("span"); u.className = "opt" + (panel.values[name] === BLANK ? " sel" : "");
+      u.innerHTML = `<span class="k">0</span>${BLANK}`;
+      u.onclick = () => { panel.values[name] = BLANK; renderPanel(); };
       o.appendChild(u);
     }
     opts.forEach((val, oi) => {
@@ -502,8 +502,8 @@ function confirmPanel() {
     showSeq();
     setStatus("Factors saved. Play on (<kbd>Space</kbd>). When the grip changes, press <kbd>T</kbd> then the style number. Press <kbd>E</kbd> at the end.");
   } else if (panel.kind === "change") {
-    // Store only real changes (compact); full state at any time = landmark values + changes so far.
-    const picked = Object.entries(panel.values).filter(([, val]) => val && val !== UNCHANGED);
+    // Store only real changes vs the current state (compact); full state = landmark values + changes so far.
+    const picked = Object.entries(panel.values).filter(([f, val]) => val && val !== BLANK && val !== panel.base[f]);
     if (!picked.length) { closePanel(); return; }
     cur.changes = cur.changes || [];
     for (const [f, val] of picked) {
@@ -525,13 +525,21 @@ function showSeq() {
   $("stylePick").classList.toggle("hidden", !stylePicking);
   $("styleKeys").innerHTML = STYLES.map((s, i) => `<kbd>${i + 1}</kbd> ${s}`).join(" ");
 }
+// Current state = landmark values, then every logged change in order. Blank fields start as BLANK.
+function currentState() {
+  const st = {};
+  for (const [n] of CHANGE_GROUPS) st[n] = (cur.factors || {})[n === "rnc_style" ? "rnc_style_at_L" : n] || BLANK;
+  for (const c of cur.changes || []) st[c.f] = c.v;
+  return st;
+}
 function fmtChanges(list) { return (list || []).map(c => `${c.t}:${c.f}=${c.v}`).join(">"); }
 function openChangePanel() {
   if (!cur || !cur.factorsDone) { setStatus("Log changes after the landmark factors are coded (<kbd>S</kbd> first)."); return; }
   v.pause();
   cur.changeT = r1(v.currentTime - cur.startV);
-  const values = Object.fromEntries(CHANGE_GROUPS.map(([n]) => [n, UNCHANGED]));
-  openPanel("change", `State at +${cur.changeT} s: every field starts as "unchanged" (0). Press a number only where something changed, then Enter`, CHANGE_GROUPS, values, "");
+  const base = currentState();
+  openPanel("change", `State at +${cur.changeT} s: the highlighted option is the current state. Press a number only where something changed (0 = back to current), then Enter`, CHANGE_GROUPS, {...base}, "");
+  panel.base = base; renderPanel();
 }
 function addStyle(tag) {
   if (!cur || !cur.factorsDone) return;
@@ -558,7 +566,7 @@ document.addEventListener("keydown", e => {
     if (e.key === "Escape") { e.preventDefault(); $("bCancel").click(); return; }
     if (typing) return;
     if (panel.kind === "change" && e.key === "0") {
-      panel.values[panel.groups[panel.active][0]] = UNCHANGED; panel.active = Math.min(panel.groups.length - 1, panel.active + 1); renderPanel();
+      const f = panel.groups[panel.active][0]; panel.values[f] = panel.base[f]; panel.active = Math.min(panel.groups.length - 1, panel.active + 1); renderPanel();
       e.preventDefault(); return;
     }
     if (/^[1-9]$/.test(e.key)) {
