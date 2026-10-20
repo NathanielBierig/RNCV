@@ -39,6 +39,7 @@ Added for the study of which details predict a finish. All are **reviewer-labele
 | `chin_tucked` | bool | defender, at the landmark |
 | `found_via` | `finish_list`, `candidate_round`, `random_fight` | how this attempt was found (PREREG §2) |
 | `view_blocked` | bool (blank = no) | the landmark view was blocked (referee, camera cut, angle): all factor fields are blank because they could not be seen, not because they were "unclear". Set with **X** in the labeler. Analysis treats these rows as missing factors, never as a factor level |
+| `state_changes` | `t:field=value` joined by `>`, e.g. `6.4:upper_body=body_lock>9.0:control=body_triangle` | changes after the landmark, logged with **G**; `t` = seconds since attempt start. Fields: control, upper_body (body_lock / seatbelt / none), choke_arm_position, defender_two_on_one, chin_tucked, opponent_flattened, back_context. **Descriptive and secondary hazard model only, never primary predictors** (PREREG §4: no post-landmark or time-held predictors) |
 | `back_context` | `ground_back`, `turtle_ride`, `standing_back`, `scramble` | where the back attack happens |
 | `attacker_side` | `left`, `right` | which arm is the choking arm |
 | `seconds_to_lock` | float | seconds from back control established to the choke going in |

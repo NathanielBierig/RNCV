@@ -112,6 +112,7 @@
         In a panel: <kbd>1</kbd>–<kbd>9</kbd> pick option and advance · <kbd>↑</kbd><kbd>↓</kbd> change field · <kbd>Enter</kbd> confirm · <kbd>Esc</kbd> cancel<br>
         <kbd>X</kbd> in the factor panel: view blocked (referee, cut, angle), so all factors are left blank and the attempt is flagged · <kbd>X</kbd> during an attempt: toggle the "view blocked" flag<br>
         <kbd>T</kbd> then <kbd>1</kbd>–<kbd>7</kbd> add a grip style to the sequence (after the landmark) · <kbd>W</kbd> swap attacker/defender<br>
+        <kbd>G</kbd> log a state change (hooks, body lock, arm position, two-on-one, chin, flattened, context) at the current time<br>
         <kbd>U</kbd> undo last saved row · <kbd>B</kbd> back 10 s
       </div>
     </div>
@@ -125,7 +126,7 @@ const CORE = ["fight_id","round","attempt_start_s","attempt_end_s","attacker","d
 const OPTIONAL = ["video_url","video_time_start","video_time_end","reviewer","confidence",
   "choke_arm_position","control","opponent_flattened","defender_two_on_one","rnc_style_at_L","rnc_style_sequence",
   "forearm_placement","choking_hand_tucked","second_hand_on_traps","squeeze_direction","chin_tucked","found_via",
-  "back_context","attacker_side","seconds_to_lock","fight_time_s","view_blocked"];
+  "back_context","attacker_side","seconds_to_lock","fight_time_s","view_blocked","state_changes"];
 const COLUMNS = CORE.concat(OPTIONAL);
 const LANDMARK_S = 2.0;
 const FPS = 30;
@@ -149,6 +150,16 @@ const FACTOR_GROUPS = [   // every landmark field, coded blind at start + 2 s
   ["opponent_flattened",  BOOL],
   ["back_context",        ["ground_back","turtle_ride","standing_back","scramble"]],
   ["attacker_side",       ["left","right"]],
+];
+// State changes after the landmark (G key). Descriptive / hazard-model only: never primary predictors (PREREG §4).
+const CHANGE_GROUPS = [
+  ["control",             ["two_hooks","body_triangle","one_hook","none"]],
+  ["upper_body",          ["body_lock","seatbelt","none"]],
+  ["choke_arm_position",  ["under_chin","over_jaw","unclear"]],
+  ["defender_two_on_one", BOOL],
+  ["chin_tucked",         BOOL],
+  ["opponent_flattened",  BOOL],
+  ["back_context",        ["ground_back","turtle_ride","standing_back","scramble"]],
 ];
 const END_GROUPS = [
   ["outcome",         ["tap","ref_stop","unconscious","escape","position_change","bell"]],
@@ -404,6 +415,7 @@ function endAttempt() {
   openPanel("end", `End at ${fmtClock(roundTime(cur.endV))} — outcome`, END_GROUPS, {camera_cut_flag: "none", sub_type: "rnc"},
     `<div class="grid2" style="margin-top:6px">
        <span>style sequence</span><input id="x_seq" type="text" value="${cur.seq.join(">")}" placeholder="e.g. wrist_pull>figure_four">
+       <span>state changes</span><input id="x_chg" type="text" value="${fmtChanges(cur.changes)}" placeholder="t_since_start:field=value>…  (logged with G)">
        <span>seconds_to_lock</span><input id="x_stl" type="number" step="0.1" placeholder="optional: back control → choke in">
        <span>notes</span><textarea id="x_notes" rows="2" placeholder="grip details, replay shown, doubts"></textarea>
        <span></span><label class="dim"><input id="x_time" type="checkbox" checked> add label time to notes (pilot)</label>
@@ -422,6 +434,7 @@ function saveAttempt(endVals) {
     reviewer: $("reviewer").value.trim(), confidence: endVals.confidence || "",
     seconds_to_lock: $("x_stl").value, fight_time_s: r1((rnd - 1) * 300 + s),
     found_via: $("found_via").value, view_blocked: cur.viewBlocked ? "True" : "",
+    state_changes: $("x_chg").value.trim(),
   };
   for (const [k] of FACTOR_GROUPS) row[k] = cur.factors[k] || "";
   const seq = $("x_seq").value.split(">").map(x => x.trim()).filter(Boolean);
@@ -470,6 +483,13 @@ function confirmPanel() {
     cur.seq = cur.factors.rnc_style_at_L ? [cur.factors.rnc_style_at_L] : [];
     showSeq();
     setStatus("Factors saved. Play on (<kbd>Space</kbd>). When the grip changes, press <kbd>T</kbd> then the style number. Press <kbd>E</kbd> at the end.");
+  } else if (panel.kind === "change") {
+    const picked = Object.entries(panel.values).filter(([, val]) => val);
+    if (!picked.length) { closePanel(); return; }
+    cur.changes = cur.changes || [];
+    for (const [f, val] of picked) cur.changes.push({t: cur.changeT, f, v: val});
+    closePanel();
+    setStatus(`Logged at +${cur.changeT} s: ${picked.map(([f, val]) => f + "=" + val).join(", ")}. Play on (<kbd>Space</kbd>).`);
   } else {
     if (!panel.values.outcome) { alert("Pick an outcome."); return; }
     if (!$("found_via").value && !confirm("found_via is blank (PREREG §2 needs it). Save anyway?")) return;
@@ -482,6 +502,13 @@ function showSeq() {
   $("hSeq").textContent = cur && cur.seq && cur.seq.length ? cur.seq.join(" > ") : "—";
   $("stylePick").classList.toggle("hidden", !stylePicking);
   $("styleKeys").innerHTML = STYLES.map((s, i) => `<kbd>${i + 1}</kbd> ${s}`).join(" ");
+}
+function fmtChanges(list) { return (list || []).map(c => `${c.t}:${c.f}=${c.v}`).join(">"); }
+function openChangePanel() {
+  if (!cur || !cur.factorsDone) { setStatus("Log changes after the landmark factors are coded (<kbd>S</kbd> first)."); return; }
+  v.pause();
+  cur.changeT = r1(v.currentTime - cur.startV);
+  openPanel("change", `State change at +${cur.changeT} s — pick only what changed, Enter to log`, CHANGE_GROUPS, {}, "");
 }
 function addStyle(tag) {
   if (!cur || !cur.factorsDone) return;
@@ -535,6 +562,7 @@ document.addEventListener("keydown", e => {
     setStatus(cur.viewBlocked ? "Attempt flagged: view blocked." : "View-blocked flag removed.");
     e.preventDefault(); return;
   }
+  if (k === "g" || k === "G") { e.preventDefault(); openChangePanel(); return; }
   if (k === "t" || k === "T") {
     if (!cur || !cur.factorsDone) { setStatus("Add styles after the landmark factors are coded (<kbd>S</kbd> first)."); return; }
     stylePicking = true; showSeq(); return;
