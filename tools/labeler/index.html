@@ -170,6 +170,7 @@ const CHANGE_GROUPS = [
   ["opponent_flattened",  BOOL],
   ["back_context",        ["ground_back","turtle_ride","standing_back","scramble"]],
   ["rnc_style",           STYLES],
+  ["attacker_side",       ["left","right"]],
 ];
 const BLANK = "blank";           // G panel: shown (key 0) when a field has no value yet; never stored
 const END_GROUPS = [
@@ -207,6 +208,7 @@ function parseClock(txt) {
   const val = Number(txt); return isNaN(val) ? null : val;
 }
 function roundTime(vt) { return clockOffset == null ? null : vt + clockOffset; }
+let clockSource = "";            // "" = synced with C on the on-screen clock; "finish_anchor" = from the known finish time
 function setStatus(msg, cls) { const el = $("status"); el.innerHTML = msg; el.className = cls || ""; }
 
 function parseCSV(text) {
@@ -234,7 +236,7 @@ function toCSV() {
 // ---------- video ----------
 $("fVideo").onchange = e => {
   const f = e.target.files[0]; if (!f) return;
-  videoName = f.name; v.src = URL.createObjectURL(f); clockOffset = null;
+  videoName = f.name; v.src = URL.createObjectURL(f); clockOffset = null; clockSource = "";
   setStatus(`Loaded <b>${f.name}</b>. Pause on a frame where the round clock is visible and press <kbd>C</kbd> to sync.`);
   updateAnchor();
 };
@@ -398,12 +400,12 @@ function syncClock() {
   v.pause();
   const txt = prompt("Round clock shown on screen RIGHT NOW (time remaining, e.g. 3:12):", "");
   const remain = parseClock(txt); if (remain == null) return;
-  clockOffset = (300 - remain) - v.currentTime;
+  clockOffset = (300 - remain) - v.currentTime; clockSource = "";
   setStatus(`Clock synced: video ${v.currentTime.toFixed(2)} s = ${fmtClock(300 - remain)} elapsed. Re-sync with <kbd>C</kbd> after replays or clock stoppages. Find the attempt and press <kbd>S</kbd>.`);
 }
 function startAttempt() {
   if (!v.duration) { setStatus("Open a video first."); return; }
-  if (clockOffset == null) { setStatus("Sync the round clock first: pause on a visible clock and press <kbd>C</kbd>.", "blind"); return; }
+  // No clock sync is OK: a finish in this round anchors the clock at save time (known finish time = end of the tap).
   if (!$("fight_id").value.trim()) { setStatus("Fill fight_id (or pick a fight) first.", "blind"); return; }
   if (cur && !confirm("Discard the attempt in progress?")) return;
   const startV = v.currentTime;
@@ -433,17 +435,25 @@ function endAttempt() {
      </div>`);
 }
 function saveAttempt(endVals) {
-  const s = roundTime(cur.startV), e = roundTime(cur.endV), rnd = Number($("round").value);
+  const rnd = Number($("round").value);
+  const fin = fights.get($("selFight").value);
+  let anchored = false;
+  if (clockOffset == null && fin && fin.finish_s != null && String(fin.finish_round) === String(rnd) && SUCCESS.has(endVals.outcome)) {
+    clockOffset = fin.finish_s - cur.endV; clockSource = "finish_anchor"; anchored = true;   // end of the tap = known finish time
+  }
+  const s = roundTime(cur.startV), e = roundTime(cur.endV);
   const notes = [$("x_notes").value.trim()];
+  if (clockOffset == null) notes.push("no_clock");
+  else if (clockSource) notes.push("clock=" + clockSource);
   if ($("x_time").checked && timerStart) notes.push("label_min=" + ((Date.now() - timerStart) / 60000).toFixed(1));
   const row = {
-    fight_id: $("fight_id").value.trim(), round: rnd, attempt_start_s: r1(s), attempt_end_s: r1(e),
+    fight_id: $("fight_id").value.trim(), round: rnd, attempt_start_s: s == null ? "" : r1(s), attempt_end_s: e == null ? "" : r1(e),
     attacker: $("attacker").value.trim(), defender: $("defender").value.trim(),
     sub_type: endVals.sub_type, outcome: endVals.outcome, success: SUCCESS.has(endVals.outcome) ? "True" : "False",
     camera_cut_flag: endVals.camera_cut_flag, notes: notes.filter(Boolean).join("; "),
     video_url: videoName, video_time_start: cur.startV.toFixed(2), video_time_end: cur.endV.toFixed(2),
     reviewer: $("reviewer").value.trim(), confidence: endVals.confidence || "",
-    seconds_to_lock: $("x_stl").value, fight_time_s: r1((rnd - 1) * 300 + s),
+    seconds_to_lock: $("x_stl").value, fight_time_s: s == null ? "" : r1((rnd - 1) * 300 + s),
     found_via: $("found_via").value, view_blocked: cur.viewBlocked ? "True" : "",
     state_changes: $("x_chg").value.trim(),
   };
@@ -454,9 +464,18 @@ function saveAttempt(endVals) {
   row.rnc_style_sequence = seq.join(">");
   const f = fights.get($("selFight").value);
   let warn = "";
-  if (f && f.finish_s != null && String(f.finish_round) === String(rnd) && SUCCESS.has(row.outcome) && Math.abs(e - f.finish_s) > 3)
+  if (e != null && !anchored && f && f.finish_s != null && String(f.finish_round) === String(rnd) && SUCCESS.has(row.outcome) && Math.abs(e - f.finish_s) > 3)
     warn = ` <span class="bad">End is ${r1(e - f.finish_s)} s from the ufcstats finish — check the clock sync.</span>`;
   if (row.outcome === "bell") warn += " (bell is kept as-is; the analysis treats it as censored)";
+  if (anchored) {   // earlier attempts from this clip/round saved without a clock get their round times now
+    let n = 0;
+    for (const r of rows) if (r.video_url === videoName && r.fight_id === row.fight_id && String(r.round) === String(rnd) && r.attempt_start_s === "") {
+      const rs = Number(r.video_time_start) + clockOffset, re = Number(r.video_time_end) + clockOffset;
+      r.attempt_start_s = r1(rs); r.attempt_end_s = r1(re); r.fight_time_s = r1((rnd - 1) * 300 + rs);
+      r.notes = r.notes.replace("no_clock", "clock=finish_anchor"); n++;
+    }
+    warn += ` Clock anchored to the known finish (${fmtClock(fin.finish_s)})${n ? `; ${n} earlier attempt(s) backfilled` : ""}.`;
+  } else if (clockOffset == null) warn += ` <span class="bad">No clock yet: round times left blank (filled in if a later finish in this clip anchors the clock, or press <kbd>C</kbd>).</span>`;
   rows.push(row); persist(); renderTable(); writeLinked().catch(err => alert("Write failed: " + err.message));
   cur = null; timerStart = null; drawTimeline(); showSeq();
   setStatus(`Saved ${row.outcome} (${row.attempt_start_s}–${row.attempt_end_s} s, round ${rnd}).${warn} Next attempt: <kbd>S</kbd>.`);

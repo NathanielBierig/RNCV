@@ -43,6 +43,8 @@ def check(df, info, finish):
         n = i + 1   # 1-based data row, as shown in a spreadsheet below the header
         if r._s >= r._e:
             issues.append((n, "🔴", f"start {r._s} >= end {r._e}"))
+        if pd.isna(r._s) or pd.isna(r._e):
+            issues.append((n, "⚪", "round times blank (no clock sync and no finish anchor yet); durations from video times are still valid"))
         if not r._comp and (r._s < 0 or r._e > 300):
             issues.append((n, "🔴", f"round time {r._s}-{r._e} s is outside 0-300 s; if the source is a compilation, add `compilation` to notes"))
         if r.outcome in SUCCESS and r.fight_id in finish.index and not r._comp:

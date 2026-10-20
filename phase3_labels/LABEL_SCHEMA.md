@@ -16,7 +16,7 @@ One row per **attempt** in `labels.csv`. Labels are derived data only (timestamp
 | `outcome` | enum | `tap`, `ref_stop`, `unconscious`, `escape`, `position_change`, `bell` |
 | `success` | bool | `True` iff outcome in {`tap`, `ref_stop`, `unconscious`}. Derived; keep it filled so the file is self-checking |
 | `camera_cut_flag` | enum | `none`, `cut_in` (a cut/replay interrupts the attempt but the clock continues), `cut_out` (part of the attempt is not shown). Rows with `cut_out` are excluded from the clean evaluation set |
-| `notes` | str | Free text: grip details, video id, "replay shown", doubts. **Reserved tokens:** `pilot` (one of the first 15 attempts), `compilation` (clip from a compilation/highlight video whose on-screen clock is unreliable: QA skips round-time checks and the analysis treats `attempt_start_s`, `attempt_end_s` and `fight_time_s` as missing; durations from `video_time_*` stay valid) |
+| `notes` | str | Free text: grip details, video id, "replay shown", doubts. **Reserved tokens:** `pilot` (one of the first 15 attempts), `no_clock` / `clock=finish_anchor` (set by the labeler: round times blank, or derived from the known finish time instead of the on-screen clock), `compilation` (clip from a compilation/highlight video whose on-screen clock is unreliable: QA skips round-time checks and the analysis treats `attempt_start_s`, `attempt_end_s` and `fight_time_s` as missing; durations from `video_time_*` stay valid) |
 
 Optional helper columns that make review faster (not required by the model code): `video_url`, `video_time_start`, `video_time_end` (position in the video file, for the reviewer's own use, not the round clock), `reviewer`, `confidence` (1-3).
 
