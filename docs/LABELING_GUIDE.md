@@ -1,6 +1,6 @@
 # RNCV labeling guide
 
-Everything you need to label, in one place. The tool is [tools/labeler/index.html](../tools/labeler/index.html) (open it in **Chrome**). Field definitions come from the code book [research/rnc_science/FACTORS.md](../research/rnc_science/FACTORS.md); if the two ever disagree, FACTORS.md wins.
+Everything you need to label, in one place. The tool is [tools/labeler/index.html](../tools/labeler/index.html) (open it in **Chrome**). Field definitions come from the code book [research/rnc_science/FACTORS.md](../research/rnc_science/FACTORS.md); if the two ever disagree, FACTORS.md wins. **Picture version:** [rnc_codebook.html](rnc_codebook.html) (open in Chrome; one card with a drawing per option, for the 12 freeze-frame questions; it predates `upper_body`, which is described in section 4 below).
 
 ---
 

@@ -1,6 +1,6 @@
 # RNCV: UFC rear-naked choke CV
 
-**Quick links:** [Labeling guide](docs/LABELING_GUIDE.md) (how to label + how to judge each field) · [Labeler tool](tools/labeler/index.html) (open in Chrome) · [Progress](PROGRESS.md) · [Your tasks](HUMAN_TASKS.md) · [Code tour](docs/CODE_TOUR.md)
+**Quick links:** [Labeling guide](docs/LABELING_GUIDE.md) (how to label + how to judge each field) · [Picture code book](docs/rnc_codebook.html) · [Labeler tool](tools/labeler/index.html) (open in Chrome) · [Progress](PROGRESS.md) · [Your tasks](HUMAN_TASKS.md) · [Code tour](docs/CODE_TOUR.md)
 
 ## Phase 2: BJJ position classification (VICOS)
 
