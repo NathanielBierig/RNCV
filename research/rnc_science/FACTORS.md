@@ -28,6 +28,7 @@ One **attempt** as defined in [LABEL_SCHEMA.md](../../phase3_labels/LABEL_SCHEMA
 | `second_hand_on_traps` | yes / no: second hand on the defender's trapezius or shoulder instead of behind the head | Common in short-choke / wrist-pull styles |
 | `squeeze_direction` | `straight_back` / `tilt_choke_side` / `tilt_away` / `pull_up` | Proposed; probably hard to see on broadcast, so check κ |
 | `chin_tucked` | yes / no (defender) | The defender's first line of defense |
+| `upper_body` | `body_lock` (arms locked around the torso) / `seatbelt` (one arm over the shoulder, one under the armpit, hands joined) / `none` | Added by PREREG A2 (2026-10-20). Separate from `control` (legs). Logged mainly as a change with **G**; exploratory |
 | `back_context` | ground_back / turtle_ride / standing_back / scramble | Do chokes from rides and standing finish differently than from classic back mount? |
 | `opponent_flattened` | yes / no | Flattened = can't turn in |
 | `round`, weight class | stats | Fatigue and division effects |
