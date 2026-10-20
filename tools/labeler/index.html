@@ -372,16 +372,39 @@ $("bLink").onclick = async () => {
         alert("This file isn't a labels file (no attempt_start_s/outcome columns), so it was NOT linked and nothing was written. Pick phase3_labels\\labels.csv, or type labels.csv as a new file name.");
         return;
       }
+      // The file is the source of truth. Browser-only rows are added only if you say so (labeled while not linked).
       const inFile = new Set(data.map(rowKey));
-      rows = data.concat(rows.filter(r => !inFile.has(rowKey(r))));
+      const extra = rows.filter(r => !inFile.has(rowKey(r)));
+      const add = extra.length && confirm(`labels.csv has ${data.length} row(s). This browser has ${extra.length} row(s) that are NOT in the file.
+
+OK = add them (only if you labeled while the file was not linked).
+Cancel = use the file as it is (recommended: rows deleted or fixed in the file stay deleted/fixed).`);
+      rows = add ? data.concat(extra) : data;
+      if (add) extra.forEach(r => touched.set(rowKey(r), r));
       extraCols = [...new Set(extraCols.concat(header.filter(h => !COLUMNS.includes(h))))];
     }
     await writeLinked(); persist(); renderTable();
     $("fileState").textContent = "linked: " + fileHandle.name; $("fileState").className = "ok";
   } catch (err) { if (err.name !== "AbortError") alert("Link failed: " + err.message); }
 };
-function rowKey(r) { return [r.fight_id, r.round, r.attempt_start_s].join("|"); }
-async function writeLinked() { if (!fileHandle) return; const w = await fileHandle.createWritable(); await w.write(toCSV()); await w.close(); }
+// Stable key (round times can be blank or back-filled later; video times never change).
+function rowKey(r) { return [r.fight_id, r.round, r.video_url, r.video_time_start].join("|"); }
+const touched = new Map();       // rows saved or changed in this browser since linking
+const deleted = new Set();       // rows undone in this browser
+// Re-read the file before every write, so edits made to labels.csv outside the tool (fixes, deletions) are never overwritten.
+async function writeLinked() {
+  if (!fileHandle) return;
+  const text = await (await fileHandle.getFile()).text();
+  if (text.trim()) {
+    const {header, data} = parseCSV(text);
+    const merged = data.filter(r => !deleted.has(rowKey(r))).map(r => touched.get(rowKey(r)) || r);
+    const have = new Set(merged.map(rowKey));
+    for (const [k, r] of touched) if (!have.has(k)) merged.push(r);
+    rows = merged; extraCols = [...new Set(extraCols.concat(header.filter(h => !COLUMNS.includes(h))))];
+    persist(); renderTable();
+  }
+  const w = await fileHandle.createWritable(); await w.write(toCSV()); await w.close();
+}
 $("bExport").onclick = () => {
   const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([toCSV()], {type: "text/csv"})); a.download = "labels.csv"; a.click();
 };
@@ -472,11 +495,11 @@ function saveAttempt(endVals) {
     for (const r of rows) if (r.video_url === videoName && r.fight_id === row.fight_id && String(r.round) === String(rnd) && r.attempt_start_s === "") {
       const rs = Number(r.video_time_start) + clockOffset, re = Number(r.video_time_end) + clockOffset;
       r.attempt_start_s = r1(rs); r.attempt_end_s = r1(re); r.fight_time_s = r1((rnd - 1) * 300 + rs);
-      r.notes = r.notes.replace("no_clock", "clock=finish_anchor"); n++;
+      r.notes = r.notes.replace("no_clock", "clock=finish_anchor"); touched.set(rowKey(r), r); n++;
     }
     warn += ` Clock anchored to the known finish (${fmtClock(fin.finish_s)})${n ? `; ${n} earlier attempt(s) backfilled` : ""}.`;
   } else if (clockOffset == null) warn += ` <span class="bad">No clock yet: round times left blank (filled in if a later finish in this clip anchors the clock, or press <kbd>C</kbd>).</span>`;
-  rows.push(row); persist(); renderTable(); writeLinked().catch(err => alert("Write failed: " + err.message));
+  rows.push(row); touched.set(rowKey(row), row); persist(); renderTable(); writeLinked().catch(err => alert("Write failed: " + err.message));
   cur = null; timerStart = null; drawTimeline(); showSeq();
   setStatus(`Saved ${row.outcome} (${row.attempt_start_s}–${row.attempt_end_s} s, round ${rnd}).${warn} Next attempt: <kbd>S</kbd>.`);
 }
@@ -636,7 +659,7 @@ document.addEventListener("keydown", e => {
   else if (k === "u" || k === "U") {
     if (!rows.length) return;
     const last = rows[rows.length - 1];
-    if (confirm(`Undo last row (${last.fight_id} R${last.round} ${last.attempt_start_s}–${last.attempt_end_s}, ${last.outcome})?`)) { rows.pop(); persist(); renderTable(); drawTimeline(); writeLinked(); }
+    if (confirm(`Undo last row (${last.fight_id} R${last.round} ${last.attempt_start_s}–${last.attempt_end_s}, ${last.outcome})?`)) { const k = rowKey(rows.pop()); touched.delete(k); deleted.add(k); persist(); renderTable(); drawTimeline(); writeLinked(); }
   }
 });
 window.addEventListener("beforeunload", e => { if (cur) { e.preventDefault(); e.returnValue = ""; } });
