@@ -51,7 +51,7 @@ Example for START-END: `14:39-14:52`. If you cannot find the fight in 10 minutes
 Skipped as women's fights: success 313, 312, 303, 302, 297. More men's rows if you need them: success 304, 301, 300, 299. For failure rows there is no known finish, so clip the part of the round where an RNC is tried. If there is none, the label is "no RNC in this round", which is a valid result. Also: the success rows above are all recent-to-old from the bottom of the sheet; recent fights (2025-26) are more likely Paramount+ only.
 
 ## Step 3: Labeling loop (about 20 min per sitting, 3 clips)
-Guide for dummies: [RNCV labeler: step-by-step](https://docs.google.com/document/d/114Be_xzg1AI46lSY1osj3NMGRVv3g0iSDbkWn9Cw0nE/edit?usp=drivesdk&ouid=105901371404619383657). Picture code book: https://claude.ai/artifact/6nubSqJW1YPKfeZy13ECBE
+Current guide: [docs/LABELING_GUIDE.md](docs/LABELING_GUIDE.md) (workflow, how to judge each field, G / X keys, clock, Link). Picture code book: [docs/rnc_codebook.html](docs/rnc_codebook.html). The old Google Doc is superseded.
 1. Open `tools\labeler\index.html` in Chrome. Press **F5**.
 2. Click **Load fight list(s) CSV** and select the three queue files (hold Ctrl): `labeling_queue_successes.csv`, `labeling_queue_failures.csv`, `random_10.csv`.
 3. Click **Link labels.csv** and choose `phase3_labels\labels.csv` (**not** a queue file; the tool now refuses those).
