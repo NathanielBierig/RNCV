@@ -1,6 +1,11 @@
 # Your tasks (most urgent first)
 
 
+## 📖 First, next free time (30 min)
+- [ ] **Read the code tour: [docs/CODE_TOUR.md](docs/CODE_TOUR.md).** The code-tour session is refreshing it tonight.
+- ℹ️ Kaggle fine-tune v2 (9 h, 960 px) is running on Kaggle overnight, started by the Main session through the command line. Nothing for you to do; Main pulls it when it finishes.
+
+
 # ☀️ Tomorrow (do in this order, one action per line)
 
 Work day tomorrow, so this is the short version. Estimates: Kaggle setup 15 min, clips 30 min, labeling 20 min per sitting.
@@ -62,7 +67,8 @@ Current guide: [docs/LABELING_GUIDE.md](docs/LABELING_GUIDE.md) (workflow, how t
 7. Type `pilot` in the notes for the first 15 labels.
 8. Repeat for clips 2 and 3, then go back to Step 2 for the next 3.
 
-## Step 4 ✅ DONE by Main (modelsncv_pose_v1.onnx is in place). Old steps kept for reference:
+## Step 4 ✅ DONE by Main (models
+ncv_pose_v1.onnx is in place). Old steps kept for reference:
 1. Kaggle > **Your Work** > the notebook > **Versions** > the finished version > **Output** tab.
 2. Download `rncv_pose_v1.onnx`, `rncv_pose_v1_results.md`, `rncv_pose_v1_metrics.json` and `yolo_pose_onnx.py`.
 3. Move `rncv_pose_v1.onnx` into `C:\Users\netan\projects\RNCV\models\` (create `models` if it does not exist).
