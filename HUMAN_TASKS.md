@@ -58,6 +58,7 @@ Guide for dummies: [RNCV labeler: step-by-step](https://docs.google.com/document
 4. Pick the fight, click **Open video**, choose the clip.
 5. Press **C** (type the clock), **S** (start), fill the panel, **Space**, **E** (end), fill the outcome, Enter.
 6. If the ref or camera blocks the view, press **X** in the panel.
+6b. **Press G** whenever something changes after the 2-second freeze (body lock added, hooks in or out, arm moves, and so on). Pick only the field that changed, then Enter. Reload with F5 first.
 7. Type `pilot` in the notes for the first 15 labels.
 8. Repeat for clips 2 and 3, then go back to Step 2 for the next 3.
 
@@ -79,6 +80,8 @@ Owned by the secretary session. Tick a box when done and tell the secretary. Tim
 - [x] Red/blue corner previews watched, they looked good
 
 ## 🔴 Open tasks, in order
+
+- [ ] **0. Approve PREREG amendment A2** (new `upper_body` variable: body_lock / seatbelt / none). Main is asking you. Recommended: approve, it is descriptive only.
 
 - [ ] **1. Pilot labeling, in short sittings** (3–5 attempts per sitting, 15–20 min). Open `tools/labeler/index.html` in Chrome or Edge, click "Link labels.csv" so every save is written, and follow [phase3_labels/PILOT.md](phase3_labels/PILOT.md) (8 successes + 7 failures). Timing is logged automatically. **Step-by-step: see "How to label" at the bottom of this file.**
 - [ ] **2. Read [docs/CODE_TOUR.md](docs/CODE_TOUR.md)** (30 min).

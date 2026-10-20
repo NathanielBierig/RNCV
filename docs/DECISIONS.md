@@ -18,4 +18,5 @@ Newest last. Owned by the secretary session.
 | Freeze PREREG v1.0 (commit) | 🟡 approved by user 2026-10-19, waiting on main session | Commit with the atypical-choke rule |
 | Phase 5/6 option choice | ⚪ memo coming at `docs/DECISION_PHASE5_6.md` | Decide after reading the memo |
 | Men's fights only? (pilot is men only so far) | 🔴 needs your call; needs a dated PREREG amendment before main labeling | Decide before the 150-attempt labeling; state it in the write-up |
-| Mid-attempt change log (body lock, hooks, arm switch) in labeler + how to treat it statistically | 🟡 requested of Main 2026-10-20 | Log changes with timestamps as exploratory/time-varying only; keep primary model at the L=2 s landmark (avoids the 'longer attempts succeed more' bias) |
+| Mid-attempt change log (body lock, hooks, arm switch) in labeler + how to treat it statistically | 🟢 shipped by Main (af79470), press G | Log changes with timestamps as exploratory/time-varying only; keep primary model at the L=2 s landmark (avoids the 'longer attempts succeed more' bias) |
+| PREREG amendment A2: new variable `upper_body` (body_lock / seatbelt / none), descriptive and secondary-hazard only | 🔴 needs your approval (Main is asking you) | Approve: it is added before any real labeling, and it is not a primary predictor |
