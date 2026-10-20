@@ -10,7 +10,7 @@ Work day tomorrow, so this is the short version. Estimates: Kaggle setup 15 min,
 2. Then tell the **Secretary** session (this one): "refresh the Google Sheets from the queues". It re-uploads the successes sheet and adds a failures sheet to your Drive folder RNCV, with women's fights marked.
 3. Excel is not needed. You use Google Sheets.
 
-## Step 1: Kaggle first. It runs about 4-6 h by itself (15 min of clicks)
+## Step 1 (STARTED 2026-10-20, wait for 'Successful'): Kaggle first. It runs about 4-6 h by itself (15 min of clicks)
 Do this first so it trains while you work. Full guide: [docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md). No UFC video goes to Kaggle.
 1. Go to kaggle.com and sign in (sign up first if you have no account).
 2. Click your **profile picture** (top right) > **Settings** > **Phone verification** > enter your phone and the code.
