@@ -5,10 +5,10 @@
 
 Work day tomorrow, so this is the short version. Estimates: Kaggle setup 15 min, clips 30 min, labeling 20 min per sitting.
 
-## Step 0: Close Excel and start a fresh session (2 min)
-1. Close Excel.
-2. In the Claude app, click **New session**, and pick the folder `C:\Users\netan\projects\RNCV`.
-3. Type: `tag women's fights out of scope in the queues` and send. (PREREG amendment A1, men's only, is already committed. This session does the tagging.)
+## Step 0: Tag women's fights out of scope (1 min)
+1. Open the **Main** session in the Claude app (the one called "UFC submission detection CV system") and send: `tag women's fights out of scope in the queues`. (PREREG amendment A1, men's only, is already committed. Main does the tagging in the queue files.)
+2. Then tell the **Secretary** session (this one): "refresh the Google Sheets from the queues". It re-uploads the successes sheet and adds a failures sheet to your Drive folder RNCV, with women's fights marked.
+3. Excel is not needed. You use Google Sheets.
 
 ## Step 1: Kaggle first. It runs about 4-6 h by itself (15 min of clicks)
 Do this first so it trains while you work. Full guide: [docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md). No UFC video goes to Kaggle.
