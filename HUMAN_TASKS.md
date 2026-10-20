@@ -1,5 +1,75 @@
 # Your tasks (most urgent first)
 
+
+# ☀️ Tomorrow (do in this order, one action per line)
+
+Work day tomorrow, so this is the short version. Estimates: Kaggle setup 15 min, clips 30 min, labeling 20 min per sitting.
+
+## Step 0: Close Excel and start a fresh session (2 min)
+1. Close Excel.
+2. In the Claude app, click **New session**, and pick the folder `C:\Users\netan\projects\RNCV`.
+3. Type: `tag women's fights out of scope in the queues` and send. (PREREG amendment A1, men's only, is already committed. This session does the tagging.)
+
+## Step 1: Kaggle first. It runs about 4-6 h by itself (15 min of clicks)
+Do this first so it trains while you work. Full guide: [docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md). No UFC video goes to Kaggle.
+1. Go to kaggle.com and sign in (sign up first if you have no account).
+2. Click your **profile picture** (top right) > **Settings** > **Phone verification** > enter your phone and the code.
+3. Click **Create** (left menu) > **New Notebook**.
+4. Click **File** > **Import Notebook** > **Browse files**. Choose `C:\Users\netan\projects\RNCV\notebooks\kaggle_finetune_pose\finetune.ipynb`. Click **Import**.
+5. Open the right sidebar (the **<** arrow, top right) > **Session options**.
+6. **Accelerator** > **GPU T4 x1** > confirm.
+7. **Internet** > **On**.
+8. Click **Save Version** (top right) > choose **Save & Run All (Commit)** > **Save**. This keeps running with the browser closed, for up to 12 h. Do not pick plain "Run All" (it stops if the tab closes).
+9. Close the tab.
+
+**What success looks like:** later, kaggle.com > **Your Work** > the notebook > **Versions** shows "Successful", and the **Output** tab lists `rncv_pose_v1.onnx` (about 80 MB) plus `rncv_pose_v1_results.md`.
+**If it errors:** open the version > **Logs**, scroll to the first red error, take a screenshot and paste it to the Main session. Re-running is safe.
+
+## Step 2: Download 10 clips (30 min)
+Rule: skip women's fights. Take **3 clips, then label them (Step 3)**, then the next 3. Do not download all 10 first.
+
+For each row below: search YouTube for `[fighter 1] vs [fighter 2] full fight` on the official **@UFC** channel. Open the video, scrub to the round, and find the choke (it starts about 60 s before the finish; the clock time to jump to is in the table). Write down two video times: where it starts, and a few seconds after it ends. Then paste this in a **new PowerShell** window, filling in the three CAPS parts:
+```powershell
+cd C:\Users\netan\projects\RNCV
+yt-dlp --download-sections "*START-END" --force-keyframes-at-cuts -f "bv*+ba/b" --merge-output-format mp4 -o "data/clips/NAME.%(ext)s" "LINK"
+```
+Example for START-END: `14:39-14:52`. If you cannot find the fight in 10 minutes, write `unwatchable` in the sheet and take the next row. Or send me the link and times and I make the command for you.
+
+| # | Queue | Fight | Round | Jump to round clock | NAME to use |
+|---|---|---|---|---|---|
+| 1 | success 311 | Jussier Formiga vs Ben Nguyen | R3 | 4:17 | already saved: `formiga_nguyen_r3` (label this first) |
+| 2 | success 310 | Robert Sanchez vs Joby Sanchez | R1 | 4:10 | `s310_sanchez_sanchez_r1` |
+| 3 | success 309 | Geoff Neal vs Brian Camozzi | R1 | 3:12 | `s309_neal_camozzi_r1` |
+| 4 | success 308 | Charles Byrd vs John Phillips | R1 | 2:02 | `s308_byrd_phillips_r1` |
+| 5 | success 307 | Dmitry Sosnovskiy vs Mark Godbeer | R2 | 1:31 | `s307_sosnovskiy_godbeer_r2` |
+| 6 | success 306 | Antonio Carlos Junior vs Tim Boetsch | R1 | 1:32 | `s306_acj_boetsch_r1` |
+| 7 | success 305 | Markus Perez vs James Bochnovic | R1 | 1:32 | `s305_perez_bochnovic_r1` |
+| 8 | failure 2 | Kevin Holland vs Randy Brown (2026-04-11) | R2 | watch the whole round | `f2_holland_brown_r2` |
+| 9 | failure 3 | Asu Almabayev vs Jose Ochoa (2025-07-26) | R1 | watch the whole round | `f3_almabayev_ochoa_r1` |
+| 10 | failure 4 | Jeremiah Wells vs Themba Gorimbo (2025-11-01) | R3 | watch the whole round | `f4_wells_gorimbo_r3` |
+
+Skipped as women's fights: success 313, 312, 303, 302, 297. More men's rows if you need them: success 304, 301, 300, 299. For failure rows there is no known finish, so clip the part of the round where an RNC is tried. If there is none, the label is "no RNC in this round", which is a valid result. Also: the success rows above are all recent-to-old from the bottom of the sheet; recent fights (2025-26) are more likely Paramount+ only.
+
+## Step 3: Labeling loop (about 20 min per sitting, 3 clips)
+Guide for dummies: [RNCV labeler: step-by-step](https://docs.google.com/document/d/114Be_xzg1AI46lSY1osj3NMGRVv3g0iSDbkWn9Cw0nE/edit?usp=drivesdk&ouid=105901371404619383657). Picture code book: https://claude.ai/artifact/6nubSqJW1YPKfeZy13ECBE
+1. Open `tools\labeler\index.html` in Chrome. Press **F5**.
+2. Click **Load fight list(s) CSV** and select the three queue files (hold Ctrl): `labeling_queue_successes.csv`, `labeling_queue_failures.csv`, `random_10.csv`.
+3. Click **Link labels.csv** and choose `phase3_labels\labels.csv` (**not** a queue file; the tool now refuses those).
+4. Pick the fight, click **Open video**, choose the clip.
+5. Press **C** (type the clock), **S** (start), fill the panel, **Space**, **E** (end), fill the outcome, Enter.
+6. If the ref or camera blocks the view, press **X** in the panel.
+7. Type `pilot` in the notes for the first 15 labels.
+8. Repeat for clips 2 and 3, then go back to Step 2 for the next 3.
+
+## Step 4: When Kaggle says Successful
+1. Kaggle > **Your Work** > the notebook > **Versions** > the finished version > **Output** tab.
+2. Download `rncv_pose_v1.onnx`, `rncv_pose_v1_results.md`, `rncv_pose_v1_metrics.json` and `yolo_pose_onnx.py`.
+3. Move `rncv_pose_v1.onnx` into `C:\Users\netan\projects\RNCV\models\` (create `models` if it does not exist).
+4. Tell the Main session: **swap in the fine-tuned pose model**.
+
+---
+# Everything else (older list)
+
 Owned by the secretary session. Tick a box when done and tell the secretary. Times are estimates. Nothing here is urgent tonight; it is queued for when you have time.
 
 ## 🟢 Done
