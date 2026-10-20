@@ -43,7 +43,7 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 | — | `round_time_left` | seconds at start | Adjustment only (bell censoring); no hypothesis |
 
 ## 6. Exploratory (labeled as such in every output)
-`rnc_style_at_L` (key contrast: figure_four vs wrist_pull), `rnc_style_sequence` (descriptive), `back_context`, `forearm_placement`, `choking_hand_tucked`, `second_hand_on_traps`, `squeeze_direction`, `chin_tucked`, `opponent_flattened`, round, weight class, `attacker_side` (sanity check: should be null). More may be added after the user's technique research, but only before v1.0 is frozen. Exploratory results are hints for a future study, never claims.
+`rnc_style_at_L` (key contrast: figure_four vs wrist_pull), `rnc_style_sequence` (descriptive), `upper_body` (added A2), `back_context`, `forearm_placement`, `choking_hand_tucked`, `second_hand_on_traps`, `squeeze_direction`, `chin_tucked`, `opponent_flattened`, round, weight class, `attacker_side` (sanity check: should be null). More may be added after the user's technique research, but only before v1.0 is frozen. Exploratory results are hints for a future study, never claims.
 
 ## 7. Analysis
 - **Primary:** Firth logistic regression, profile-likelihood 95% CIs, reported as odds ratios.
@@ -66,3 +66,10 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
   - The success and failure queues: women's rows are skipped at labeling time and recorded as `status = out_of_scope_womens` (not `unwatchable`). The per-fighter caps are unchanged.
   - `random_10.csv`: women's fights in the fixed draw are excluded and **not replaced**, so the draw stays exactly as fixed before watching. The base finish rate is computed from the remaining men's fights, and the write-up reports how many were excluded.
 - **Limitation (stated in the write-up):** findings apply to men's UFC divisions only.
+
+### A2 (2026-10-20): upper-body control variable and a timestamped change log
+- **Change 1, new exploratory variable:** `upper_body` ∈ {`body_lock`, `seatbelt`, `none`}, the attacker's upper-body control. It is separate from `control` (leg control), so the primary factor `lower_body` (§5, H2) is **unchanged**. It is added to §6 as exploratory only.
+- **Change 2, change log:** after the landmark, changes in `control`, `upper_body`, `choke_arm_position`, `defender_two_on_one`, `chin_tucked`, `opponent_flattened`, `back_context` and `rnc_style` are recorded with their time since attempt start (`state_changes`, LABEL_SCHEMA.md).
+- **Use rule:** `state_changes` and any post-landmark value are **descriptive, or time-varying covariates in the secondary discrete-time hazard model (§7) only. Never primary-model predictors.** This restates §4: longer attempts have more time to change state and more time to end in a finish, so post-landmark states would leak the outcome into the primary model.
+- **Why:** labeling showed that attempts evolve, e.g. a body lock is added mid-attempt. Recording this makes the hazard model's "current state" bins possible and gives the write-up a descriptive picture of how chokes develop.
+- **Timing:** made before any attempt was saved (`phase3_labels/labels.csv` had 0 rows). No hypothesis, primary coding, model or decision rule changes.
