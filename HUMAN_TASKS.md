@@ -10,7 +10,7 @@ Work day tomorrow, so this is the short version. Estimates: Kaggle setup 15 min,
 2. Then tell the **Secretary** session (this one): "refresh the Google Sheets from the queues". It re-uploads the successes sheet and adds a failures sheet to your Drive folder RNCV, with women's fights marked.
 3. Excel is not needed. You use Google Sheets.
 
-## Step 1 (STARTED 2026-10-20, wait for 'Successful'): Kaggle first. It runs about 4-6 h by itself (15 min of clicks)
+## Step 1 ✅ DONE: Kaggle fine-tune finished (COMPLETE) and Main downloaded it by CLI. Old clicks below kept for reference. It runs about 4-6 h by itself (15 min of clicks)
 Do this first so it trains while you work. Full guide: [docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md). No UFC video goes to Kaggle.
 1. Go to kaggle.com and sign in (sign up first if you have no account).
 2. Click your **profile picture** (top right) > **Settings** > **Phone verification** > enter your phone and the code.
@@ -62,7 +62,7 @@ Current guide: [docs/LABELING_GUIDE.md](docs/LABELING_GUIDE.md) (workflow, how t
 7. Type `pilot` in the notes for the first 15 labels.
 8. Repeat for clips 2 and 3, then go back to Step 2 for the next 3.
 
-## Step 4: When Kaggle says Successful
+## Step 4 ✅ DONE by Main (modelsncv_pose_v1.onnx is in place). Old steps kept for reference:
 1. Kaggle > **Your Work** > the notebook > **Versions** > the finished version > **Output** tab.
 2. Download `rncv_pose_v1.onnx`, `rncv_pose_v1_results.md`, `rncv_pose_v1_metrics.json` and `yolo_pose_onnx.py`.
 3. Move `rncv_pose_v1.onnx` into `C:\Users\netan\projects\RNCV\models\` (create `models` if it does not exist).
