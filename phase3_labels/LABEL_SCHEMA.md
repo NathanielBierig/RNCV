@@ -78,7 +78,7 @@ Use the on-screen round clock. The broadcast clock counts down from 5:00, so con
 
 1. **Camera cut** (broadcast switches to the crowd or replay and back): keep one attempt row, set `camera_cut_flag`, and pick times from the round clock.
 2. **Replays** are never labeled as separate attempts.
-3. **Round-level evidence** from `failed_attempt_candidates.csv`: it lists fighter-rounds with UFC-scored submission attempts of any type, not only RNC. Most candidates will not contain an RNC. A candidate with no RNC is still a useful negative for the "attempt detector" (record it as a note, not as a row).
+3. **Round-level evidence** from `failed_attempt_candidates.csv`: it lists fighter-rounds with UFC-scored submission attempts of any type, not only RNC. Most candidates will not contain an RNC. A candidate round watched in full with no RNC is a real negative for the "attempt detector": set its queue `status` to `watched_no_rnc` (not a labels.csv row). QA counts these.
 4. **Ambiguous** (unsure it was a real choke): do not guess. Put the row in `labels_ambiguous.csv` with the same columns plus `why`.
 5. **Back control without a choke attempt** for 10+ s is not a row here; Phase 2 (back-control detector) handles that class.
 6. Two reviewers on a random 10% subset; report agreement (start/end within 1 s, same outcome).

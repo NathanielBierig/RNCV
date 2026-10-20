@@ -103,6 +103,15 @@ def main():
                   for n, sev, msg in sorted(issues)]
     lines += ["", "Row numbers count data rows from 1 (the header isn't counted). This script never edits labels.csv: fix rows in the labeler (U = undo last row) or ask Main.",
               "Compilation sources: put the word `compilation` in notes, so round-time checks are skipped and the analysis treats round times as missing."]
+    # Watched candidate rounds with no RNC are real negatives (LABEL_SCHEMA rule 3): count them here, not in labels.csv.
+    neg = []
+    for qp in ["labeling_queue_failures.csv", "labeling_queue_successes.csv", "random_10.csv"]:
+        qd = pd.read_csv(ROOT / "phase3_labels" / qp, dtype=str, keep_default_na=False)
+        if "status" in qd:
+            neg += [f"{r.get('attacker', '') or r.get('fighters', '')} vs {r.get('defender', '')} R{r.get('round', '')}".replace(" vs  R", " R")
+                    for _, r in qd[qd.status == "watched_no_rnc"].iterrows()]
+    lines.insert(4, f"Watched rounds with **0 RNC attempts** (real negatives, status `watched_no_rnc` in the queues): **{len(neg)}**"
+                 + (" (" + "; ".join(neg) + ")" if neg else ""))
     out = ROOT / "reports/labels_qa.md"
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"wrote {out.relative_to(ROOT)}: {len(issues)} issue(s), {sum(s == '🔴' for _, s, _ in issues)} red")

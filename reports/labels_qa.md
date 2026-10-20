@@ -2,6 +2,7 @@
 
 Rows: **7** · fights: **4** · outcomes: position_change 2, tap 2, unconscious 2, escape 1 · found_via: finish_list 7
 Label time per attempt (minutes): median **2.1**, total 26 (from `label_min` in notes).
+Watched rounds with **0 RNC attempts** (real negatives, status `watched_no_rnc` in the queues): **1** (Paddy Pimblett vs Jordan Leavitt R1)
 
 🔴 fix before analysis · 🟡 check · ⚪ info
 
