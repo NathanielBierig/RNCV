@@ -7,7 +7,7 @@ Every processed frame gets the raw output of
   rncv_pose_v1.onnx (score 0.25, nms 0.65) -> pipeline B, C
 Saved to data/pose_review/cache.pkl (local, git-ignored); eval frames as JPGs in data/pose_review/frames/.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_review/cache.py
+    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_review/cache.py [--negatives]
 """
 import pickle
 import sys
@@ -46,12 +46,24 @@ def eval_frames():
     return out
 
 
+# Negative frames (outside every labeled attempt window, >= 3 s away) for precision of the role signals.
+NEG = {"f21_blachowicz_pereira_r1.mp4": [20, 60, 100, 170, 195, 290], "olivera_hoolowar_r1.mp4": [120, 135, 170, 185],
+       "elkins_johnson_r2.mp4": [14, 17], "sterling_sandhagen.mp4": [25, 32], "pantoja_asakura_r2_b.mp4": [5, 12],
+       "formiga_nguyen_r3_b.mp4": [5, 10]}
+
+
+def neg_frames():
+    return [dict(row=100 + i, clip=c, pos="neg", t=float(t), t_attempt0=float(t) - 1.0, context="none", attacker_side="")
+            for i, (c, t) in enumerate((c, t) for c, ts in NEG.items() for t in ts)]
+
+
 def main():
+    neg = "--negatives" in sys.argv
     (OUT / "frames").mkdir(parents=True, exist_ok=True)
     rtmo = RTMO(onnx_model=RTMO_M, model_input_size=(640, 640), backend="onnxruntime", device="cpu")
     v1 = YoloPoseOnnx(ROOT / "models/rncv_pose_v1.onnx")
     cache = []
-    for e in eval_frames():
+    for e in (neg_frames() if neg else eval_frames()):
         cap = cv2.VideoCapture(str(ROOT / "data/clips" / e["clip"]))
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
         fe = int(round(e["t"] * fps))
@@ -72,8 +84,9 @@ def main():
         e.update(fps=fps, fe=fe, seq=seq)
         cache.append(e)
         print(e["row"], e["pos"], len(seq), "frames", flush=True)
-    pickle.dump(cache, open(OUT / "cache.pkl", "wb"))
-    print("wrote", OUT / "cache.pkl")
+    name = "cache_neg.pkl" if neg else "cache.pkl"
+    pickle.dump(cache, open(OUT / name, "wb"))
+    print("wrote", OUT / name)
 
 
 if __name__ == "__main__":

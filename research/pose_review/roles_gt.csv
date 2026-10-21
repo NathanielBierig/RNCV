@@ -1,0 +1,67 @@
+row,pos,neck_cell,arm_across_neck,arm_position,hooks,back_control,notes
+1,start,,U,,U,U,referee's back hides the fighters
+1,mid,D3,U,,U,N,scramble on the mat
+1,end,H5,Y,under_chin,Y,Y,
+2,start,D4,Y,under_chin,U,Y,
+2,mid,G6,U,,U,Y,wide top view
+2,end,H5,Y,under_chin,U,Y,
+3,start,,U,,U,Y,motion blur; defender head hidden
+3,mid,H3,Y,under_chin,Y,Y,
+3,end,F5,U,,U,Y,wide top view
+4,start,D4,Y,,Y,Y,
+4,mid,F4,U,,Y,Y,
+4,end,E5,Y,under_chin,Y,Y,
+5,start,F5,Y,under_chin,Y,Y,
+5,mid,H4,Y,under_chin,Y,Y,
+5,end,F4,Y,under_chin,Y,Y,
+6,start,H5,U,,U,Y,defender flattened face down
+6,mid,E5,U,,U,Y,low confidence on the neck cell
+6,end,G5,U,,U,Y,
+7,start,E3,U,,U,Y,standing back at the cage
+7,mid,H4,Y,,U,Y,
+7,end,G5,Y,under_chin,U,Y,
+8,start,F4,U,,Y,Y,low-res
+8,mid,E4,U,,Y,Y,low-res
+8,end,,U,,U,U,close-up through the cage
+9,start,F4,U,,Y,Y,
+9,mid,F5,U,,Y,Y,
+9,end,E5,U,,Y,Y,
+10,start,F5,U,,U,Y,
+10,mid,D6,U,,U,Y,
+10,end,F6,U,,U,Y,
+11,start,E4,U,,U,Y,
+11,mid,,U,,U,U,close-up through the cage
+11,end,,U,,U,U,close-up through the cage
+12,start,,U,,U,U,close-up through the cage
+12,mid,,U,,U,U,close-up through the cage
+12,end,,U,,U,U,close-up through the cage
+13,start,,U,,U,U,through the cage
+13,mid,F4,U,,U,Y,low confidence on the neck cell
+13,end,,U,,U,U,through the cage
+14,start,F4,U,,U,Y,
+14,mid,F4,U,,U,Y,close-up
+14,end,E4,Y,,U,Y,
+15,start,F5,U,,U,Y,close-up
+15,mid,,U,,U,U,close-up
+15,end,,U,,U,U,close-up
+16,start,J4,Y,,U,Y,
+16,mid,D4,Y,,U,Y,
+16,end,E4,Y,,Y,Y,
+100,neg,,N,,N,N,standing clinch
+101,neg,,U,,N,N,standing clinch; arm near head
+102,neg,,N,,N,N,standing clinch
+103,neg,,U,,U,U,close-up through the cage
+104,neg,,U,,U,Y,standing back ride (between attempts)
+105,neg,,U,,U,Y,turtle ride at the cage
+106,neg,,U,,U,U,close-up grappling
+107,neg,,U,,U,Y,seated back control (between attempts)
+108,neg,,U,,U,U,through the cage
+109,neg,,U,,U,Y,back control at the cage
+110,neg,,U,,U,U,ground scramble
+111,neg,,N,,N,N,ground scramble
+112,neg,,U,,Y,Y,back control between attempts
+113,neg,,U,,U,Y,wide top view; back control
+114,neg,,U,,U,U,referee blocks the view
+115,neg,,U,,U,Y,back control before the attempt
+116,neg,,N,,N,N,standing apart
+117,neg,,U,,U,Y,turtle ride; referee close
