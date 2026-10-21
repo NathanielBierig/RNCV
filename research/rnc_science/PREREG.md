@@ -15,7 +15,7 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
   - **Successes:** chosen from the 677-finish list (the finish time is known, so jump straight to it). Choosing by outcome keeps the factor comparisons (odds ratios) valid; it only distorts the *overall* finish %, which comes from the random subset below.
   - **Failures:** from rounds that UFC stats flag with submission attempts, and later from back-control moments flagged by the pose pre-labeler. No full-fight watching.
   - **Every** RNC attempt in a watched round is labeled, including failed attempts before a finish in the same round.
-  - **Per-fighter cap:** at most 3 attempts per attacker and 3 per defender, so no single fighter (e.g. Charles Oliveira) dominates the results.
+  - **Per-fighter cap:** at most 3 attempts per attacker and 3 per defender, so no single fighter (e.g. Charles Oliveira) dominates the results. *(Replaced by A3, 2026-10-21: max 3 attacking rounds and max 20 attempts per attacker; every attempt in a watched round is labeled; see §9.)*
   - **Random subset:** about 10 fights drawn at random (fixed seed, list fixed before watching) and fully labeled. This gives the honest base finish rate.
   - Each row records `found_via` (`finish_list`, `candidate_round`, `random_fight`). The analysis adjusts for it.
 - **Unit:** one attempt, per [LABEL_SCHEMA.md](../../phase3_labels/LABEL_SCHEMA.md).
@@ -74,3 +74,9 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 - **Why:** labeling showed that attempts evolve, e.g. a body lock is added mid-attempt. Recording this makes the hazard model's "current state" bins possible and gives the write-up a descriptive picture of how chokes develop.
 - **Timing:** made before any attempt was saved (`phase3_labels/labels.csv` had 0 rows). No hypothesis, primary coding, model or decision rule changes.
 - **A2 addendum (2026-10-20, same day, owner request):** the change log also covers `forearm_placement`, `choking_hand_tucked`, `second_hand_on_traps` and `squeeze_direction` (all existing exploratory landmark fields). Same use rule: descriptive / secondary hazard model only.
+
+### A3 (2026-10-21): per-fighter cap counts rounds, not attempts
+- **Change:** the §2 per-fighter cap "at most 3 attempts per attacker and 3 per defender" is replaced by: **at most 3 rounds in which a fighter is the attacker, and at most 20 attempts per attacker in total.** No cap on defenders. Within a watched round, **every** RNC attempt is still labeled.
+- **Why:** the old cap clashed with "label every attempt in a watched round" (e.g. Blachowicz 5 attempts, Oliveira 4 in one round). Capping attempts would throw labeling time away. The goal is unchanged: no single fighter's style dominates the results. Repeated attackers are also handled statistically (cluster bootstrap by attacker, §7).
+- **Timing:** made with 16 attempts labeled, **before any outcome was tabulated or any factor model was fitted**. No hypothesis, coding, model or decision rule changes. Attempts already labeled all satisfy the new cap.
+- Can be amended again (dated) if the cap turns out to bind too often.
