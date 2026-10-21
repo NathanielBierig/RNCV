@@ -54,7 +54,7 @@ def _iou(a, b):
     return inter / union if union > 0 else 0.0
 
 
-REF_THR = 0.5
+REF_THR = 0.6   # with the dark-aware referee_score (research/pose_review/REVIEW.md)
 # Bone pairs that should have similar lengths on a real body (upper vs lower limb, left vs right).
 _PAIRS = [((5, 7), (7, 9)), ((6, 8), (8, 10)), ((11, 13), (13, 15)), ((12, 14), (14, 16)),
           ((5, 7), (6, 8)), ((7, 9), (8, 10)), ((11, 13), (12, 14)), ((13, 15), (14, 16)),

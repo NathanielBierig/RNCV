@@ -74,20 +74,30 @@ def clothing_features(img, kpts, scores):
     return out
 
 
-def referee_score(img, kpts, scores):
-    """1 - pixel-weighted skin fraction over torso, upper arms and legs.
+DARK_W = 0.5         # a too-dark pixel counts as half a "not skin" pixel (black shirt = mostly too dark)
 
-    0.5 when nothing usable is visible (unknown). Threshold ~0.5-0.6 per person;
-    averaging over a track is much more reliable than a single frame.
+
+def referee_score(img, kpts, scores, dark_w=DARK_W):
+    """1 - skin share over torso, upper arms and legs, where too-dark pixels count dark_w as 'not skin'.
+
+    Ignoring dark pixels (dark_w=0, the old rule) let a black-shirted referee be judged on the few lit
+    pixels (bare forearm, highlights), giving him 0.2-0.3 on attempt frames. With 0.5: AUC 0.92 -> 0.99 on
+    research/referee/eval (research/pose_review/ref_dark.py). Use threshold 0.6.
+    0.5 when nothing usable is visible (unknown).
     """
-    f = clothing_features(img, np.asarray(kpts, float), np.asarray(scores, float))
+    ycc = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
+    k, s = np.asarray(kpts, float), np.asarray(scores, float)
     num = den = 0.0
-    for name in ("torso", "uarm", "legs"):
-        v, n = f[f"{name}_skin"], f[f"{name}_n"]
-        if not np.isnan(v):
-            w = n * (1.0 - f[f"{name}_dark"])
-            num += w * v
-            den += w
-    if den == 0:
-        return 0.5
-    return float(1.0 - num / den)
+    for pairs in (TORSO, UPPER_ARM, LEGS):
+        m = region_mask(img.shape, k, s, pairs)
+        if m is None:
+            continue
+        px = ycc[m > 0]
+        if len(px) < 30:
+            continue
+        y, cr, cb = px[:, 0].astype(int), px[:, 1].astype(int), px[:, 2].astype(int)
+        lit = y >= DARK_Y
+        skin = lit & (cr >= CR_MIN) & (cr <= CR_MAX) & (cb >= CB_MIN) & (cb <= CB_MAX)
+        num += skin.sum()
+        den += lit.sum() + dark_w * (~lit).sum()
+    return 0.5 if den == 0 else float(1 - num / den)
