@@ -1,12 +1,14 @@
-# RNCV progress (as of 2026-10-20 evening)
+# RNCV progress (as of 2026-10-21)
 
 🟢 done · 🟡 in progress · 🔴 needs the owner · ⚪ not started
 
-## ▶ Next session starts here
-1. **Check the Kaggle fine-tune:** `C:\Users\netan\.venvs\ufc-cv\Scripts\kaggle kernels status nathanielbierig/finetune-pose`. If COMPLETE: `kaggle kernels output nathanielbierig/finetune-pose -p models\` → plug `rncv_pose_v1.onnx` in (see [docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md)) → re-run `src\pose_attempts.py` with the new model and compare with [reports/pose_attempts.md](reports/pose_attempts.md). Then re-extract the VICOS keypoints with it and retrain the classifier (was 0.47 with standard YOLO).
-2. **Labeling continues** (owner): next failure rounds + successes. Run the QA after each sitting.
-3. **Open decision for the owner:** the PREREG cap "max 3 attempts per attacker/defender" clashes with "label every attempt in a watched round" (Blachowicz has 5 attempts in one round, Oliveira 4). Proposed amendment: the cap counts **fights per fighter (max 3)**, not attempts. Needs the owner's OK.
-4. The owner must **reload the labeler** (Ctrl+Shift+R) to get the fix that re-reads `labels.csv` before every save.
+## ▶ Next session starts here (2026-10-21)
+1. **Labeling is the bottleneck for everything now.** Successes first (finish time known), then failure rounds. 16 attempts / 6 fights so far; science needs ~150, automatic detection needs ~15–20+ fights before re-testing.
+2. **Automatic detection status (all measured, all committed):**
+   - Pose: combined fine-tuned v1 + RTMO fallback looks like 94% "tracked", but **by eye only 4/48 frames have both fighters correct**. Mixed skeletons are the root cause ([research/pose_review/REVIEW.md](research/pose_review/REVIEW.md)). The joint-role reframe was a NO-GO. Referee dark-pixel fix applied. Kaggle v2 is no better than v1.
+   - No-pose image classifier (CLIP + logistic, leave-one-fight-out): chance level (AUC 0.46) with 6 fights ([reports/attempt_clf.md](reports/attempt_clf.md)); a fighter-crop variant is ready (`--crop`). **Re-test both after ~15–20 labeled fights**, with one command each.
+3. **Kaggle:** VICOS keypoints re-extracted with RTMO (`yolo-pose` kernel, v3). When COMPLETE: `kaggle kernels output nathanielbierig/yolo-pose -p data/raw/vicos/` → retrain the classifier with `--annotations data/raw/vicos/annotations_rtmo-m_stride1.json` (or stride3 if the CPU fallback was used).
+4. PREREG: v1.0 + A1 (men only) + A2 (upper_body, change log) + A3 (cap = 3 attacking rounds / 20 attempts per attacker).
 
 ## Shelved (owner, 2026-10-21)
 - **MVP (clip → pose → attempt detection → overlay with a danger bar):** wait for a more concrete model (needs ~100+ labeled attempts for a learned probability).
