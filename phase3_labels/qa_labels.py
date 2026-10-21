@@ -80,6 +80,15 @@ def check(df, info, finish):
                 elif rb._s < ra._e:
                     issues.append((rb.name + 1, "🔴", f"overlaps row {ra.name + 1} ({ra._s}-{ra._e} s vs {rb._s}-{rb._e} s), "
                                    "same fight + round; keep one, or make them consecutive attempts"))
+    # Per-fighter cap (PREREG A3): max 3 attacking rounds and max 20 attempts per attacker.
+    for att, g in df.groupby("attacker"):
+        if not att:
+            continue
+        rounds = g[["fight_id", "round"]].drop_duplicates()
+        if len(rounds) > 3:
+            issues.append((g.index[-1] + 1, "🔴", f"{att} is the attacker in {len(rounds)} rounds (cap 3, PREREG A3)"))
+        if len(g) > 20:
+            issues.append((g.index[-1] + 1, "🔴", f"{att} has {len(g)} attempts as attacker (cap 20, PREREG A3)"))
     return issues
 
 
