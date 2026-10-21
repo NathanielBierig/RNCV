@@ -8,6 +8,10 @@
 3. **Open decision for the owner:** the PREREG cap "max 3 attempts per attacker/defender" clashes with "label every attempt in a watched round" (Blachowicz has 5 attempts in one round, Oliveira 4). Proposed amendment: the cap counts **fights per fighter (max 3)**, not attempts. Needs the owner's OK.
 4. The owner must **reload the labeler** (Ctrl+Shift+R) to get the fix that re-reads `labels.csv` before every save.
 
+## Shelved (owner, 2026-10-21)
+- **MVP (clip → pose → attempt detection → overlay with a danger bar):** wait for a more concrete model (needs ~100+ labeled attempts for a learned probability).
+- **Design goal for the overlay/UI:** "gnarly and sciency, colorful but minimalistic". Owner wants **several design options first** (maybe with a design plugin), later.
+
 ## Decisions
 - 🟢 Direction: science-based RNC + live overlay. UFC only, men's divisions only (A1). Clips local only.
 - 🟢 PREREG v1.0 frozen (`b8d817d`) + A1 (men's only) + A2 (upper_body, change log = descriptive / hazard only).
