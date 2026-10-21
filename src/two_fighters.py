@@ -55,14 +55,38 @@ def _iou(a, b):
 
 
 REF_THR = 0.5
+# Bone pairs that should have similar lengths on a real body (upper vs lower limb, left vs right).
+_PAIRS = [((5, 7), (7, 9)), ((6, 8), (8, 10)), ((11, 13), (13, 15)), ((12, 14), (14, 16)),
+          ((5, 7), (6, 8)), ((7, 9), (8, 10)), ((11, 13), (12, 14)), ((13, 15), (14, 16)),
+          ((5, 6), (11, 12))]
+
+
+def implausible(k, s, max_ratio=2.8):
+    """Junk-skeleton check: a real body's paired bones (upper vs lower arm, left vs right leg,
+    shoulder vs hip width) have similar lengths. Two or more pairs off by more than max_ratio
+    -> a skeleton stitched across the background or across two bodies."""
+    bad = 0
+    for (a, b), (c, d) in _PAIRS:
+        if min(s[a], s[b], s[c], s[d]) < THR:
+            continue
+        l1, l2 = np.linalg.norm(k[a] - k[b]), np.linalg.norm(k[c] - k[d])
+        if min(l1, l2) > 0 and max(l1, l2) / min(l1, l2) > max_ratio:
+            bad += 1
+    return bad >= 2
 
 
 def select(kpts, scores, img=None):
     """kpts [N,17,2], scores [N,17], img = BGR frame (optional, enables the
     appearance referee filter) -> (kept kpts, kept scores, dropped kpts, counts)."""
-    counts = {"crowd": 0, "dup": 0, "ref_look": 0, "ref": 0}
+    counts = {"crowd": 0, "dup": 0, "ref_look": 0, "ref": 0, "junk": 0}
     if not len(scores):
         return kpts, scores, [], counts
+    junk = np.array([implausible(k, s) for k, s in zip(kpts, scores)])   # before the crowd rule: a huge junk
+    counts["junk"] = int(junk.sum())                                       # skeleton would make real fighters look small
+    junk_k = [k for k, j in zip(kpts, junk) if j]
+    kpts, scores = kpts[~junk], scores[~junk]
+    if not len(scores):
+        return kpts, scores, junk_k, counts
     order = np.argsort(-scores.mean(1))
     kpts, scores = kpts[order], scores[order]
     areas = np.array([box_area(k, s) for k, s in zip(kpts, scores)])
@@ -85,7 +109,7 @@ def select(kpts, scores, img=None):
         others = [i for i in keep if i not in best]
         counts["ref"] += len(others); dropped += others
         keep = list(best)
-    return kpts[keep], scores[keep], [kpts[i] for i in dropped], counts
+    return kpts[keep], scores[keep], junk_k + [kpts[i] for i in dropped], counts
 
 
 class TwoSlotTracker:
