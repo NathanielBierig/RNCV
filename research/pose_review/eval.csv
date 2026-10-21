@@ -1,0 +1,241 @@
+row,pos,clip,t,context,view,pipe,defender_ok,choker_ok,both_ok,referee_kept,junk_or_mixed,notes
+1,start,elkins_johnson_r2.mp4,4.26,scramble,occluded,A,0,0,0,1,1,referee's back fills the frame; A/B/C keep him (filled or seen); D drops him
+1,start,elkins_johnson_r2.mp4,4.26,scramble,occluded,B,0,0,0,1,1,referee's back fills the frame; A/B/C keep him (filled or seen); D drops him
+1,start,elkins_johnson_r2.mp4,4.26,scramble,occluded,C,0,0,0,1,1,referee's back fills the frame; A/B/C keep him (filled or seen); D drops him
+1,start,elkins_johnson_r2.mp4,4.26,scramble,occluded,D,0,0,0,0,0,referee's back fills the frame; A/B/C keep him (filled or seen); D drops him
+1,start,elkins_johnson_r2.mp4,4.26,scramble,occluded,E,0,0,0,0,0,referee's back fills the frame; A/B/C keep him (filled or seen); D drops him
+1,mid,elkins_johnson_r2.mp4,5.84,scramble,ok,A,0,0,0,0,1,one skeleton spans both fighters; C keeps a referee leg (filled)
+1,mid,elkins_johnson_r2.mp4,5.84,scramble,ok,B,0,0,0,0,1,one skeleton spans both fighters; C keeps a referee leg (filled)
+1,mid,elkins_johnson_r2.mp4,5.84,scramble,ok,C,0,0,0,1,1,one skeleton spans both fighters; C keeps a referee leg (filled)
+1,mid,elkins_johnson_r2.mp4,5.84,scramble,ok,D,0,0,0,0,1,one skeleton spans both fighters; C keeps a referee leg (filled)
+1,mid,elkins_johnson_r2.mp4,5.84,scramble,ok,E,0,0,0,0,1,one skeleton spans both fighters; C keeps a referee leg (filled)
+1,end,elkins_johnson_r2.mp4,8.42,scramble,ok,A,0,0,0,0,1,
+1,end,elkins_johnson_r2.mp4,8.42,scramble,ok,B,1,1,1,0,0,
+1,end,elkins_johnson_r2.mp4,8.42,scramble,ok,C,1,1,1,0,0,
+1,end,elkins_johnson_r2.mp4,8.42,scramble,ok,D,1,1,1,0,0,
+1,end,elkins_johnson_r2.mp4,8.42,scramble,ok,E,1,1,1,0,0,
+2,start,elkins_johnson_r2.mp4,22.86,ground_back,ok,A,0,0,0,1,0,A: only a filled referee at the frame edge
+2,start,elkins_johnson_r2.mp4,22.86,ground_back,ok,B,1,0,0,0,1,A: only a filled referee at the frame edge
+2,start,elkins_johnson_r2.mp4,22.86,ground_back,ok,C,1,0,0,0,1,A: only a filled referee at the frame edge
+2,start,elkins_johnson_r2.mp4,22.86,ground_back,ok,D,1,0,0,0,1,A: only a filled referee at the frame edge
+2,start,elkins_johnson_r2.mp4,22.86,ground_back,ok,E,1,0,0,0,1,A: only a filled referee at the frame edge
+2,mid,elkins_johnson_r2.mp4,25.75,ground_back,wide,A,0,0,0,0,1,"wide top view, fighters small"
+2,mid,elkins_johnson_r2.mp4,25.75,ground_back,wide,B,0,0,0,0,1,"wide top view, fighters small"
+2,mid,elkins_johnson_r2.mp4,25.75,ground_back,wide,C,0,0,0,0,1,"wide top view, fighters small"
+2,mid,elkins_johnson_r2.mp4,25.75,ground_back,wide,D,0,0,0,0,1,"wide top view, fighters small"
+2,mid,elkins_johnson_r2.mp4,25.75,ground_back,wide,E,0,0,0,0,1,"wide top view, fighters small"
+2,end,elkins_johnson_r2.mp4,29.65,ground_back,ok,A,0,0,0,0,1,
+2,end,elkins_johnson_r2.mp4,29.65,ground_back,ok,B,1,1,1,0,0,
+2,end,elkins_johnson_r2.mp4,29.65,ground_back,ok,C,1,1,1,0,0,
+2,end,elkins_johnson_r2.mp4,29.65,ground_back,ok,D,1,1,1,0,0,
+2,end,elkins_johnson_r2.mp4,29.65,ground_back,ok,E,1,1,1,0,0,
+3,start,sterling_sandhagen.mp4,3.09,standing_back,ok,A,0,0,0,0,1,"top view, skeletons overlap both bodies"
+3,start,sterling_sandhagen.mp4,3.09,standing_back,ok,B,0,1,0,0,1,"top view, skeletons overlap both bodies"
+3,start,sterling_sandhagen.mp4,3.09,standing_back,ok,C,0,0,0,0,1,"top view, skeletons overlap both bodies"
+3,start,sterling_sandhagen.mp4,3.09,standing_back,ok,D,0,0,0,0,1,"top view, skeletons overlap both bodies"
+3,start,sterling_sandhagen.mp4,3.09,standing_back,ok,E,0,0,0,0,1,"top view, skeletons overlap both bodies"
+3,mid,sterling_sandhagen.mp4,9.77,standing_back,ok,A,0,0,0,0,1,"heads right, limbs swapped between fighters"
+3,mid,sterling_sandhagen.mp4,9.77,standing_back,ok,B,0,0,0,0,1,"heads right, limbs swapped between fighters"
+3,mid,sterling_sandhagen.mp4,9.77,standing_back,ok,C,0,0,0,0,1,"heads right, limbs swapped between fighters"
+3,mid,sterling_sandhagen.mp4,9.77,standing_back,ok,D,0,0,0,0,1,"heads right, limbs swapped between fighters"
+3,mid,sterling_sandhagen.mp4,9.77,standing_back,ok,E,0,0,0,0,1,"heads right, limbs swapped between fighters"
+3,end,sterling_sandhagen.mp4,17.45,standing_back,wide,A,0,0,0,0,1,one skeleton for the tangled pair; referee correctly dropped
+3,end,sterling_sandhagen.mp4,17.45,standing_back,wide,B,0,0,0,0,1,one skeleton for the tangled pair; referee correctly dropped
+3,end,sterling_sandhagen.mp4,17.45,standing_back,wide,C,0,0,0,0,1,one skeleton for the tangled pair; referee correctly dropped
+3,end,sterling_sandhagen.mp4,17.45,standing_back,wide,D,0,0,0,0,1,one skeleton for the tangled pair; referee correctly dropped
+3,end,sterling_sandhagen.mp4,17.45,standing_back,wide,E,0,0,0,0,1,one skeleton for the tangled pair; referee correctly dropped
+4,start,sterling_sandhagen.mp4,40.61,ground_back,ok,A,1,0,0,0,1,
+4,start,sterling_sandhagen.mp4,40.61,ground_back,ok,B,1,0,0,0,1,
+4,start,sterling_sandhagen.mp4,40.61,ground_back,ok,C,1,0,0,0,0,
+4,start,sterling_sandhagen.mp4,40.61,ground_back,ok,D,1,0,0,0,0,
+4,start,sterling_sandhagen.mp4,40.61,ground_back,ok,E,1,0,0,0,0,
+4,mid,sterling_sandhagen.mp4,43.48,ground_back,ok,A,0,0,0,0,1,
+4,mid,sterling_sandhagen.mp4,43.48,ground_back,ok,B,1,0,0,0,1,
+4,mid,sterling_sandhagen.mp4,43.48,ground_back,ok,C,1,0,0,0,1,
+4,mid,sterling_sandhagen.mp4,43.48,ground_back,ok,D,1,0,0,0,1,
+4,mid,sterling_sandhagen.mp4,43.48,ground_back,ok,E,1,0,0,0,1,
+4,end,sterling_sandhagen.mp4,47.36,ground_back,ok,A,0,0,0,0,1,
+4,end,sterling_sandhagen.mp4,47.36,ground_back,ok,B,1,1,1,0,0,
+4,end,sterling_sandhagen.mp4,47.36,ground_back,ok,C,1,1,1,0,0,
+4,end,sterling_sandhagen.mp4,47.36,ground_back,ok,D,1,1,1,0,0,
+4,end,sterling_sandhagen.mp4,47.36,ground_back,ok,E,1,1,1,0,0,
+5,start,sterling_sandhagen.mp4,52.99,turtle_ride,ok,A,1,0,0,1,0,"referee kept by A/B/C (score 0.20-0.31); D drops him; choker (dark skin, behind) never detected alone"
+5,start,sterling_sandhagen.mp4,52.99,turtle_ride,ok,B,1,0,0,1,0,"referee kept by A/B/C (score 0.20-0.31); D drops him; choker (dark skin, behind) never detected alone"
+5,start,sterling_sandhagen.mp4,52.99,turtle_ride,ok,C,1,0,0,1,0,"referee kept by A/B/C (score 0.20-0.31); D drops him; choker (dark skin, behind) never detected alone"
+5,start,sterling_sandhagen.mp4,52.99,turtle_ride,ok,D,1,0,0,0,1,"referee kept by A/B/C (score 0.20-0.31); D drops him; choker (dark skin, behind) never detected alone"
+5,start,sterling_sandhagen.mp4,52.99,turtle_ride,ok,E,1,0,0,0,1,"referee kept by A/B/C (score 0.20-0.31); D drops him; choker (dark skin, behind) never detected alone"
+5,mid,sterling_sandhagen.mp4,56.83,turtle_ride,ok,A,1,0,0,1,1,kneeling referee merged into a fighter skeleton (score 0.54 even with dark pixels)
+5,mid,sterling_sandhagen.mp4,56.83,turtle_ride,ok,B,1,0,0,1,1,kneeling referee merged into a fighter skeleton (score 0.54 even with dark pixels)
+5,mid,sterling_sandhagen.mp4,56.83,turtle_ride,ok,C,1,0,0,1,1,kneeling referee merged into a fighter skeleton (score 0.54 even with dark pixels)
+5,mid,sterling_sandhagen.mp4,56.83,turtle_ride,ok,D,1,0,0,1,1,kneeling referee merged into a fighter skeleton (score 0.54 even with dark pixels)
+5,mid,sterling_sandhagen.mp4,56.83,turtle_ride,ok,E,1,0,0,1,1,kneeling referee merged into a fighter skeleton (score 0.54 even with dark pixels)
+5,end,sterling_sandhagen.mp4,61.67,turtle_ride,ok,A,1,0,0,0,0,
+5,end,sterling_sandhagen.mp4,61.67,turtle_ride,ok,B,1,0,0,0,1,
+5,end,sterling_sandhagen.mp4,61.67,turtle_ride,ok,C,1,0,0,0,1,
+5,end,sterling_sandhagen.mp4,61.67,turtle_ride,ok,D,1,0,0,0,1,
+5,end,sterling_sandhagen.mp4,61.67,turtle_ride,ok,E,1,0,0,0,1,
+6,start,formiga_nguyen_r3_b.mp4,17.82,ground_back,ok,A,0,1,0,0,0,
+6,start,formiga_nguyen_r3_b.mp4,17.82,ground_back,ok,B,0,1,0,0,1,
+6,start,formiga_nguyen_r3_b.mp4,17.82,ground_back,ok,C,0,1,0,0,1,
+6,start,formiga_nguyen_r3_b.mp4,17.82,ground_back,ok,D,0,1,0,0,1,
+6,start,formiga_nguyen_r3_b.mp4,17.82,ground_back,ok,E,0,1,0,0,1,
+6,mid,formiga_nguyen_r3_b.mp4,20.12,ground_back,wide,A,0,0,0,1,1,referee leg kept as FILLED pose (tracker fill of a stale referee)
+6,mid,formiga_nguyen_r3_b.mp4,20.12,ground_back,wide,B,0,0,0,0,1,referee leg kept as FILLED pose (tracker fill of a stale referee)
+6,mid,formiga_nguyen_r3_b.mp4,20.12,ground_back,wide,C,0,0,0,1,1,referee leg kept as FILLED pose (tracker fill of a stale referee)
+6,mid,formiga_nguyen_r3_b.mp4,20.12,ground_back,wide,D,0,0,0,1,1,referee leg kept as FILLED pose (tracker fill of a stale referee)
+6,mid,formiga_nguyen_r3_b.mp4,20.12,ground_back,wide,E,0,0,0,0,1,referee leg kept as FILLED pose (tracker fill of a stale referee)
+6,end,formiga_nguyen_r3_b.mp4,23.43,ground_back,ok,A,0,0,0,0,1,
+6,end,formiga_nguyen_r3_b.mp4,23.43,ground_back,ok,B,0,0,0,0,1,
+6,end,formiga_nguyen_r3_b.mp4,23.43,ground_back,ok,C,0,0,0,0,1,
+6,end,formiga_nguyen_r3_b.mp4,23.43,ground_back,ok,D,0,0,0,0,1,
+6,end,formiga_nguyen_r3_b.mp4,23.43,ground_back,ok,E,0,0,0,0,1,
+7,start,pantoja_asakura_r2_b.mp4,21.81,ground_back,ok,A,1,0,0,0,1,"standing at cage, one fighter's head on the other's legs"
+7,start,pantoja_asakura_r2_b.mp4,21.81,ground_back,ok,B,0,0,0,0,1,"standing at cage, one fighter's head on the other's legs"
+7,start,pantoja_asakura_r2_b.mp4,21.81,ground_back,ok,C,0,0,0,0,1,"standing at cage, one fighter's head on the other's legs"
+7,start,pantoja_asakura_r2_b.mp4,21.81,ground_back,ok,D,0,0,0,0,1,"standing at cage, one fighter's head on the other's legs"
+7,start,pantoja_asakura_r2_b.mp4,21.81,ground_back,ok,E,0,0,0,0,1,"standing at cage, one fighter's head on the other's legs"
+7,mid,pantoja_asakura_r2_b.mp4,29.3,ground_back,ok,A,0,0,0,0,1,mixed body parts (Main's symptom confirmed)
+7,mid,pantoja_asakura_r2_b.mp4,29.3,ground_back,ok,B,0,0,0,0,1,mixed body parts (Main's symptom confirmed)
+7,mid,pantoja_asakura_r2_b.mp4,29.3,ground_back,ok,C,0,0,0,0,1,mixed body parts (Main's symptom confirmed)
+7,mid,pantoja_asakura_r2_b.mp4,29.3,ground_back,ok,D,0,0,0,0,1,mixed body parts (Main's symptom confirmed)
+7,mid,pantoja_asakura_r2_b.mp4,29.3,ground_back,ok,E,0,0,0,0,1,mixed body parts (Main's symptom confirmed)
+7,end,pantoja_asakura_r2_b.mp4,37.78,ground_back,ok,A,1,0,0,0,0,D keeps the referee via the RTMO fallback
+7,end,pantoja_asakura_r2_b.mp4,37.78,ground_back,ok,B,0,0,0,0,1,D keeps the referee via the RTMO fallback
+7,end,pantoja_asakura_r2_b.mp4,37.78,ground_back,ok,C,0,0,0,0,1,D keeps the referee via the RTMO fallback
+7,end,pantoja_asakura_r2_b.mp4,37.78,ground_back,ok,D,0,0,0,1,1,D keeps the referee via the RTMO fallback
+7,end,pantoja_asakura_r2_b.mp4,37.78,ground_back,ok,E,0,0,0,1,1,D keeps the referee via the RTMO fallback
+8,start,f21_blachowicz_pereira_r1.mp4,129.84,turtle_ride,lowres,A,0,0,0,0,1,1280x576 source
+8,start,f21_blachowicz_pereira_r1.mp4,129.84,turtle_ride,lowres,B,0,0,0,0,1,1280x576 source
+8,start,f21_blachowicz_pereira_r1.mp4,129.84,turtle_ride,lowres,C,0,0,0,0,1,1280x576 source
+8,start,f21_blachowicz_pereira_r1.mp4,129.84,turtle_ride,lowres,D,0,0,0,0,1,1280x576 source
+8,start,f21_blachowicz_pereira_r1.mp4,129.84,turtle_ride,lowres,E,0,0,0,0,1,1280x576 source
+8,mid,f21_blachowicz_pereira_r1.mp4,136.68,turtle_ride,lowres,A,1,1,1,0,0,
+8,mid,f21_blachowicz_pereira_r1.mp4,136.68,turtle_ride,lowres,B,0,0,0,0,1,
+8,mid,f21_blachowicz_pereira_r1.mp4,136.68,turtle_ride,lowres,C,1,1,1,0,0,
+8,mid,f21_blachowicz_pereira_r1.mp4,136.68,turtle_ride,lowres,D,1,1,1,0,0,
+8,mid,f21_blachowicz_pereira_r1.mp4,136.68,turtle_ride,lowres,E,1,1,1,0,0,
+8,end,f21_blachowicz_pereira_r1.mp4,144.52,turtle_ride,closeup,A,0,0,0,0,1,through the cage
+8,end,f21_blachowicz_pereira_r1.mp4,144.52,turtle_ride,closeup,B,0,0,0,0,1,through the cage
+8,end,f21_blachowicz_pereira_r1.mp4,144.52,turtle_ride,closeup,C,0,0,0,0,1,through the cage
+8,end,f21_blachowicz_pereira_r1.mp4,144.52,turtle_ride,closeup,D,0,0,0,0,1,through the cage
+8,end,f21_blachowicz_pereira_r1.mp4,144.52,turtle_ride,closeup,E,0,0,0,0,1,through the cage
+9,start,f21_blachowicz_pereira_r1.mp4,223.09,turtle_ride,closeup,A,0,0,0,0,1,B also keeps a huge junk skeleton
+9,start,f21_blachowicz_pereira_r1.mp4,223.09,turtle_ride,closeup,B,0,0,0,0,1,B also keeps a huge junk skeleton
+9,start,f21_blachowicz_pereira_r1.mp4,223.09,turtle_ride,closeup,C,0,0,0,0,1,B also keeps a huge junk skeleton
+9,start,f21_blachowicz_pereira_r1.mp4,223.09,turtle_ride,closeup,D,0,0,0,0,1,B also keeps a huge junk skeleton
+9,start,f21_blachowicz_pereira_r1.mp4,223.09,turtle_ride,closeup,E,0,0,0,0,1,B also keeps a huge junk skeleton
+9,mid,f21_blachowicz_pereira_r1.mp4,225.3,turtle_ride,closeup,A,0,0,0,0,1,
+9,mid,f21_blachowicz_pereira_r1.mp4,225.3,turtle_ride,closeup,B,0,0,0,0,1,
+9,mid,f21_blachowicz_pereira_r1.mp4,225.3,turtle_ride,closeup,C,0,0,0,0,1,
+9,mid,f21_blachowicz_pereira_r1.mp4,225.3,turtle_ride,closeup,D,0,0,0,0,1,
+9,mid,f21_blachowicz_pereira_r1.mp4,225.3,turtle_ride,closeup,E,0,0,0,0,1,
+9,end,f21_blachowicz_pereira_r1.mp4,228.51,turtle_ride,closeup,A,0,0,0,0,1,
+9,end,f21_blachowicz_pereira_r1.mp4,228.51,turtle_ride,closeup,B,0,0,0,0,1,
+9,end,f21_blachowicz_pereira_r1.mp4,228.51,turtle_ride,closeup,C,0,0,0,0,1,
+9,end,f21_blachowicz_pereira_r1.mp4,228.51,turtle_ride,closeup,D,0,0,0,0,1,
+9,end,f21_blachowicz_pereira_r1.mp4,228.51,turtle_ride,closeup,E,0,0,0,0,1,
+10,start,f21_blachowicz_pereira_r1.mp4,249.74,turtle_ride,ok,A,0,0,0,0,1,A/C keep a crowd member as a fighter
+10,start,f21_blachowicz_pereira_r1.mp4,249.74,turtle_ride,ok,B,0,0,0,0,1,A/C keep a crowd member as a fighter
+10,start,f21_blachowicz_pereira_r1.mp4,249.74,turtle_ride,ok,C,0,0,0,0,1,A/C keep a crowd member as a fighter
+10,start,f21_blachowicz_pereira_r1.mp4,249.74,turtle_ride,ok,D,0,0,0,0,1,A/C keep a crowd member as a fighter
+10,start,f21_blachowicz_pereira_r1.mp4,249.74,turtle_ride,ok,E,0,0,0,0,1,A/C keep a crowd member as a fighter
+10,mid,f21_blachowicz_pereira_r1.mp4,253.82,turtle_ride,ok,A,0,0,0,0,1,"B keeps junk in the black pillarbox bar (score exactly 0.5 = unknown, not > 0.5)"
+10,mid,f21_blachowicz_pereira_r1.mp4,253.82,turtle_ride,ok,B,0,0,0,0,1,"B keeps junk in the black pillarbox bar (score exactly 0.5 = unknown, not > 0.5)"
+10,mid,f21_blachowicz_pereira_r1.mp4,253.82,turtle_ride,ok,C,0,0,0,0,1,"B keeps junk in the black pillarbox bar (score exactly 0.5 = unknown, not > 0.5)"
+10,mid,f21_blachowicz_pereira_r1.mp4,253.82,turtle_ride,ok,D,0,0,0,0,1,"B keeps junk in the black pillarbox bar (score exactly 0.5 = unknown, not > 0.5)"
+10,mid,f21_blachowicz_pereira_r1.mp4,253.82,turtle_ride,ok,E,0,0,0,0,1,"B keeps junk in the black pillarbox bar (score exactly 0.5 = unknown, not > 0.5)"
+10,end,f21_blachowicz_pereira_r1.mp4,258.9,turtle_ride,ok,A,0,0,0,0,1,B/C keep a black-bar junk skeleton + a referee/fighter mix; D drops both
+10,end,f21_blachowicz_pereira_r1.mp4,258.9,turtle_ride,ok,B,0,0,0,1,1,B/C keep a black-bar junk skeleton + a referee/fighter mix; D drops both
+10,end,f21_blachowicz_pereira_r1.mp4,258.9,turtle_ride,ok,C,0,0,0,1,1,B/C keep a black-bar junk skeleton + a referee/fighter mix; D drops both
+10,end,f21_blachowicz_pereira_r1.mp4,258.9,turtle_ride,ok,D,0,0,0,0,1,B/C keep a black-bar junk skeleton + a referee/fighter mix; D drops both
+10,end,f21_blachowicz_pereira_r1.mp4,258.9,turtle_ride,ok,E,0,0,0,0,1,B/C keep a black-bar junk skeleton + a referee/fighter mix; D drops both
+11,start,f21_blachowicz_pereira_r1.mp4,275.05,turtle_ride,ok,A,0,0,0,0,1,
+11,start,f21_blachowicz_pereira_r1.mp4,275.05,turtle_ride,ok,B,0,0,0,0,1,
+11,start,f21_blachowicz_pereira_r1.mp4,275.05,turtle_ride,ok,C,0,0,0,0,1,
+11,start,f21_blachowicz_pereira_r1.mp4,275.05,turtle_ride,ok,D,0,0,0,0,1,
+11,start,f21_blachowicz_pereira_r1.mp4,275.05,turtle_ride,ok,E,0,0,0,0,1,
+11,mid,f21_blachowicz_pereira_r1.mp4,275.93,turtle_ride,closeup,A,0,0,0,0,0,"extreme close-up through the cage, not gradeable by eye either"
+11,mid,f21_blachowicz_pereira_r1.mp4,275.93,turtle_ride,closeup,B,0,0,0,0,1,"extreme close-up through the cage, not gradeable by eye either"
+11,mid,f21_blachowicz_pereira_r1.mp4,275.93,turtle_ride,closeup,C,0,0,0,0,1,"extreme close-up through the cage, not gradeable by eye either"
+11,mid,f21_blachowicz_pereira_r1.mp4,275.93,turtle_ride,closeup,D,0,0,0,0,1,"extreme close-up through the cage, not gradeable by eye either"
+11,mid,f21_blachowicz_pereira_r1.mp4,275.93,turtle_ride,closeup,E,0,0,0,0,1,"extreme close-up through the cage, not gradeable by eye either"
+11,end,f21_blachowicz_pereira_r1.mp4,277.8,turtle_ride,closeup,A,0,0,0,0,1,
+11,end,f21_blachowicz_pereira_r1.mp4,277.8,turtle_ride,closeup,B,0,0,0,0,1,
+11,end,f21_blachowicz_pereira_r1.mp4,277.8,turtle_ride,closeup,C,0,0,0,0,1,
+11,end,f21_blachowicz_pereira_r1.mp4,277.8,turtle_ride,closeup,D,0,0,0,0,1,
+11,end,f21_blachowicz_pereira_r1.mp4,277.8,turtle_ride,closeup,E,0,0,0,0,1,
+12,start,f21_blachowicz_pereira_r1.mp4,301.69,scramble,closeup,A,0,0,0,0,1,"0.4 s attempt, all close-up through the cage"
+12,start,f21_blachowicz_pereira_r1.mp4,301.69,scramble,closeup,B,0,0,0,0,1,"0.4 s attempt, all close-up through the cage"
+12,start,f21_blachowicz_pereira_r1.mp4,301.69,scramble,closeup,C,0,0,0,0,1,"0.4 s attempt, all close-up through the cage"
+12,start,f21_blachowicz_pereira_r1.mp4,301.69,scramble,closeup,D,0,0,0,0,1,"0.4 s attempt, all close-up through the cage"
+12,start,f21_blachowicz_pereira_r1.mp4,301.69,scramble,closeup,E,0,0,0,0,1,"0.4 s attempt, all close-up through the cage"
+12,mid,f21_blachowicz_pereira_r1.mp4,301.79,scramble,closeup,A,0,0,0,0,1,
+12,mid,f21_blachowicz_pereira_r1.mp4,301.79,scramble,closeup,B,0,0,0,0,1,
+12,mid,f21_blachowicz_pereira_r1.mp4,301.79,scramble,closeup,C,0,0,0,0,1,
+12,mid,f21_blachowicz_pereira_r1.mp4,301.79,scramble,closeup,D,0,0,0,0,1,
+12,mid,f21_blachowicz_pereira_r1.mp4,301.79,scramble,closeup,E,0,0,0,0,1,
+12,end,f21_blachowicz_pereira_r1.mp4,301.96,scramble,closeup,A,0,0,0,0,1,
+12,end,f21_blachowicz_pereira_r1.mp4,301.96,scramble,closeup,B,0,0,0,0,1,
+12,end,f21_blachowicz_pereira_r1.mp4,301.96,scramble,closeup,C,0,0,0,0,1,
+12,end,f21_blachowicz_pereira_r1.mp4,301.96,scramble,closeup,D,0,0,0,0,1,
+12,end,f21_blachowicz_pereira_r1.mp4,301.96,scramble,closeup,E,0,0,0,0,1,
+13,start,olivera_hoolowar_r1.mp4,10.95,ground_back,cage,A,0,0,0,0,1,A/C keep a cage-side person as the 2nd fighter
+13,start,olivera_hoolowar_r1.mp4,10.95,ground_back,cage,B,0,0,0,0,1,A/C keep a cage-side person as the 2nd fighter
+13,start,olivera_hoolowar_r1.mp4,10.95,ground_back,cage,C,0,0,0,0,1,A/C keep a cage-side person as the 2nd fighter
+13,start,olivera_hoolowar_r1.mp4,10.95,ground_back,cage,D,0,0,0,0,1,A/C keep a cage-side person as the 2nd fighter
+13,start,olivera_hoolowar_r1.mp4,10.95,ground_back,cage,E,0,0,0,0,1,A/C keep a cage-side person as the 2nd fighter
+13,mid,olivera_hoolowar_r1.mp4,23.47,ground_back,cage,A,0,0,0,0,1,B: junk filter drops everything -> 0 kept
+13,mid,olivera_hoolowar_r1.mp4,23.47,ground_back,cage,B,0,0,0,0,0,B: junk filter drops everything -> 0 kept
+13,mid,olivera_hoolowar_r1.mp4,23.47,ground_back,cage,C,0,0,0,0,1,B: junk filter drops everything -> 0 kept
+13,mid,olivera_hoolowar_r1.mp4,23.47,ground_back,cage,D,0,0,0,0,1,B: junk filter drops everything -> 0 kept
+13,mid,olivera_hoolowar_r1.mp4,23.47,ground_back,cage,E,0,0,0,0,1,B: junk filter drops everything -> 0 kept
+13,end,olivera_hoolowar_r1.mp4,36.99,ground_back,cage,A,0,0,0,0,1,
+13,end,olivera_hoolowar_r1.mp4,36.99,ground_back,cage,B,0,0,0,0,1,
+13,end,olivera_hoolowar_r1.mp4,36.99,ground_back,cage,C,0,0,0,0,1,
+13,end,olivera_hoolowar_r1.mp4,36.99,ground_back,cage,D,0,0,0,0,1,
+13,end,olivera_hoolowar_r1.mp4,36.99,ground_back,cage,E,0,0,0,0,1,
+14,start,olivera_hoolowar_r1.mp4,45.82,scramble,cage,A,0,0,0,0,1,
+14,start,olivera_hoolowar_r1.mp4,45.82,scramble,cage,B,0,0,0,0,1,
+14,start,olivera_hoolowar_r1.mp4,45.82,scramble,cage,C,0,0,0,0,1,
+14,start,olivera_hoolowar_r1.mp4,45.82,scramble,cage,D,0,0,0,0,1,
+14,start,olivera_hoolowar_r1.mp4,45.82,scramble,cage,E,0,0,0,0,1,
+14,mid,olivera_hoolowar_r1.mp4,58.14,scramble,closeup,A,0,0,0,0,1,
+14,mid,olivera_hoolowar_r1.mp4,58.14,scramble,closeup,B,0,0,0,0,1,
+14,mid,olivera_hoolowar_r1.mp4,58.14,scramble,closeup,C,0,0,0,0,1,
+14,mid,olivera_hoolowar_r1.mp4,58.14,scramble,closeup,D,0,0,0,0,1,
+14,mid,olivera_hoolowar_r1.mp4,58.14,scramble,closeup,E,0,0,0,0,1,
+14,end,olivera_hoolowar_r1.mp4,71.47,scramble,cage,A,0,1,0,0,1,
+14,end,olivera_hoolowar_r1.mp4,71.47,scramble,cage,B,0,0,0,0,1,
+14,end,olivera_hoolowar_r1.mp4,71.47,scramble,cage,C,0,1,0,0,1,
+14,end,olivera_hoolowar_r1.mp4,71.47,scramble,cage,D,0,1,0,0,1,
+14,end,olivera_hoolowar_r1.mp4,71.47,scramble,cage,E,0,1,0,0,1,
+15,start,olivera_hoolowar_r1.mp4,78.09,scramble,closeup,A,0,1,0,0,0,
+15,start,olivera_hoolowar_r1.mp4,78.09,scramble,closeup,B,0,0,0,0,0,
+15,start,olivera_hoolowar_r1.mp4,78.09,scramble,closeup,C,0,1,0,0,0,
+15,start,olivera_hoolowar_r1.mp4,78.09,scramble,closeup,D,0,1,0,0,0,
+15,start,olivera_hoolowar_r1.mp4,78.09,scramble,closeup,E,0,1,0,0,0,
+15,mid,olivera_hoolowar_r1.mp4,92.87,scramble,closeup,A,0,0,0,0,1,
+15,mid,olivera_hoolowar_r1.mp4,92.87,scramble,closeup,B,0,0,0,0,1,
+15,mid,olivera_hoolowar_r1.mp4,92.87,scramble,closeup,C,0,0,0,0,1,
+15,mid,olivera_hoolowar_r1.mp4,92.87,scramble,closeup,D,0,0,0,0,1,
+15,mid,olivera_hoolowar_r1.mp4,92.87,scramble,closeup,E,0,0,0,0,1,
+15,end,olivera_hoolowar_r1.mp4,108.64,scramble,closeup,A,0,0,0,0,0,
+15,end,olivera_hoolowar_r1.mp4,108.64,scramble,closeup,B,0,0,0,0,1,
+15,end,olivera_hoolowar_r1.mp4,108.64,scramble,closeup,C,0,0,0,0,0,
+15,end,olivera_hoolowar_r1.mp4,108.64,scramble,closeup,D,0,0,0,0,0,
+15,end,olivera_hoolowar_r1.mp4,108.64,scramble,closeup,E,0,0,0,0,0,
+16,start,olivera_hoolowar_r1.mp4,150.54,ground_back,ok,A,0,0,0,0,1,A/C keep a crowd member (score 0.42); D drops it
+16,start,olivera_hoolowar_r1.mp4,150.54,ground_back,ok,B,0,0,0,0,1,A/C keep a crowd member (score 0.42); D drops it
+16,start,olivera_hoolowar_r1.mp4,150.54,ground_back,ok,C,0,0,0,0,1,A/C keep a crowd member (score 0.42); D drops it
+16,start,olivera_hoolowar_r1.mp4,150.54,ground_back,ok,D,1,0,0,0,1,A/C keep a crowd member (score 0.42); D drops it
+16,start,olivera_hoolowar_r1.mp4,150.54,ground_back,ok,E,1,0,0,0,1,A/C keep a crowd member (score 0.42); D drops it
+16,mid,olivera_hoolowar_r1.mp4,153.25,ground_back,wide,A,0,0,0,0,1,standing referee correctly dropped by all
+16,mid,olivera_hoolowar_r1.mp4,153.25,ground_back,wide,B,0,0,0,0,1,standing referee correctly dropped by all
+16,mid,olivera_hoolowar_r1.mp4,153.25,ground_back,wide,C,0,0,0,0,1,standing referee correctly dropped by all
+16,mid,olivera_hoolowar_r1.mp4,153.25,ground_back,wide,D,0,0,0,0,1,standing referee correctly dropped by all
+16,mid,olivera_hoolowar_r1.mp4,153.25,ground_back,wide,E,0,0,0,0,1,standing referee correctly dropped by all
+16,end,olivera_hoolowar_r1.mp4,156.97,ground_back,ok,A,0,0,0,0,1,
+16,end,olivera_hoolowar_r1.mp4,156.97,ground_back,ok,B,0,0,0,0,1,
+16,end,olivera_hoolowar_r1.mp4,156.97,ground_back,ok,C,0,0,0,0,1,
+16,end,olivera_hoolowar_r1.mp4,156.97,ground_back,ok,D,0,0,0,0,1,
+16,end,olivera_hoolowar_r1.mp4,156.97,ground_back,ok,E,0,0,0,0,1,
