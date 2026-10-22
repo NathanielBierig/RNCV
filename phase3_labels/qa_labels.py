@@ -61,7 +61,7 @@ def check(df, info, finish):
             issues.append((n, "🔴", "found_via is missing (PREREG §2)"))
         if r.fight_id in info.index:
             wc, date = info.loc[r.fight_id, "weight_class"], info.loc[r.fight_id, "date"]
-            if "women" in wc.lower():
+            if "women" in wc.lower() and "excluded_womens" not in r.notes:
                 issues.append((n, "🔴", f"women's fight ({wc}): out of scope (PREREG A1)"))
             if date and date < "2018":
                 issues.append((n, "🟡", f"fight date {date} is before 2018 (outside the study window)"))
@@ -81,6 +81,7 @@ def check(df, info, finish):
                     issues.append((rb.name + 1, "🔴", f"overlaps row {ra.name + 1} ({ra._s}-{ra._e} s vs {rb._s}-{rb._e} s), "
                                    "same fight + round; keep one, or make them consecutive attempts"))
     # Per-fighter cap (PREREG A3): max 3 attacking rounds and max 20 attempts per attacker.
+    df = df[~df["notes"].str.contains("excluded_", case=False)]   # rows already excluded by rule (A1 women's, A3 cap)
     for att, g in df.groupby("attacker"):
         if not att:
             continue
