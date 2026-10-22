@@ -41,7 +41,7 @@ for r in csv.DictReader(open(HERE / "rnc_successes.csv", encoding="utf-8")):
         "card_position": pos.get(r["fight_id"], "prelim"),
         "numbered_event": "yes" if r["event"].split(":")[0].strip()[4:].isdigit() else "no",
         "date": r["date"], "event": r["event"], "attacker": r["winner_attacker"], "defender": r["defender"],
-        "round": r["round"], "finish": r["finish_time_in_round"],
+        "round": r["round"], "finish": r["finish_time_in_round"], "known_finish_elapsed_s": fin, "found_via": "finish_list",
         "jump_to_clock_remaining": f"{(300 - jump) // 60}:{(300 - jump) % 60:02d}",
         "weight_class": r["weight_class"], "fight_id": r["fight_id"],
         "youtube_search": "https://www.youtube.com/@UFC/search?query=" + "+".join(f"{r['fighter_1']} {r['fighter_2']}".split()),
