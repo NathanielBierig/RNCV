@@ -19,8 +19,11 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 FPS_S = 2.0
 CROP = "--crop" in sys.argv          # crop each frame to the fighters (pair box) instead of the whole frame
-CACHE = ROOT / ("data/attempt_clf/feats_crop.npz" if CROP else "data/attempt_clf/feats.npz")
-REPORT = ROOT / ("reports/attempt_clf_crop.md" if CROP else "reports/attempt_clf.md")
+B16 = "--b16" in sys.argv            # bigger image backbone (ViT-B-16, about 3x slower on CPU)
+ARCH, WEIGHTS = ("ViT-B-16", "laion2b_s34b_b88k") if B16 else ("ViT-B-32", "laion2b_s34b_b79k")
+TAG = ("_crop" if CROP else "") + ("_b16" if B16 else "")
+CACHE = ROOT / f"data/attempt_clf/feats{TAG}.npz"
+REPORT = ROOT / f"reports/attempt_clf{TAG}.md"
 
 
 def pair_crop(det, frame, pad=0.25):
@@ -60,7 +63,7 @@ def extract(clips):
     import open_clip
     import torch
     from PIL import Image
-    model, _, prep = open_clip.create_model_and_transforms("ViT-B-32", pretrained="laion2b_s34b_b79k")
+    model, _, prep = open_clip.create_model_and_transforms(ARCH, pretrained=WEIGHTS)
     model.eval()
     det = None
     if CROP:
@@ -116,7 +119,7 @@ def evaluate():
     d = np.load(CACHE)
     X, y, fight, clip = d["X"], d["y"], d["fight"], d["clip"]
     p = np.full(len(y), np.nan)
-    lines = ["# No-pose RNC attempt detector (CLIP ViT-B-32 + logistic regression)" + (", fighter crop" if CROP else ""), "",
+    lines = [f"# No-pose RNC attempt detector (CLIP {ARCH} + logistic regression)" + (", fighter crop" if CROP else ""), "",
              f"Frames sampled at {FPS_S}/s from every labeled clip (+ watched no-RNC rounds). Positive = inside a labeled attempt window. "
              "**Leave-one-fight-out:** each fight is scored by a model that never saw it.", "",
              "| Held-out fight | Frames | % inside attempts | ROC-AUC | PR-AUC (base rate) |", "|---|---|---|---|---|"]
