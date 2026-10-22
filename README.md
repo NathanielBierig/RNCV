@@ -2,7 +2,7 @@
 
 RNCV = **RNC + CV** (computer vision). A UFC-only study of which rear-naked choke details predict a finish (pre-registered science), plus a live finish-probability overlay built on pose estimation.
 
-**Quick links:** [Progress](PROGRESS.md) · [Your tasks](HUMAN_TASKS.md) · [Labeling guide](docs/LABELING_GUIDE.md) · [Picture code book](docs/rnc_codebook.html) · [Labeler](tools/labeler/index.html) · [Kaggle fine-tune guide](docs/KAGGLE_FINETUNE.md) · [Code tour](docs/CODE_TOUR.md) · [Plan](docs/PLAN.md) · [Pre-registration](research/rnc_science/PREREG.md)
+**Quick links:** [Progress](PROGRESS.md) · [Roadmap](docs/ROADMAP.md) · [Your tasks](HUMAN_TASKS.md) · [Labeling guide](docs/LABELING_GUIDE.md) · [Picture code book](docs/rnc_codebook.html) · [Labeler](tools/labeler/index.html) · [Kaggle fine-tune guide](docs/KAGGLE_FINETUNE.md) · [Code tour](docs/CODE_TOUR.md) · [Plan](docs/PLAN.md) · [Pre-registration](research/rnc_science/PREREG.md)
 
 ---
 
