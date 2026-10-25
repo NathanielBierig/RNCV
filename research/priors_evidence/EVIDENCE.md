@@ -66,7 +66,7 @@
 | C4 locked under chin + BT, open | **72** (50–88) | medium | >70 (85) | 🟢 yes (owner a bit higher) |
 | C5 C4 + hand hidden + flattened | **85** (65–95) | low | placeholder 90 | 🟢 |
 | C6 under chin, one arm, defended | **18** (5–40) | low | placeholder 20 | 🟢 |
-| C7 locked over the jaw, defended | **12** (3–32) | low | placeholder 20 | 🟡 lower |
+| C7 locked over the jaw, defended | **15** (5–35) (was 12; addendum) | low | placeholder 20 | 🟡 a bit lower |
 | C8 locked under chin, no hooks, open | **60** (35–80) | low | placeholder 65 | 🟢 |
 | C9 C3 but chin not tucked | **50** (28–72) | low | placeholder 55 | 🟢 |
 
@@ -78,7 +78,7 @@
 | blood_recovery_secs | 3 | **3** (2–6) | medium |
 | lingering_share | 0.3 | **0.2** (0.1–0.4) | low |
 | fatigue_recovery_secs | 120 | **60** (20–180) | low |
-| squeeze: locked under chin / one arm / locked + two-on-one / jaw no lock / locked jaw | 1.0 / 0.45 / 0.65 / 0.15 / ~0.2 | **1.0 / 0.5 / 0.55 / 0.05 / 0.2** | medium / low / low / low / low |
+| squeeze: locked under chin / one arm / locked + two-on-one / jaw no lock / locked jaw | 1.0 / 0.45 / 0.65 / 0.15 / ~0.2 | **1.0 / 0.5 / 0.55 / 0.08 / 0.25** (jaw values raised in the addendum) | medium / low / low / low / low |
 | chin-tuck multiplier | 0.7 | 0.7 (0.5–0.9) | low |
 
 The lower jaw squeeze (0.15 → 0.05) and the lower two-on-one squeeze target the v0.4 problem where the gauge drained on 10/18 *survived* attempts. Whether it actually fixes it is ⚪ untested; the model-expert session should rerun.
@@ -88,3 +88,18 @@ The lower jaw squeeze (0.15 → 0.05) and the lower two-on-one squeeze target th
 - 🟡 Partial: the 41% per-attempt rate (one source, method unseen); lingering-effect duration (EEG and G-LOC analogs).
 - 🔴 Not studied anywhere I could find: finish rates by arm position, grip type, hooks, two-on-one or chin tuck; squeeze strength by configuration. Those numbers are judgment from mechanics + coaching consensus + 36 biased labels. I found **no** biomechanics paper measuring neck pressure by RNC configuration, and no Danaher text that quantifies these.
 - Not used: Mitchell et al. 2012 (*J Appl Physiol*, vascular neck restraint, police volunteers). I saw only secondary police summaries, no time figures. The "10–20 s" figure on Wikipedia is unsourced.
+
+---
+
+## ADDENDUM (2026-10-26): owner's follow-up checks for v0.7
+
+Grades as above. Changed numbers are in [priors_evidence.csv](priors_evidence.csv) (C7) and [gauge_evidence.csv](gauge_evidence.csv) (grip, jaw and re-attack rows).
+
+| # | Question | Verdict | Suggested model numbers | Conf. |
+|---|---|---|---|---|
+| A1 | Is the figure-four stronger than palm-to-palm / gable / wrist pull / short choke / one arm? | 🔴 **No study measures it**: no grip-force or neck-pressure paper, and no submission statistics by RNC grip (BJJ Heroes, ADCC and IBJJF tallies count "RNC" only). Stellpflug 2020 found no time difference across 11 *choke types*, which says nothing about grips. Single-source claim (Wikipedia RNC, one citation): palm-to-palm = more pressure, less head control, more air/mixed choke → more pain, slower. Repo labels: figure-four 9/20, wrist pull 2/4, palm-to-palm 1/1, one arm 4/8 (no signal at n = 36). | Finish %: **every two-hand lock counts as "locked"**, with no grip-type term. Squeeze: figure-four 1.0, palm-to-palm / gable / short choke 0.9 (0.7–1.0), wrist pull 0.85 (0.6–1.0), one arm 0.5 (0.3–0.7) | low |
+| A2 | Body triangle vs two hooks | 🔴 **No retention or finish data anywhere.** Consensus ([Wikipedia: body triangle](https://en.wikipedia.org/wiki/Body_triangle_(grappling)); coaching articles): the body triangle is harder to escape and stops the defender from clearing hooks with his legs, but limits the attacker's own movement. Another coach argues upper-body control matters more than the legs ([Open Note Grappling 2023](https://www.opennotegrappling.com/p/rear-naked-choke-components)). Repo labels: finish rate body triangle 6/15, two hooks 5/10, one hook 4/9; failed attempts that ended in escape: 4/9 vs 3/5 vs 3/5; re-attack after a failure ~100% in every group (biased sample). **Owner's re-attack point:** plausible (keeping the back = more attempts), and Oliveira–Poirier fits it (body triangle, 2 attempts, the 2nd tapped). But no data, and a re-attack effect belongs to the *round* (more attempts), not to each attempt's finish %. | Keep one `legs_strong` factor (body triangle ≈ two hooks), prior OR ≈ 1.7 vs no hooks (cards C4 vs C8). Optional small body-triangle bump OR 1.15 (0.8–1.6). Model the owner's re-attack point as "attempts per round", not per-attempt finish % | low |
+| A3 | Over the jaw: does it ever choke? | 🟡 **It does finish UFC fights, mostly as a pain/crank tap.** ufcstats (repo raw_sources) logs **13 "Neck Crank From (Standing) Back Control" finishes vs 679 RNC** (~2% of back-control neck finishes; e.g. Cirkunov–Nicholson 2016 cracked the jaw, [report](https://www.lowkickmma.com/misha-cirkunov-cracks-alex-nicholsons-jaw-for-submission-win/); Pantoja–Perez 2022). Some finishes recorded as "RNC" are over the jaw too. In the repo, Oliveira–Poirier UFC 269 was labeled over the jaw throughout and ended in a tap (1 of 17 labeled finishes). Physiology: **no measurement exists.** By anatomy, the forearm on the mandible sits above the carotid bifurcation (~C3–C4), so blood flow is blocked only partly, through the biceps/forearm "V" on the sides of the neck. Coaches say it's slow and painful and often makes him lift the chin so the arm slips under ([Kesting 2009](https://www.grapplearts.com/?p=365)). | Squeeze: jaw unlocked **0.08** (was 0.05; 0–0.2), jaw locked **0.25** (0.1–0.45). C7 **15%** (5–35). Jaw finishes come from pain, which the CONSCIOUSNESS gauge can't show; they belong in the finish %, not the gauge | low |
+| A4 | Re-attacks / defender fatigue: do later chokes finish more often? | 🔴 **No study of re-attack success.** Indirect: dominant grip strength falls after BJJ bouts (Andreato et al. 2014, *Kinesiology* 46(1):44–52, [record](https://hrcak.srce.hr/123721), n = 12); BJJ athletes tire in the upper limbs earlier across repeated matches (2020 *JSAMS* systematic review, [record](https://lida.sport-iat.de/djb/Record/4061459?lng=en); no high-quality studies). Blood flow comes back in 4–8 s (Nimura 2022), so leftover "hypoxia" matters only for quick regrips. Repo: 6 of 17 re-attack gaps ≤ 6 s, 11 of 17 ≤ 20 s. **The repo labels can't answer it:** a finish ends the round, so later attempts only follow failures (raw: first attempts 10/19 finish, later 7/17). | Keep carrying the CONSCIOUSNESS gauge (blood + fatigue deficit) across attempts in a round (it already captures quick regrips). Optional defender-fatigue term: **OR 1.1 per earlier attempt in the round** (0.8–1.5), prior centered near no effect. Better: add a `prior_attempts_in_round` field when labeling the random-10 fights | low |
+
+**Bottom line for v0.7:** none of the four has measured support beyond the physiology (A3 anatomy, A4 recovery time). Treat grip type, body triangle vs hooks and re-attacks as owner judgment with wide priors. The one data-backed change is that over-the-jaw squeezes *do* finish UFC fights (~2% of back-control neck finishes, plus some logged as RNC), so jaw squeeze and C7 go up slightly.
