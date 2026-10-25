@@ -150,6 +150,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("clip")
     ap.add_argument("--out", default="")
+    ap.add_argument("--no-track", action="store_true", help="skip the fighter tracking layer")
     a = ap.parse_args()
     clip = Path(a.clip)
     rows = list(csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8")))
@@ -174,6 +175,11 @@ def main():
     s = min((W - PANEL) / vw, H / vh); nw, nh = int(vw * s), int(vh * s)
     ox, oy = (W - PANEL - nw) // 2, (H - nh) // 2
     wr = cv2.VideoWriter(str(out), cv2.VideoWriter_fourcc(*"mp4v"), fps, (W, H))
+    layer = None
+    if not a.no_track:
+        sys.path.insert(0, str(ROOT / "tools/mvp"))
+        import tracking
+        layer = tracking.Layer(*tracking.compute(clip))
     hist, shown, last_end, i = [], 0.0, None, 0
     air, grip, band = 1.0, 1.0, None
     while True:
@@ -183,6 +189,8 @@ def main():
         t = i / fps; i += 1
         cur = next((r for r in mine if float(r["video_time_start"]) <= t <= float(r["video_time_end"])), None)
         canvas = np.zeros((H, W, 3), np.uint8); canvas[:] = BG[::-1]
+        if layer is not None:
+            fr = layer.draw(fr, i - 1, t, cur is not None)
         canvas[oy:oy + nh, ox:ox + nw] = cv2.resize(fr, (nw, nh))
         banner = None
         if cur:
