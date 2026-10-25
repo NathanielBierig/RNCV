@@ -1,0 +1,9 @@
+scenario,arm_under,grip_locked,legs_strong,two_on_one,chin_tucked,hand_tucked,flattened,p_finish,n0,note
+loose_jaw_defended,0,0,0,1,1,0,0,0.08,4,arm over the jaw; no lock; one hook; defender two-on-one; chin tucked
+under_chin_one_arm_defended,1,0,0,1,1,0,0,0.20,4,arm under chin but no second hand; weak legs; two-on-one; chin tucked
+locked_strong_legs_defended,1,1,1,1,1,0,0,0.45,4,figure-four under chin + body triangle/two hooks but defender two-on-one and chin tucked
+locked_strong_legs_open,1,1,1,0,0,0,0,0.80,4,figure-four under chin + strong legs; defender hands not two-on-one; chin not tucked
+dream_choke,1,1,1,0,0,1,1,0.90,4,as above + choking hand tucked deep + defender flattened
+locked_over_jaw_defended,0,1,1,1,1,0,0,0.20,4,locked grip but over the jaw (jaw crank territory); two-on-one; chin tucked
+locked_weak_legs_open,1,1,0,0,0,0,0,0.65,4,figure-four under chin; no hooks; hands not two-on-one; chin not tucked
+locked_strong_legs_two_on_one_chin_open,1,1,1,1,0,0,0,0.55,4,figure-four under chin + strong legs; two-on-one; chin not tucked

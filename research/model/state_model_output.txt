@@ -1,0 +1,52 @@
+attempts 35 (bell excluded) from 19 fights; finishes 17
+found_via: ['candidate_round', 'finish_list']  (no random_fight rows yet -> real-world base rate = owner's prior only)
+
+Leave-one-fight-out scores (lower = better; Brier 0.25 = coin flip at 50%):
+model                                   Brier@2s  Brier time-avg  logloss@2s
+M0 base rate only                          0.270           0.270       0.733
+M1 MVP 0.1 (rejected)                      0.413           0.337       1.258
+M2 labels only (no priors)                 0.219           0.195       0.620
+M3 priors only (cards, no labels)          0.216           0.202       0.617
+M4 priors + labels (n0 x0.5)               0.216           0.191       0.613
+M4 priors + labels (n0 x1)                 0.216           0.192       0.615
+M4 priors + labels (n0 x2)                 0.218           0.194       0.621
+(M3 uses no labels, so it isn't leave-one-out; its sample-scale intercept is the owner's real-world one, which is why it under-predicts on this finish-heavy sample)
+
+Calibration, M4 n0 x1, at the 2-s landmark (one row per attempt)
+  bin            n  mean pred  observed  95% CI (Wilson, landmark only)
+  0.0-0.2    3.0       0.14      0.33  [0.06, 0.79]
+  0.2-0.4   11.0       0.31      0.36  [0.15, 0.65]
+  0.4-0.6   13.0       0.51      0.38  [0.18, 0.64]
+  0.6-0.8    5.0       0.68      0.80  [0.38, 0.96]
+  0.8-1.0    3.0       0.93      1.00  [0.44, 1.00]
+
+Calibration, M4 n0 x1, time-weighted over every second of every attempt
+  bin            n  mean pred  observed  95% CI (Wilson, landmark only)
+  0.0-0.2    3.0       0.14      0.33
+  0.2-0.4    9.2       0.32      0.24
+  0.4-0.6   12.5       0.51      0.41
+  0.6-0.8    6.8       0.68      0.76
+  0.8-1.0    3.4       0.93      1.00
+
+M4 fit on all 35 attempts (log-odds; exp = odds ratio). Prior-only fit in brackets:
+  intercept (world)            -1.03  OR  0.36   [-0.60]
+  delta (sample oversampling)  -0.65  OR  0.52   [+0.00]
+  arm_under                    +1.12  OR  3.05   [+0.76]
+  grip_locked                  +0.63  OR  1.88   [+0.46]
+  legs_strong                  +0.15  OR  1.16   [+0.47]
+  two_on_one                   -1.11  OR  0.33   [-0.81]
+  chin_tucked                  -0.04  OR  0.96   [-0.62]
+  hand_tucked                  +0.92  OR  2.50   [+0.36]
+  flattened                    +1.53  OR  4.61   [+0.36]
+
+Pantoja vs Asakura R2 (fight left out), what M4 would show on screen (real-world scale, delta = 0):
+    0.0-  6.6s  {'arm_under': np.float64(0.0), 'grip_locked': np.float64(0.5), 'legs_strong': np.float64(1.0), 'two_on_one': np.float64(1.0), 'chin_tucked': np.float64(1.0), 'hand_tucked': np.float64(0.0), 'flattened': np.float64(1.0)}  ->    35%  (sample scale 21%)
+    6.6- 14.9s  {'arm_under': np.float64(1.0), 'grip_locked': np.float64(1.0), 'legs_strong': np.float64(1.0), 'two_on_one': np.float64(0.0), 'chin_tucked': np.float64(1.0), 'hand_tucked': np.float64(1.0), 'flattened': np.float64(1.0)}  ->    96%  (sample scale 91%)
+   14.9- 19.0s  {'arm_under': np.float64(1.0), 'grip_locked': np.float64(1.0), 'legs_strong': np.float64(1.0), 'two_on_one': np.float64(1.0), 'chin_tucked': np.float64(1.0), 'hand_tucked': np.float64(1.0), 'flattened': np.float64(1.0)}  ->    87%  (sample scale 77%)
+   19.0s  outcome observed: unconscious  ->  100% (event shown, not predicted)
+  80% bands (real-world scale): ['10-74%', '80-99%', '58-97%']
+  defender health: 0s:100 2s:99 4s:98 6s:97 8s:84 10s:66 12s:48 14s:30 16s:16 18s:4 end:0
+
+Defender gauge check (no fitting; placeholder weights): health at the end, finishes vs not
+  median end health: finishes 24, not 50;  AUC (lower health = finish) 0.67
+  finishes ending with health <= 20: 8/17;  non-finishes: 6/18
