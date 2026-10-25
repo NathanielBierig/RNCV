@@ -96,7 +96,7 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, gr
     d.rectangle([x0, 0, W, H], fill=BG); d.line([x0, 0, x0, H], fill=LINE, width=2)
     x = x0 + 24
     d.text((x, 18), "RNCV // RNC MONITOR", font=MONO_B, fill=DIM)
-    d.text((x, 38), "rear-naked choke · finish model v0.6 (replay)", font=MONO, fill=DIM)
+    d.text((x, 38), f"rear-naked choke · finish model {model['label']} (replay)", font=MONO, fill=DIM)
     # attacker: finish % grows
     d.text((x, 78), "ATTACKER", font=MONO, fill=ATT); d.text((x, 96), att[:22], font=SANS_B, fill=INK)
     d.text((x, 124), f"{round(100 * fin):d}%", font=BIG, fill=ATT if live else DIM)
@@ -135,7 +135,7 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, gr
         d.text((x + 170, y), v.replace("_", " "), font=MONO_B, fill=ATT if hot else INK); y += 22
     # model footer
     d.line([x, H - 92, W - 24, H - 92], fill=LINE)
-    d.text((x, H - 84), f"priors: you + research ({model['cards']} cards) + {model['n']} labels", font=MONO, fill=DIM)
+    d.text((x, H - 84), f"priors: you + research{' + coach' if model['label'] == 'v0.7c' else ''} + {model['n']} labels", font=MONO, fill=DIM)
     d.text((x, H - 64), "other fights only (leave-one-fight-out)", font=MONO, fill=DIM)
     d.text((x, H - 44), "replay: windows + factors from labels", font=MONO, fill=DIM)
     if banner:
@@ -151,6 +151,8 @@ def main():
     ap.add_argument("clip")
     ap.add_argument("--out", default="")
     ap.add_argument("--no-track", action="store_true", help="skip the fighter tracking layer")
+    ap.add_argument("--model", choices=["v06", "v07c"], default="v06",
+                    help="v06 = current model; v07c = v0.7 structure (grip type, body triangle) + coach priors")
     a = ap.parse_args()
     clip = Path(a.clip)
     rows = list(csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8")))
@@ -161,11 +163,22 @@ def main():
     import sys
     sys.path.insert(0, str(ROOT / "research/model"))
     import state_model as sm                     # finish model v0.6 (docs/MODEL_SPEC.md)
-    sm.USE_FATIGUE = True
-    cards = list(csv.DictReader(open(ROOT / "research/model/priors_v06.csv", encoding="utf-8")))
     train = [r for r in sm.load() if r["fight_id"] != mine[0]["fight_id"]]
-    beta, cov = sm.fit_cov(train, cards)
-    model = {"cards": len(cards), "n": len(train)}
+    if a.model == "v07c":                        # v0.7 + coach priors (research/model/run_v07_coach.py)
+        import model_v07 as m7
+        import run_v07_coach as rc
+        rc.setup(); sm.USE_FATIGUE = False
+        m7.D0.update(m7.round_d0(sm.load()))
+        sm.SQUEEZE, sm.CONSCIOUSNESS = sm.SQUEEZE_V06, sm.CONSCIOUSNESS_V06
+        cards = list(csv.DictReader(open(ROOT / "research/model/priors_v07.csv", encoding="utf-8")))
+        beta, cov = rc.fit_cov(train, cards)
+        x_at, fat_i, label = m7.x_at, m7.FEATS.index("fatigue"), "v0.7c"
+    else:
+        sm.USE_FATIGUE = True
+        cards = list(csv.DictReader(open(ROOT / "research/model/priors_v06.csv", encoding="utf-8")))
+        beta, cov = sm.fit_cov(train, cards)
+        x_at, fat_i, label = sm.x_at, 7, "v0.6"
+    model = {"cards": len(cards), "n": len(train), "label": label}
     airs = {id(r): [(tt, c) for tt, c, *_ in sm.consciousness_trace(r)] for r in mine}
     out = Path(a.out) if a.out else ROOT / "data/mvp" / f"{clip.stem}_demo.mp4"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -196,13 +209,13 @@ def main():
         if cur:
             el = t - float(cur["video_time_start"])
             st = state_at(cur, el)
-            xv = sm.x_at(cur, el)
+            xv = x_at(cur, el)
             target = sm.predict(beta, xv, sample=False)          # P(finish | state now), no time ramp
             band = sm.interval(beta, cov, xv)
             shown += (target - shown) * 0.35                      # light display smoothing only
             tr = airs[id(cur)]
             air = tr[min(len(tr) - 1, int(el / 0.1))][1] / 100
-            grip = 1 - float(xv[7])
+            grip = 1 - float(xv[fat_i])
             hist.append(shown); att_t = el; last_end = cur
             att, dfn, live = cur["attacker"], cur["defender"], True
         else:

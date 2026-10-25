@@ -41,12 +41,19 @@ def fit_cov(rows, cards):
     return beta, np.linalg.inv((X * (w * p * (1 - p))[:, None]).T @ X + np.diag(P))
 
 
-def main():
+def setup(coach=True):
+    """Install the coach-prior fit into model_v07 (also used by tools/mvp/demo.py --model v07c)."""
     global use_mu
     for i, f in enumerate(m.FEATS):
         MU[2 + i] = math.log(COACH.get(f, 1.0))
     m.fit_cov = fit_cov
     m.fit = lambda rows, cards: fit_cov(rows, cards)[0]
+    use_mu = coach
+
+
+def main():
+    global use_mu
+    setup()
     rows = sm.load()
     m.D0.update(m.round_d0(rows))
     cards = list(csv.DictReader(open(m.HERE / "priors_v07.csv", encoding="utf-8")))
