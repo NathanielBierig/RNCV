@@ -1,73 +1,34 @@
 # RNCV: what makes a UFC rear-naked choke finish?
 
-RNCV = **RNC + CV** (computer vision). A UFC-only study of which rear-naked choke details predict a finish (pre-registered science), plus a live finish-probability overlay built on pose estimation.
+RNCV (**RNC + CV**, computer vision) asks a BJJ question with data: *which details of a rear-naked choke decide whether a UFC fighter taps?* It has three parts:
 
-**Quick links:** [Progress](PROGRESS.md) · [Roadmap](docs/ROADMAP.md) · [Alignment](docs/ALIGNMENT.md) · [Your tasks](HUMAN_TASKS.md) · [Labeling guide](docs/LABELING_GUIDE.md) · [Picture code book](docs/rnc_codebook.html) · [Labeler](tools/labeler/index.html) · [Kaggle fine-tune guide](docs/KAGGLE_FINETUNE.md) · [Code tour](docs/CODE_TOUR.md) · [Plan](docs/PLAN.md) · [Pre-registration](research/rnc_science/PREREG.md)
+1. **A pre-registered study** of hand-labeled UFC choke attempts: 36 so far, target ~150. The hypotheses were frozen before labeling ([PREREG](research/rnc_science/PREREG.md)).
+2. **A replay overlay** with two readouts. The attacker's **finish chance** is a forecast that the attempt ends in a tap or stoppage. The defender's **choke meter** shows how much choking they have already absorbed.
+3. **An early automatic attempt detector** (experimental).
 
----
-
-## Where things stand
-
-- 🟢 **Science design frozen:** [PREREG.md](research/rnc_science/PREREG.md) (v1.0 + amendments A1 men's only, A2 upper body / change log). Code book: [FACTORS.md](research/rnc_science/FACTORS.md).
-- 🟡 **Labeling:** see [reports/labels_qa.md](reports/labels_qa.md) for the current count and checks. Data: [phase3_labels/labels.csv](phase3_labels/labels.csv).
-- 🟡 **Pose on UFC clips:** RTMO-m + two-fighter tracking + referee filter. Coverage inside labeled attempts: [reports/pose_attempts.md](reports/pose_attempts.md). Finishes are the weak spot. The fix in progress is a pose model fine-tuned on grappling ([docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md)).
-- 🟢 **Position classifier (VICOS):** macro-F1 0.63 on original keypoints, 0.47 on standard YOLO keypoints. Details: [reports/TRAINING_STATUS.md](reports/TRAINING_STATUS.md).
-
-Full status: [PROGRESS.md](PROGRESS.md).
+**Status: early.** The finish model mixes expert priors (the owner's BJJ judgment plus a published-evidence review) with a small labeled set. So far it beats a base-rate guess only slightly. UFC footage is never published: the repo holds only derived data (timestamps, labels, keypoints).
 
 ---
 
-## How to: label attempts (your main job)
+## Results so far (honest numbers)
 
-Full guide: **[docs/LABELING_GUIDE.md](docs/LABELING_GUIDE.md)**. Pictures for each answer: **[docs/rnc_codebook.html](docs/rnc_codebook.html)**.
+| Piece | Result | What it means |
+|---|---|---|
+| Labeled data | 36 attempts from 20 UFC fights, men's divisions | Too few for the pre-registered analysis yet (needs ~150) |
+| Finish model v0.6 | Brier 0.226 vs 0.270 for always guessing the average; 95% CI of the gain includes ~0 | Sensible in replay; not yet shown to beat a base rate |
+| Choke meter | Pantoja vs Asakura: hits 0 at 18.0 s; he went out at 19.0 s | Timing comes from physiology (≈9 s from lock to out, Stellpflug 2020), not from fitting |
+| Attempt detector | Frame ROC-AUC 0.70 (leave-one-fight-out, 20 fights) | Correct start on only ~6% of attempts; the overlay uses a manual "attempt starts" key |
+| Pose skeletons | Both fighters correct in 4/48 tangled frames | Parked; the overlay draws only confident parts (box, heads) |
 
-1. **Pick a fight:** [successes queue](phase3_labels/labeling_queue_successes.csv) or [failures queue](phase3_labels/labeling_queue_failures.csv), next row with status `todo` (men's only).
-2. **Get the clip** into `data\clips\` (local only, never uploaded). Ask Main for the download command if needed.
-3. **Open the labeler:** `tools\labeler\index.html` in Chrome → **Ctrl+Shift+R** → *Load fight list(s) CSV* (the 3 queue files) → *Load labels.csv* → *Link labels.csv file* (both: `phase3_labels\labels.csv`).
-4. **Label:** **S** start → answer the frozen 2-second panel (**X** if the view is blocked) → **G** whenever something changes → **E** at the end → outcome → Enter.
-5. **Round with no RNC at all?** Tell Main "rank N watched, no RNC".
-6. **Check your work:** ask Main to "run the labels QA", or run it yourself:
-   ```powershell
-   python -I phase3_labels\qa_labels.py
-   ```
-   Then open [reports/labels_qa.md](reports/labels_qa.md).
+Model details: [docs/MODEL_SPEC.md](docs/MODEL_SPEC.md) · Expert review: [research/coach_review/COACH_REVIEW.md](research/coach_review/COACH_REVIEW.md) · Evidence review: [research/priors_evidence/EVIDENCE.md](research/priors_evidence/EVIDENCE.md)
 
-## How to: train the pose model on Kaggle (free GPU)
+## How the two readouts work
 
-Full guide: **[docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md)**.
+- **Finish chance (attacker):** *given the position visible right now* (arm under the chin, grip type, legs, the defender's two-on-one, chin tucked...), what fraction of similar UFC attempts end in a finish? It jumps when the grip locks and drops when the defender fights the hands. There is no time ramp. At the tap it reads 100%, because the finish has happened (planned: show **RESULT: TAP** there instead).
+- **Choke meter (defender):** a modeled running dose of choking, not a medical measurement. It drains fast under a locked choke below the chin, barely moves over the jaw, and refills when the defender breathes again.
+- **Grip (attacker):** the attacker's arms tire the longer they squeeze, which slowly lowers the finish chance.
 
-1. kaggle.com → your notebook **finetune_pose** (or import [notebooks/kaggle_finetune_pose/finetune.ipynb](notebooks/kaggle_finetune_pose/finetune.ipynb)).
-2. Right sidebar → *Session options*: **GPU T4**, **Internet on**.
-3. **Save Version → Save & Run All (Commit) → Save.** It runs on Kaggle's servers (about 4 h, estimate); you can close Chrome.
-4. Check it any time (the Kaggle CLI is set up with your token in `~/.kaggle/`):
-   ```powershell
-   kaggle kernels status nathanielbierig/finetune-pose
-   ```
-5. When it says **COMPLETE**, tell Main **"pull the fine-tune"**. Main downloads `rncv_pose_v1.onnx` into `models\` and re-runs the pose checks, before vs after.
-
-Never put UFC video on Kaggle (its rules forbid it). Only open datasets (VICOS, Harmony4D) go there.
-
-## How to: train the position classifier (laptop, CPU)
-
-```powershell
-python -I src\train_baseline.py --model gbm --swap-aug --tag _swapaug
-```
-- Other keypoints: add `--annotations data\raw\vicos\annotations_yolo11m-pose_stride1.json --tag _swapaug_yolo11m`.
-- About 30–40 min. Results land in `reports\metrics_*.json`, `per_class_*.csv`, `confusion_*.png`.
-
-## How to: run pose on clips
-
-```powershell
-python -I src\pose_attempts.py                # pose inside every labeled attempt → reports\pose_attempts.md
-python -I src\pose_smoke.py                   # whole clips → reports\pose_smoke.md
-python -I tools\preview\corner_preview.py     # red/blue skeleton preview videos → data\pose\*_corners.mp4
-```
-
-## How to: work with Claude sessions
-
-- **Main session** (in this folder) does the work and is the only one that commits and pushes. Start a fresh one any time: it reads [CLAUDE.md](CLAUDE.md), [PROGRESS.md](PROGRESS.md) and [HUMAN_TASKS.md](HUMAN_TASKS.md) and catches up.
-- **Secretary** keeps [HUMAN_TASKS.md](HUMAN_TASKS.md), [docs/BRIEF.md](docs/BRIEF.md) and [docs/DECISIONS.md](docs/DECISIONS.md) current.
-- Useful phrases for Main: "run the labels QA" · "pull the fine-tune" · "swap in the fine-tuned pose model" · "next 3 failure rounds" · "rank N watched, no RNC".
+Readouts come from **labeled positions** for now, not from live computer vision.
 
 ---
 
@@ -75,15 +36,16 @@ python -I tools\preview\corner_preview.py     # red/blue skeleton preview videos
 
 | Folder | What's in it |
 |---|---|
-| [docs/](docs/) | Plan, decisions, brief, guides (labeling, Kaggle, footage, code tour) |
-| [research/rnc_science/](research/rnc_science/) | PREREG (frozen hypotheses) and FACTORS (code book) |
-| [phase3_labels/](phase3_labels/) | Fight queues, `labels.csv`, label schema, QA script |
-| [src/](src/) | Pose, two-fighter tracking, referee filter, position classifier |
-| [tools/](tools/) | Labeler, overlay renderer, red/blue preview, eval harness |
-| [notebooks/](notebooks/) | Kaggle GPU notebooks |
-| [reports/](reports/) | Every result, as markdown, JSON and plots |
-| [research/](research/) | Referee study, pose sweep, critique, venture ideas |
+| [research/rnc_science/](research/rnc_science/) | Pre-registration and the code book of choke factors ([FACTORS.md](research/rnc_science/FACTORS.md), [pictures](docs/rnc_codebook.html)) |
+| [research/model/](research/model/) | Finish model, priors, validation runs |
+| [phase3_labels/](phase3_labels/) | `labels.csv`, fight queues, schema, QA script |
+| [tools/](tools/) | Browser labeler, overlay demo, renderer, eval harness |
+| [src/](src/) | Pose, two-fighter tracking, referee filter, side experiments |
+| [reports/](reports/) | Every result as markdown, JSON and plots |
+| [docs/](docs/) | Plan, roadmap, model spec, guides, [operations how-tos](docs/OPERATIONS.md) |
 | `data/`, `models/` | Local only (git-ignored): clips, datasets, weights |
+
+**Side experiment:** a grappling-position classifier on the open VICOS dataset (macro-F1 0.63, not UFC data). See [docs/OPERATIONS.md](docs/OPERATIONS.md) and [reports/TRAINING_STATUS.md](reports/TRAINING_STATUS.md).
 
 ## Setup
 
@@ -92,24 +54,11 @@ python -m venv .venv            # on Windows, put the venv at a short path if Op
 python -m pip install -r requirements.txt
 curl -L --fail -o data/raw/vicos/annotations.json https://data.vicos.si/datasets/JuiJuitsu/annotations.json
 ```
-> Three environments are used in practice: pose + training (`requirements.txt`, rtmlib, onnxruntime), tools (OpenCV, pandas, Pillow, Kaggle CLI), and image features (open_clip, torch CPU). Commands below assume the right one is active.
+> Three environments are used in practice: pose + training (`requirements.txt`, rtmlib, onnxruntime), tools (OpenCV, pandas, Pillow, Kaggle CLI), and image features (open_clip, torch CPU).
 
-## Position-classifier evaluation (why the numbers are honest)
-
-- VICOS = 6 sparring sequences × up to 3 cameras. Each sequence's timeline is cut into 5 **time blocks**; each fold tests one block of every sequence (all cameras together) and drops training frames within 300 frames of it, so near-duplicate frames can't leak.
-- Metrics: **macro-F1** and **balanced accuracy** (rare classes count as much as common ones); **swap macro-F1** checks the model doesn't care which athlete is "1" or "2".
-- Limit: same athletes and gym in train and test, so these numbers aren't UFC performance. Only UFC data split by fight can measure that.
-
-| Model (5 time-block folds) | Macro-F1 | Balanced acc. |
-|---|---|---|
-| GBM | 0.46 | 0.47 |
-| **GBM + swap augmentation (default)** | **0.63** | **0.63** |
-| GBM + swap aug on YOLO11m keypoints | 0.47 | 0.47 |
-| MLP + swap augmentation | 0.58 | 0.58 |
-| GBM, role-invariant features | 0.62 | 0.62 |
-| Majority class | 0.14 accuracy | |
+How-tos (labeling, Kaggle, training, pose runs): [docs/OPERATIONS.md](docs/OPERATIONS.md). Status: [PROGRESS.md](PROGRESS.md) · [Roadmap](docs/ROADMAP.md).
 
 ## Footage and licenses
 
-- UFC footage: private local clips only, never uploaded; only derived data (keypoints, timestamps, labels) is committed. See [docs/FOOTAGE.md](docs/FOOTAGE.md).
+- UFC footage: private local clips only, never uploaded; only derived data is committed. See [docs/FOOTAGE.md](docs/FOOTAGE.md).
 - VICOS: CC BY-NC-SA 4.0 (cite Hudovernik & Skočaj, MMSports'22). YOLO11: AGPL-3.0. RTMO/MMPose/rtmlib: Apache-2.0. Full table: [DOWNLOADS.md](DOWNLOADS.md).

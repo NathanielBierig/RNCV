@@ -108,7 +108,7 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, gr
     # defender: health drains
     hp = 1 - fin if air is None else air
     d.text((x, 228), "DEFENDER", font=MONO, fill=DEF); d.text((x, 246), dfn[:22], font=SANS_B, fill=INK)
-    d.text((x, 278), "CONSCIOUSNESS", font=MONO, fill=DIM); d.text((x + PANEL - 110, 278), f"{round(100 * hp):d}/100", font=MONO_B, fill=INK)
+    d.text((x, 278), "CHOKE METER (model)", font=MONO, fill=DIM); d.text((x + PANEL - 110, 278), f"{round(100 * hp):d}/100", font=MONO_B, fill=INK)
     hcol = GOOD if hp > .6 else (255, 200, 87) if hp > .3 else BAD
     bar(d, x, 300, PANEL - 48, 22, hp, hcol)
     # sparkline of finish % over the attempt
