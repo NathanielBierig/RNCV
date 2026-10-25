@@ -1,0 +1,54 @@
+35 attempts, 19 fights, LOFO
+
+model                               Brier@2s  Brier all-sec  logloss@2s
+always the average                     0.270          0.270       0.733
+v0.2 placeholders, no fatigue          0.216          0.192       0.615
+v0.3 owner buckets, no fatigue         0.223          0.197       0.635
+v0.3 owner buckets + fatigue           0.222          0.196       0.632
+v0.3+fatigue minus average           : -0.047  95% CI [-0.094, +0.008]  (negative = v0.3 better)
+v0.3+fatigue minus v0.2 placeholders : +0.006  95% CI [-0.001, +0.013]  (negative = v0.3 better)
+v0.3+fatigue minus v0.3 no fatigue   : -0.001  95% CI [-0.004, +0.002]  (negative = v0.3 better)
+
+Calibration, v0.3 + fatigue, at the 2-s landmark:
+  0.0-0.2  n= 5  predicted 0.14  observed 0.40  [0.12, 0.77]
+  0.2-0.4  n= 9  predicted 0.34  observed 0.33  [0.12, 0.65]
+  0.4-0.6  n=10  predicted 0.51  observed 0.40  [0.17, 0.69]
+  0.6-0.8  n= 8  predicted 0.66  observed 0.62  [0.31, 0.86]
+  0.8-1.0  n= 3  predicted 0.91  observed 1.00  [0.44, 1.00]
+
+Coefficients, all data (log-odds) [cards only]:
+  intercept (world)  -1.43 [-0.87]
+  delta (sample)     -0.54 [+0.00]
+  arm_under          +1.30 [+0.84]
+  grip_locked        +0.77 [+0.59]
+  legs_strong        +0.18 [+0.54]
+  two_on_one         -1.08 [-0.69]
+  chin_tucked        +0.09 [-0.45]
+  hand_tucked        +0.80 [+0.14]
+  flattened          +1.36 [+0.14]
+  fatigue            -0.35 [-0.08]
+
+Pantoja vs Asakura R2 (fight left out), on-screen values (real-world scale):
+      t  finish   80% band   air  grip
+    0.0     29%    7- 67%   100   100
+    1.0     29%    7- 67%    99    99
+    2.0     29%    7- 67%    99    99
+    3.0     29%    7- 67%    98    98
+    4.0     29%    7- 67%    98    98
+    5.0     29%    7- 67%    97    97
+    6.0     29%    7- 67%    97    97
+    6.5     29%    7- 67%    97    96
+    7.0     95%   78- 99%    93    94
+    8.0     95%   78- 99%    84    88
+    9.0     95%   78- 99%    75    82
+   10.0     95%   77- 99%    66    77
+   11.0     94%   77- 99%    57    72
+   12.0     94%   77- 99%    48    67
+   13.0     94%   76- 99%    39    63
+   14.0     94%   76- 99%    30    59
+   14.5     94%   75- 99%    26    57
+   15.0     83%   50- 96%    22    55
+   16.0     83%   50- 96%    16    53
+   17.0     83%   49- 96%    10    50
+   18.0     83%   49- 96%     4    48
+   19.0  100%  (unconscious: event shown)   air 0   grip 46

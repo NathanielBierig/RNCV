@@ -10,6 +10,8 @@ M3 priors only (cards, no labels)          0.216           0.202       0.617
 M4 priors + labels (n0 x0.5)               0.216           0.191       0.613
 M4 priors + labels (n0 x1)                 0.216           0.192       0.615
 M4 priors + labels (n0 x2)                 0.218           0.194       0.621
+M5 = M4 + attacker fatigue                 0.215           0.191       0.612
+M6 = M4 with bucket answers (3 each)       0.220           0.195       0.624
 (M3 uses no labels, so it isn't leave-one-out; its sample-scale intercept is the owner's real-world one, which is why it under-predicts on this finish-heavy sample)
 
 Calibration, M4 n0 x1, at the 2-s landmark (one row per attempt)
@@ -38,14 +40,18 @@ M4 fit on all 35 attempts (log-odds; exp = odds ratio). Prior-only fit in bracke
   chin_tucked                  -0.04  OR  0.96   [-0.62]
   hand_tucked                  +0.92  OR  2.50   [+0.36]
   flattened                    +1.53  OR  4.61   [+0.36]
+  fatigue                      +0.00  OR  1.00   [+0.00]
 
 Pantoja vs Asakura R2 (fight left out), what M4 would show on screen (real-world scale, delta = 0):
-    0.0-  6.6s  {'arm_under': np.float64(0.0), 'grip_locked': np.float64(0.5), 'legs_strong': np.float64(1.0), 'two_on_one': np.float64(1.0), 'chin_tucked': np.float64(1.0), 'hand_tucked': np.float64(0.0), 'flattened': np.float64(1.0)}  ->    35%  (sample scale 21%)
-    6.6- 14.9s  {'arm_under': np.float64(1.0), 'grip_locked': np.float64(1.0), 'legs_strong': np.float64(1.0), 'two_on_one': np.float64(0.0), 'chin_tucked': np.float64(1.0), 'hand_tucked': np.float64(1.0), 'flattened': np.float64(1.0)}  ->    96%  (sample scale 91%)
-   14.9- 19.0s  {'arm_under': np.float64(1.0), 'grip_locked': np.float64(1.0), 'legs_strong': np.float64(1.0), 'two_on_one': np.float64(1.0), 'chin_tucked': np.float64(1.0), 'hand_tucked': np.float64(1.0), 'flattened': np.float64(1.0)}  ->    87%  (sample scale 77%)
+    0.0-  6.6s  {'arm_under': np.float64(0.0), 'grip_locked': np.float64(0.5), 'legs_strong': np.float64(1.0), 'two_on_one': np.float64(1.0), 'chin_tucked': np.float64(1.0), 'hand_tucked': np.float64(0.0), 'flattened': np.float64(1.0), 'fatigue': np.float64(0.0)}  ->    35%  (sample scale 21%)
+    6.6- 14.9s  {'arm_under': np.float64(1.0), 'grip_locked': np.float64(1.0), 'legs_strong': np.float64(1.0), 'two_on_one': np.float64(0.0), 'chin_tucked': np.float64(1.0), 'hand_tucked': np.float64(1.0), 'flattened': np.float64(1.0), 'fatigue': np.float64(0.0)}  ->    96%  (sample scale 91%)
+   14.9- 19.0s  {'arm_under': np.float64(1.0), 'grip_locked': np.float64(1.0), 'legs_strong': np.float64(1.0), 'two_on_one': np.float64(1.0), 'chin_tucked': np.float64(1.0), 'hand_tucked': np.float64(1.0), 'flattened': np.float64(1.0), 'fatigue': np.float64(0.0)}  ->    87%  (sample scale 77%)
    19.0s  outcome observed: unconscious  ->  100% (event shown, not predicted)
   80% bands (real-world scale): ['10-74%', '80-99%', '58-97%']
   defender health: 0s:100 2s:99 4s:98 6s:97 8s:84 10s:66 12s:48 14s:30 16s:16 18s:4 end:0
+
+Attacker fatigue term (M5, all data): log-odds -0.32 at full fatigue (OR 0.72)
+  Pantoja with fatigue: 0.0s:35% 2.0s:35% 4.0s:35% 6.0s:35% 7.5s:96% 9.5s:96% 11.5s:95% 13.5s:95% 15.0s:86% 17.0s:86% last:85%
 
 Defender gauge check (no fitting; placeholder weights): health at the end, finishes vs not
   median end health: finishes 24, not 50;  AUC (lower health = finish) 0.67
