@@ -6,10 +6,10 @@ Draws the submission type, the success probability (bar, colored red to green), 
 - `make_demo.py`: makes a synthetic clip + fake predictions for testing without real footage.
 
 ```bash
-/c/Users/netan/.venvs/ufc-cv/Scripts/python make_demo.py
-/c/Users/netan/.venvs/ufc-cv/Scripts/python overlay.py --video demo_clip.mp4 --preds demo_preds.csv --out demo_overlay.mp4
+python make_demo.py
+python overlay.py --video demo_clip.mp4 --preds demo_preds.csv --out demo_overlay.mp4
 ```
 
-**Windows note:** OpenCV fails to load from a venv inside this project folder ("filename too long"), so the venv lives at the short path `C:\Users\netan\.venvs\ufc-cv`.
+**Windows note:** if OpenCV fails to load ("filename too long"), create the venv at a short path (e.g. `C:envsncv`).
 
 Later, Phase 5's model writes `preds.csv` and this renderer stays unchanged.

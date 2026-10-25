@@ -13,13 +13,13 @@ These are the evaluation rules from [docs/PLAN.md](../../docs/PLAN.md), written 
 This project folder can have a long Windows path, and scikit-learn fails to load its DLL from deep paths (`WinError 206`). Keep the venv at a short path:
 
 ```bash
-python -m venv C:/Users/netan/.venvs/ufc-eval
+python -m venv a separate venv (ufc-eval)
 ```
 ```bash
-C:/Users/netan/.venvs/ufc-eval/Scripts/python.exe -m pip install numpy pandas scikit-learn pytest
+python -m pip install numpy pandas scikit-learn pytest
 ```
 ```bash
-C:/Users/netan/.venvs/ufc-eval/Scripts/python.exe -m pytest -q -p no:cacheprovider tools/eval_harness
+python -m pytest -q -p no:cacheprovider tools/eval_harness
 ```
 
 ## Typical use (Phase 5)

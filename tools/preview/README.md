@@ -9,7 +9,7 @@
 - **Top bar:** clip time, the running % of frames where both fighters are tracked, and the corner status.
 
 ```bash
-C:/Users/netan/.venvs/rncv/Scripts/python -I tools/preview/corner_preview.py
+python -I tools/preview/corner_preview.py
 ```
 
 Output: `data/pose/<clip>_corners.mp4` (local only). Known issue (see `research/pose_sweep/FINDINGS.md`): the referee is sometimes kept instead of a fighter. The preview shows this clearly when one skeleton stands apart from the pile.

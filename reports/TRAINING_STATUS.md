@@ -44,10 +44,10 @@ Updated 2026-10-18. All runs use 5 time-block folds (all cameras of a moment tog
 - Two folds took 1–1.7 h instead of ~5 min, probably because the laptop slept mid-run. Use `--train-stride 4` for faster runs.
 - `src/vicos_data.py`: the dead `lo = {},` line flagged in critique #18 is removed.
 
-## Reproduce (from C:\Users\netan\projects\RNCV)
+## Reproduce (from )
 
 ```powershell
-C:\Users\netan\.venvs\rncv\Scripts\python -I src/train_baseline.py --model gbm --swap-aug --tag _swapaug
-C:\Users\netan\.venvs\rncv\Scripts\python -I src/back_rule.py
-C:\Users\netan\.venvs\rncv\Scripts\python -I src/pose_smoke.py
+python -I src/train_baseline.py --model gbm --swap-aug --tag _swapaug
+python -I src/back_rule.py
+python -I src/pose_smoke.py
 ```

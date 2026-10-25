@@ -65,7 +65,7 @@
    - `yolo_pose_onnx.py`: the laptop wrapper (identical to the one in the repo).
    - `rncv_pose_v1_results.md` + `rncv_pose_v1_metrics.json`: the scores. Send these to Claude.
    - (`runs/rncv_pose_v1/weights/best.pt`, only if you want to train further later.)
-9. **Put the model in the repo folder:** move `rncv_pose_v1.onnx` into `C:\Users\netan\projects\RNCV\models\` (create the folder if needed). `models/` and `*.onnx` are git-ignored, so the model never goes into git.
+9. **Put the model in the repo folder:** move `rncv_pose_v1.onnx` into `models\` (create the folder if needed). `models/` and `*.onnx` are git-ignored, so the model never goes into git.
 
 If a run fails: open its **Logs**, scroll to the first red error, and paste it to Claude. Re-running is safe, because every cell skips work it already finished (within the same session).
 
@@ -88,7 +88,7 @@ If a run fails: open its **Logs**, scroll to the first red error, and paste it t
 3. Run it on the same clips and compare with the RTMO report (`reports/pose_smoke.md`):
 
 ```bash
-C:/Users/netan/.venvs/ufc-cv/Scripts/python.exe src/pose_smoke.py --model models/rncv_pose_v1.onnx --score-thr 0.25 --nms-thr 0.65
+python src/pose_smoke.py --model models/rncv_pose_v1.onnx --score-thr 0.25 --nms-thr 0.65
 ```
 
 Use `--score-thr 0.25` (the YOLO default person-score cutoff; RTMO's 0.3 means something different). The two-fighter selection,
@@ -115,4 +115,4 @@ with RTMO's 26-59%. The Kaggle test numbers (Harmony4D/VICOS) are only a proxy, 
 - **ONNX wrapper vs. Ultralytics** (COCO yolo11n-pose, 640 px, 23 test images): median keypoint difference **0.56 px**, same number of people on 21 of 23 images (off by one twice, near the score cutoff).
 - **Not tested locally:** the GPU, the full 28k-image fetch, the 4 h training, and the RTMO comparison on Kaggle (`rtmlib` + `onnxruntime-gpu`). If the RTMO step fails, set `EVAL_RTMO = False`; the rest still runs.
 
-Re-run the local check: `C:/Users/netan/.venvs/yolo/Scripts/python.exe notebooks/kaggle_finetune_pose/smoke_test.py <scratch dir>` (add `--plan` for the subset size only).
+Re-run the local check: `python notebooks/kaggle_finetune_pose/smoke_test.py <scratch dir>` (add `--plan` for the subset size only).

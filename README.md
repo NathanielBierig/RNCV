@@ -28,7 +28,7 @@ Full guide: **[docs/LABELING_GUIDE.md](docs/LABELING_GUIDE.md)**. Pictures for e
 5. **Round with no RNC at all?** Tell Main "rank N watched, no RNC".
 6. **Check your work:** ask Main to "run the labels QA", or run it yourself:
    ```powershell
-   C:\Users\netan\.venvs\ufc-cv\Scripts\python -I phase3_labels\qa_labels.py
+   python -I phase3_labels\qa_labels.py
    ```
    Then open [reports/labels_qa.md](reports/labels_qa.md).
 
@@ -39,9 +39,9 @@ Full guide: **[docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md)**.
 1. kaggle.com → your notebook **finetune_pose** (or import [notebooks/kaggle_finetune_pose/finetune.ipynb](notebooks/kaggle_finetune_pose/finetune.ipynb)).
 2. Right sidebar → *Session options*: **GPU T4**, **Internet on**.
 3. **Save Version → Save & Run All (Commit) → Save.** It runs on Kaggle's servers (about 4 h, estimate); you can close Chrome.
-4. Check it any time (the Kaggle CLI is set up with your token in `C:\Users\netan\.kaggle\`):
+4. Check it any time (the Kaggle CLI is set up with your token in `~/.kaggle/`):
    ```powershell
-   C:\Users\netan\.venvs\ufc-cv\Scripts\kaggle kernels status nathanielbierig/finetune-pose
+   kaggle kernels status nathanielbierig/finetune-pose
    ```
 5. When it says **COMPLETE**, tell Main **"pull the fine-tune"**. Main downloads `rncv_pose_v1.onnx` into `models\` and re-runs the pose checks, before vs after.
 
@@ -50,7 +50,7 @@ Never put UFC video on Kaggle (its rules forbid it). Only open datasets (VICOS, 
 ## How to: train the position classifier (laptop, CPU)
 
 ```powershell
-C:\Users\netan\.venvs\rncv\Scripts\python -I src\train_baseline.py --model gbm --swap-aug --tag _swapaug
+python -I src\train_baseline.py --model gbm --swap-aug --tag _swapaug
 ```
 - Other keypoints: add `--annotations data\raw\vicos\annotations_yolo11m-pose_stride1.json --tag _swapaug_yolo11m`.
 - About 30–40 min. Results land in `reports\metrics_*.json`, `per_class_*.csv`, `confusion_*.png`.
@@ -58,9 +58,9 @@ C:\Users\netan\.venvs\rncv\Scripts\python -I src\train_baseline.py --model gbm -
 ## How to: run pose on clips
 
 ```powershell
-C:\Users\netan\.venvs\rncv\Scripts\python -I src\pose_attempts.py                # pose inside every labeled attempt → reports\pose_attempts.md
-C:\Users\netan\.venvs\rncv\Scripts\python -I src\pose_smoke.py                   # whole clips → reports\pose_smoke.md
-C:\Users\netan\.venvs\rncv\Scripts\python -I tools\preview\corner_preview.py     # red/blue skeleton preview videos → data\pose\*_corners.mp4
+python -I src\pose_attempts.py                # pose inside every labeled attempt → reports\pose_attempts.md
+python -I src\pose_smoke.py                   # whole clips → reports\pose_smoke.md
+python -I tools\preview\corner_preview.py     # red/blue skeleton preview videos → data\pose\*_corners.mp4
 ```
 
 ## How to: work with Claude sessions
@@ -85,14 +85,14 @@ C:\Users\netan\.venvs\rncv\Scripts\python -I tools\preview\corner_preview.py    
 | [research/](research/) | Referee study, pose sweep, critique, venture ideas |
 | `data/`, `models/` | Local only (git-ignored): clips, datasets, weights |
 
-## Setup (Windows, no GPU)
+## Setup
 
-```powershell
-py -3.12 -m venv C:\Users\netan\.venvs\rncv
-C:\Users\netan\.venvs\rncv\Scripts\python -m pip install -r requirements.txt
-curl.exe -L --fail -o data/raw/vicos/annotations.json https://data.vicos.si/datasets/JuiJuitsu/annotations.json
+```bash
+python -m venv .venv            # on Windows, put the venv at a short path if OpenCV DLLs fail to load
+python -m pip install -r requirements.txt
+curl -L --fail -o data/raw/vicos/annotations.json https://data.vicos.si/datasets/JuiJuitsu/annotations.json
 ```
-> Venvs live at short paths (`C:\Users\netan\.venvs\...`) because a long folder path breaks some Windows DLLs. `rncv` = pose and training, `ufc-cv` = OpenCV, pandas and the Kaggle CLI.
+> Three environments are used in practice: pose + training (`requirements.txt`, rtmlib, onnxruntime), tools (OpenCV, pandas, Pillow, Kaggle CLI), and image features (open_clip, torch CPU). Commands below assume the right one is active.
 
 ## Position-classifier evaluation (why the numbers are honest)
 

@@ -6,9 +6,9 @@ Updated 2026-10-25. Legend: 🟢 works today · 🟡 partial · ⚪ planned. All
 Timings below are measured on this laptop. `$PY_*` are shorthand for these paths (type them out in PowerShell).
 
 ```
-PY_RNCV=C:/Users/netan/.venvs/rncv/Scripts/python
-PY_CV=C:/Users/netan/.venvs/ufc-cv/Scripts/python
-PY_EVAL=C:/Users/netan/.venvs/ufc-eval/Scripts/python.exe
+PY_RNCV=python
+PY_CV=python
+PY_EVAL=python
 ```
 
 ---
@@ -135,7 +135,7 @@ Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton prev
 
 ### Stop 8d · `research/attempt_clf/attempt_clf.py` 🟡: detecting an attempt without pose
 - **What:** the workaround for Stop 8c. Frames are sampled 2 per second from every labeled clip; each frame (optionally cropped to the fighters) becomes a CLIP embedding (a general-purpose image model's "fingerprint" of the picture); a logistic regression (a simple yes/no scorer) learns "inside a labeled attempt?". Scored **leave-one-fight-out**: each fight is judged by a model that never saw it. Pooled ROC-AUC 0.66 on the full frame, **0.70** on the fighter crop, 0.72 smoothed over ~2 s; the bigger ViT-B-16 backbone is in `reports/attempt_clf_crop_b16.md`. ROC-AUC 0.5 is guessing; the roadmap wants ≥ 0.80.
-- **Look at:** [`clips_and_windows()`](../research/attempt_clf/attempt_clf.py:50) (what counts as positive), [`extract()`](../research/attempt_clf/attempt_clf.py:62), [`evaluate()`](../research/attempt_clf/attempt_clf.py:116), the `--crop` / `--b16` flags. Needs its own venv (`C:/Users/netan/.venvs/clip`) and caches features in `data/attempt_clf/`.
+- **Look at:** [`clips_and_windows()`](../research/attempt_clf/attempt_clf.py:50) (what counts as positive), [`extract()`](../research/attempt_clf/attempt_clf.py:62), [`evaluate()`](../research/attempt_clf/attempt_clf.py:116), the `--crop` / `--b16` flags. Needs its own venv (`a separate venv (clip)`) and caches features in `data/attempt_clf/`.
 - **Try it:** read `reports/attempt_clf_crop.md`; per-fight AUCs range from 0.10 to 1.00, so they're noisy with this few fights. Re-running extracts CLIP features for every clip, which takes many minutes (CPU), so I haven't included a quick command.
 
 ### Stop 9 · `tools/eval_harness/` 🟢: the scoring rules, as code

@@ -2,13 +2,13 @@
 
 Status: 🟢 all 3 clips scored on research/referee/eval/labels.csv. 🟡 Evidence frames are rendered in `data/referee/detector/evidence/` (local, 2x2 panels: baseline, hybrid / hybrid_ioa, topdown) but **not yet checked by eye**. Re-run:
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/referee/detector/cache_dets.py   # ~10+ min per clip, CPU
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/referee/detector/evaluate.py --evidence
+    python -I research/referee/detector/cache_dets.py   # ~10+ min per clip, CPU
+    python -I research/referee/detector/evaluate.py --evidence
 
 ## Detectors searched
 | Detector | Weights | License | Used |
 |---|---|---|---|
-| [fight-judge YOLOv8s](https://huggingface.co/hasanfaesal/fight-judge-yolov8s) | `best.pt`, exported to ONNX (`data/referee/detector/weights/`, local) | Weights MIT. Ultralytics was used only for the one-time export (AGPL, separate venv `C:\Users\netan\.venvs\yolo`). It runs under onnxruntime. Training data CC BY-NC-SA. | yes |
+| [fight-judge YOLOv8s](https://huggingface.co/hasanfaesal/fight-judge-yolov8s) | `best.pt`, exported to ONNX (`data/referee/detector/weights/`, local) | Weights MIT. Ultralytics was used only for the one-time export (AGPL, separate venv `a separate venv (yolo)`). It runs under onnxruntime. Training data CC BY-NC-SA. | yes |
 | Roboflow FightersMMA / MMA Striking | datasets only; the hosted models need a Roboflow account/API key | CC BY 4.0 (dataset) | no |
 | RidgeRun MMA detector | not published | n/a | no |
 
