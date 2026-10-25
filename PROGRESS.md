@@ -30,8 +30,8 @@
 | 2. Position classifier (VICOS) | 🟢 GBM + swap aug 0.63 macro-F1 (original keypoints); 🟡 0.47 on YOLO11m keypoints (YOLO finds both athletes in only 46% of frames) |
 | 2b. Pose on UFC | ⏸️ parked: fine-tunes v1/v2 done, but both fighters are correct in only 4/48 tangled frames. The overlay uses only confident parts. |
 | 3. Labeling | 🟡 36 attempts / 20 fights, QA clean. Goal ~60 this week, ~150 for the study. ~1.5 min per attempt. |
-| 4. Attempt detection | 🟡 experimental: frame ROC-AUC 0.70 on 20 fights, but a correct start on only ~6% of attempts; manual "attempt starts" key until M1 |
-| 5. Finish prediction + science | 🟡 live model v0.6 (Brier 0.226 vs 0.270 base rate, gain not yet certain), v0.7 in progress; study waits on ~150 attempts |
+| 4. Attempt detection | 🟡 experimental v2 ([report](reports/attempt_detector_v2.md)): frame ROC-AUC 0.74 (v1 0.70) on 19 fights, but a correct start on only ~8–22% of attempts; manual "attempt starts" key until M1 |
+| 5. Finish prediction + science | 🟡 live model v0.6 (Brier 0.226) and v0.7c = v0.7 + coach priors (0.228; best over every second, 0.204); base rate 0.270. Demo: `--model v07c`. Study waits on ~150 attempts |
 | 6. Overlay | 🟡 replay demo (`tools/mvp/demo.py`): finish chance + choke meter + grip + tracking layer |
 | 7. Expansion | ⚪ |
 
