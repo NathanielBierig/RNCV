@@ -96,7 +96,7 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, gr
     d.rectangle([x0, 0, W, H], fill=BG); d.line([x0, 0, x0, H], fill=LINE, width=2)
     x = x0 + 24
     d.text((x, 18), "RNCV // RNC MONITOR", font=MONO_B, fill=DIM)
-    d.text((x, 38), "rear-naked choke · finish model v0.3 (replay)", font=MONO, fill=DIM)
+    d.text((x, 38), "rear-naked choke · finish model v0.4 (replay)", font=MONO, fill=DIM)
     # attacker: finish % grows
     d.text((x, 78), "ATTACKER", font=MONO, fill=ATT); d.text((x, 96), att[:22], font=SANS_B, fill=INK)
     d.text((x, 124), f"{round(100 * fin):d}%", font=BIG, fill=ATT if live else DIM)
@@ -108,7 +108,7 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, gr
     # defender: health drains
     hp = 1 - fin if air is None else air
     d.text((x, 228), "DEFENDER", font=MONO, fill=DEF); d.text((x, 246), dfn[:22], font=SANS_B, fill=INK)
-    d.text((x, 278), "AIR", font=MONO, fill=DIM); d.text((x + PANEL - 110, 278), f"{round(100 * hp):d}/100", font=MONO_B, fill=INK)
+    d.text((x, 278), "CONSCIOUSNESS", font=MONO, fill=DIM); d.text((x + PANEL - 110, 278), f"{round(100 * hp):d}/100", font=MONO_B, fill=INK)
     hcol = GOOD if hp > .6 else (255, 200, 87) if hp > .3 else BAD
     bar(d, x, 300, PANEL - 48, 22, hp, hcol)
     # sparkline of finish % over the attempt
@@ -159,13 +159,13 @@ def main():
         raise SystemExit(f"no labeled attempts for {clip.name}")
     import sys
     sys.path.insert(0, str(ROOT / "research/model"))
-    import state_model as sm                     # finish model v0.3 (docs/MODEL_SPEC.md)
+    import state_model as sm                     # finish model v0.4 (docs/MODEL_SPEC.md)
     sm.USE_FATIGUE = True
-    cards = list(csv.DictReader(open(ROOT / "research/model/priors_owner.csv", encoding="utf-8")))
+    cards = list(csv.DictReader(open(ROOT / "research/model/priors_owner_v04.csv", encoding="utf-8")))
     train = [r for r in sm.load() if r["fight_id"] != mine[0]["fight_id"]]
     beta, cov = sm.fit_cov(train, cards)
     model = {"cards": len(cards), "n": len(train)}
-    airs = {id(r): sm.health_trace(r) for r in mine}
+    airs = {id(r): [(tt, c) for tt, c, *_ in sm.consciousness_trace(r)] for r in mine}
     out = Path(a.out) if a.out else ROOT / "data/mvp" / f"{clip.stem}_demo.mp4"
     out.parent.mkdir(parents=True, exist_ok=True)
     cap = cv2.VideoCapture(str(clip))
