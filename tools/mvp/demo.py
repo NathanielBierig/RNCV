@@ -90,22 +90,25 @@ def bar(d, x, y, w, h, frac, col, back=LINE):
         d.rounded_rectangle([x, y, x + max(6, int(w * frac)), y + h], 4, fill=col)
 
 
-def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live):
+def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, grip=1.0, band=None):
     d = ImageDraw.Draw(img)
     x0 = W - PANEL
     d.rectangle([x0, 0, W, H], fill=BG); d.line([x0, 0, x0, H], fill=LINE, width=2)
     x = x0 + 24
     d.text((x, 18), "RNCV // RNC MONITOR", font=MONO_B, fill=DIM)
-    d.text((x, 38), "rear-naked choke · finish model v0.1 (demo)", font=MONO, fill=DIM)
+    d.text((x, 38), "rear-naked choke · finish model v0.3 (replay)", font=MONO, fill=DIM)
     # attacker: finish % grows
     d.text((x, 78), "ATTACKER", font=MONO, fill=ATT); d.text((x, 96), att[:22], font=SANS_B, fill=INK)
     d.text((x, 124), f"{round(100 * fin):d}%", font=BIG, fill=ATT if live else DIM)
-    d.text((x + 150, 150), "finish chance", font=MONO, fill=DIM)
+    d.text((x + 150, 136), "finish chance", font=MONO, fill=DIM)
+    if band and live:
+        d.text((x + 150, 154), f"80% band {round(100 * band[0])}–{round(100 * band[1])}%", font=MONO, fill=DIM)
     bar(d, x, 192, PANEL - 48, 14, fin, ATT)
+    d.text((x, 210), "grip", font=MONO, fill=DIM); bar(d, x + 50, 214, 120, 6, grip, (200, 120, 60))
     # defender: health drains
-    hp = 1 - fin
+    hp = 1 - fin if air is None else air
     d.text((x, 228), "DEFENDER", font=MONO, fill=DEF); d.text((x, 246), dfn[:22], font=SANS_B, fill=INK)
-    d.text((x, 278), "HEALTH", font=MONO, fill=DIM); d.text((x + PANEL - 110, 278), f"{round(100 * hp):d}/100", font=MONO_B, fill=INK)
+    d.text((x, 278), "AIR", font=MONO, fill=DIM); d.text((x + PANEL - 110, 278), f"{round(100 * hp):d}/100", font=MONO_B, fill=INK)
     hcol = GOOD if hp > .6 else (255, 200, 87) if hp > .3 else BAD
     bar(d, x, 300, PANEL - 48, 22, hp, hcol)
     # sparkline of finish % over the attempt
@@ -120,12 +123,11 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live):
     # state
     y = 460
     d.text((x, y), "STATE", font=MONO_B, fill=DIM); y += 24
-    rows = [("arm", st.get("choke_arm_position") or "—", st.get("choke_arm_position") == "under_chin" and model["or_arm"] > 1),
-            ("legs", st.get("control") or "—", strong_legs(st.get("control", "")) and model["or_legs"] > 1),
+    rows = [("arm", st.get("choke_arm_position") or "—", st.get("choke_arm_position") == "under_chin"),
+            ("legs", st.get("control") or "—", strong_legs(st.get("control", ""))),
             ("upper body", st.get("upper_body") or "—", st.get("upper_body") == "body_lock"),
             ("grip", st.get("rnc_style") or "—", False),
-            ("defender 2-on-1", {"True": "yes", "False": "no"}.get(st.get("defender_two_on_one", ""), "—"),
-             st.get("defender_two_on_one") == "True" and model["or_two"] > 1),
+            ("defender 2-on-1", {"True": "yes", "False": "no"}.get(st.get("defender_two_on_one", ""), "—"), False),
             ("chin tucked", {"True": "yes", "False": "no"}.get(st.get("chin_tucked", ""), "—"), st.get("chin_tucked") == "False"),
             ("position", st.get("back_context") or "—", False)]
     for k, v, hot in rows:
@@ -133,9 +135,9 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live):
         d.text((x + 170, y), v.replace("_", " "), font=MONO_B, fill=ATT if hot else INK); y += 22
     # model footer
     d.line([x, H - 92, W - 24, H - 92], fill=LINE)
-    d.text((x, H - 84), f"base {100 * model['base']:.0f}% · arm OR {model['or_arm']:.1f} · legs OR {model['or_legs']:.1f}", font=MONO, fill=DIM)
-    d.text((x, H - 64), f"trained on {model['n']} attempts, other fights only", font=MONO, fill=DIM)
-    d.text((x, H - 44), "demo: windows + factors from labels", font=MONO, fill=DIM)
+    d.text((x, H - 84), f"your priors ({model['cards']} cards) + {model['n']} labeled attempts", font=MONO, fill=DIM)
+    d.text((x, H - 64), "other fights only (leave-one-fight-out)", font=MONO, fill=DIM)
+    d.text((x, H - 44), "replay: windows + factors from labels", font=MONO, fill=DIM)
     if banner:
         txt, col = banner
         bw = d.textlength(txt, font=BIG)
@@ -155,7 +157,15 @@ def main():
     mine = sorted([r for r in rows if r["video_url"] == clip.name], key=lambda r: float(r["video_time_start"]))
     if not mine:
         raise SystemExit(f"no labeled attempts for {clip.name}")
-    model = fit([r for r in rows if r["fight_id"] != mine[0]["fight_id"]])
+    import sys
+    sys.path.insert(0, str(ROOT / "research/model"))
+    import state_model as sm                     # finish model v0.3 (docs/MODEL_SPEC.md)
+    sm.USE_FATIGUE = True
+    cards = list(csv.DictReader(open(ROOT / "research/model/priors_owner.csv", encoding="utf-8")))
+    train = [r for r in sm.load() if r["fight_id"] != mine[0]["fight_id"]]
+    beta, cov = sm.fit_cov(train, cards)
+    model = {"cards": len(cards), "n": len(train)}
+    airs = {id(r): sm.health_trace(r) for r in mine}
     out = Path(a.out) if a.out else ROOT / "data/mvp" / f"{clip.stem}_demo.mp4"
     out.parent.mkdir(parents=True, exist_ok=True)
     cap = cv2.VideoCapture(str(clip))
@@ -165,6 +175,7 @@ def main():
     ox, oy = (W - PANEL - nw) // 2, (H - nh) // 2
     wr = cv2.VideoWriter(str(out), cv2.VideoWriter_fourcc(*"mp4v"), fps, (W, H))
     hist, shown, last_end, i = [], 0.0, None, 0
+    air, grip, band = 1.0, 1.0, None
     while True:
         ok, fr = cap.read()
         if not ok:
@@ -177,9 +188,13 @@ def main():
         if cur:
             el = t - float(cur["video_time_start"])
             st = state_at(cur, el)
-            p = finish_prob(model, st) if el >= 2 else model["base"]
-            target = p * (1 - math.exp(-el / max(model["tau"], 1)))
-            shown += (target - shown) * 0.15                      # smooth, no jumps
+            xv = sm.x_at(cur, el)
+            target = sm.predict(beta, xv, sample=False)          # P(finish | state now), no time ramp
+            band = sm.interval(beta, cov, xv)
+            shown += (target - shown) * 0.35                      # light display smoothing only
+            tr = airs[id(cur)]
+            air = tr[min(len(tr) - 1, int(el / 0.1))][1] / 100
+            grip = 1 - float(xv[7])
             hist.append(shown); att_t = el; last_end = cur
             att, dfn, live = cur["attacker"], cur["defender"], True
         else:
@@ -190,11 +205,14 @@ def main():
             if last_end and t - float(last_end["video_time_end"]) < 3:
                 o = last_end["outcome"]
                 banner = (OUTCOME_TXT.get(o, o.upper()), BAD if o in SUCCESS else DEF)
-                shown += ((1.0 if o in SUCCESS else 0.0) - shown) * 0.2
+                shown += ((1.0 if o in SUCCESS else 0.0) - shown) * 0.5
+                if o in SUCCESS:
+                    air = max(0.0, air - 0.1)
             else:
                 shown *= 0.9; hist = [] if shown < .01 else hist
+                air = min(1.0, air + 0.02); grip = min(1.0, grip + 0.02)
         img = Image.fromarray(cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB))
-        panel(img, att, dfn, shown, hist[-240:], st, att_t, banner, model, live)
+        panel(img, att, dfn, shown, hist[-240:], st, att_t, banner, model, live, air, grip, band)
         wr.write(cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR))
     cap.release(); wr.release()
     print("wrote", out)
