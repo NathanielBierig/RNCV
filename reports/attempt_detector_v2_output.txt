@@ -1,0 +1,11 @@
+19 fights, 2779 frames, base rate 0.29
+
+variant                              ROC ROC sm    PR  PR sm | good win overlap FA/min   th
+frame, crop (v1)                    0.70   0.72  0.47   0.52 |     0.08    0.75   0.49 0.55
+frame, full                         0.66   0.68  0.43   0.45 |     0.14    0.75   0.49 0.55
+frame, full+crop                    0.69   0.71  0.47   0.50 |     0.11    0.78   0.49 0.55
++context, crop                      0.74   0.75  0.55   0.57 |     0.08    0.78   0.43 0.50
++context, full+crop                 0.71   0.72  0.50   0.52 |     0.11    0.78   0.73 0.50
++context, full+crop, PCA 64         0.73   0.74  0.54   0.55 |     0.11    0.69   0.43 0.60
++context, full+crop+b16, PCA 64     0.73   0.74  0.52   0.53 |     0.22    0.69   0.61 0.60
++context, full+crop, C 0.05         0.70   0.71  0.50   0.51 |     0.06    0.92   0.30 0.50
