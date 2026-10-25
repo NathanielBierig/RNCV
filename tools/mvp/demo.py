@@ -96,7 +96,7 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, gr
     d.rectangle([x0, 0, W, H], fill=BG); d.line([x0, 0, x0, H], fill=LINE, width=2)
     x = x0 + 24
     d.text((x, 18), "RNCV // RNC MONITOR", font=MONO_B, fill=DIM)
-    d.text((x, 38), "rear-naked choke · finish model v0.4 (replay)", font=MONO, fill=DIM)
+    d.text((x, 38), "rear-naked choke · finish model v0.6 (replay)", font=MONO, fill=DIM)
     # attacker: finish % grows
     d.text((x, 78), "ATTACKER", font=MONO, fill=ATT); d.text((x, 96), att[:22], font=SANS_B, fill=INK)
     d.text((x, 124), f"{round(100 * fin):d}%", font=BIG, fill=ATT if live else DIM)
@@ -135,7 +135,7 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, gr
         d.text((x + 170, y), v.replace("_", " "), font=MONO_B, fill=ATT if hot else INK); y += 22
     # model footer
     d.line([x, H - 92, W - 24, H - 92], fill=LINE)
-    d.text((x, H - 84), f"your priors ({model['cards']} cards) + {model['n']} labeled attempts", font=MONO, fill=DIM)
+    d.text((x, H - 84), f"priors: you + research ({model['cards']} cards) + {model['n']} labels", font=MONO, fill=DIM)
     d.text((x, H - 64), "other fights only (leave-one-fight-out)", font=MONO, fill=DIM)
     d.text((x, H - 44), "replay: windows + factors from labels", font=MONO, fill=DIM)
     if banner:
@@ -160,9 +160,9 @@ def main():
         raise SystemExit(f"no labeled attempts for {clip.name}")
     import sys
     sys.path.insert(0, str(ROOT / "research/model"))
-    import state_model as sm                     # finish model v0.4 (docs/MODEL_SPEC.md)
+    import state_model as sm                     # finish model v0.6 (docs/MODEL_SPEC.md)
     sm.USE_FATIGUE = True
-    cards = list(csv.DictReader(open(ROOT / "research/model/priors_owner_v04.csv", encoding="utf-8")))
+    cards = list(csv.DictReader(open(ROOT / "research/model/priors_combined.csv", encoding="utf-8")))
     train = [r for r in sm.load() if r["fight_id"] != mine[0]["fight_id"]]
     beta, cov = sm.fit_cov(train, cards)
     model = {"cards": len(cards), "n": len(train)}

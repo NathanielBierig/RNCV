@@ -197,7 +197,8 @@ SQUEEZE_V04 = {"version": "v0.4", "w_jaw": 0.15, "w_one_arm": 0.45, "chin_relief
 SQUEEZE_V05 = {"version": "v0.5", "w_jaw": 0.15, "w_one_arm": 0.45, "chin_relief": 0.30,
                "two_relief_open": 0.35, "two_relief_locked": 0.10, "hand_bonus": 0.15}
 SQUEEZE_V05_FIT = dict(SQUEEZE_V05, w_jaw=0.06, w_one_arm=0.61, chin_relief=0.70)
-SQUEEZE = SQUEEZE_V05
+SQUEEZE_V06 = dict(SQUEEZE_V05, version="v0.6", w_jaw=0.05)
+SQUEEZE = SQUEEZE_V06
 
 
 def squeeze(x, p=None):
@@ -237,7 +238,10 @@ CONSCIOUSNESS_V04 = {
 }
 CONSCIOUSNESS_V05 = dict(CONSCIOUSNESS_V04)                   # v0.5: owner's 7.5 s kept (the label fit is not usable)
 CONSCIOUSNESS_V05_FIT = dict(CONSCIOUSNESS_V04, secs_to_out=7.8)   # label-fitted preset (prior 7.5)
-CONSCIOUSNESS = CONSCIOUSNESS_V05
+# v0.6 (Main, 2026-10-26): evidence constants (research/priors_evidence/gauge_evidence.csv): 9 s lock -> out
+# (Stellpflug 2020, matches the owner's 5-10 s), lingering 0.2, fatigue recovery 60 s; over-the-jaw squeeze 0.05.
+CONSCIOUSNESS_V06 = dict(CONSCIOUSNESS_V04, secs_to_out=9.0, lingering_share=0.2, fatigue_recovery_secs=60.0)
+CONSCIOUSNESS = CONSCIOUSNESS_V06
 
 
 def use_v04_gauge():
