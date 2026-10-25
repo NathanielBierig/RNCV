@@ -1,5 +1,22 @@
 # Your tasks (most urgent first)
 
+## ▶ Now (updated 2026-10-26)
+1. 🔴 **Label toward ~60 attempts** (the critical path; every number in the project waits on it). Labeler: Ctrl+Shift+R first, then Load labels.csv, then Link. Two clips are already on disk and unlabeled: **`gsp_bisping.mp4`** (RNC finish) and **`Khabib_conor_r4.mp4.webm`**. Next fights: [FINDABLE_TOP18.md](phase3_labels/FINDABLE_TOP18.md).
+2. 🔴 **Label 1–2 full rounds with back control but no choke** (tell Main "rank N watched, no RNC"). The detector has **zero** such "hard negative" rounds right now, and it needs them to stop firing on every back take.
+3. 🔴 **Decisions (one word each, reply to Main):**
+   - Model for the demo: **v0.6** or **v0.7c** (your grip/legs structure + coach priors)? They're tied on accuracy.
+   - Defender gauge name: keep **"choke meter"**?
+   - At the tap: show **"RESULT: TAP"** instead of 100%?
+   - Public demo without UFC video: the **panel-only GIF** (already in the README), plus your own gym rolls with consent, or a private video for interviews only?
+   - New label fields the coach rates highest: **defender's hand inside the choke**, **defender's arm trapped**, **hurt before the back take** (would be a dated PREREG amendment, descriptive only).
+4. 🟡 New placeholder cards C12–C15 (other lock 65%, one arm 40%, two hooks 75%, re-attack 87%): give buckets if you disagree (`docs/MODEL_SPEC.md` §4f).
+5. 📖 When free: read [docs/CODE_TOUR.md](docs/CODE_TOUR.md) and find a second rater for ~30 attempts.
+
+---
+
+# Older (reference)
+
+
 
 ## 📖 First, next free time (30 min)
 - [ ] **Read the code tour: [docs/CODE_TOUR.md](docs/CODE_TOUR.md).** The code-tour session is refreshing it tonight.
