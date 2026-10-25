@@ -1,0 +1,36 @@
+model (LOFO)                        Brier@2s  Brier all-sec  logloss@2s
+always the average                     0.270          0.270       0.733
+v0.4                                   0.227          0.205       0.643
+v0.5-fit                               0.227          0.206       0.646
+v0.5 (owner-anchored, default)         0.226          0.205       0.643
+v0.5 minus v0.4: -0.000  95% CI [-0.001, +0.001]
+  v0.5-fit  Pantoja consciousness: 10 s 84, 14.9 s 63, just before the KO 47; first 0 at None s (out at 19.0 s)
+  v0.5      Pantoja consciousness: 10 s 60, 14.9 s 7, just before the KO 0; first 0 at 15.7 s (out at 19.0 s)
+fatigue coefficient (all data): -0.59 log-odds at full fatigue
+
+Pantoja vs Asakura R2 (fight left out), v0.5 (default) on-screen values:
+      t  finish   80% band  squeeze  consc.  grip
+    0.0     33%    9- 70%     0.07     100   100
+    1.0     32%    9- 70%     0.07      99    99
+    2.0     32%    9- 70%     0.07      98    99
+    3.0     32%    9- 70%     0.07      98    98
+    4.0     32%    9- 70%     0.07      97    98
+    5.0     32%    9- 70%     0.07      97    97
+    6.0     32%    9- 70%     0.07      97    97
+    6.6     93%   75- 99%     0.80      97    96
+    7.0     93%   75- 99%     0.80      92    94
+    8.0     93%   74- 98%     0.80      81    88
+    9.0     93%   73- 98%     0.80      71    82
+   10.0     93%   73- 98%     0.80      60    77
+   11.0     93%   72- 98%     0.80      49    72
+   12.0     92%   71- 98%     0.80      39    67
+   13.0     92%   71- 98%     0.80      28    63
+   14.0     92%   70- 98%     0.80      17    59
+   14.9     90%   65- 98%     0.72       7    55
+   15.0     90%   65- 98%     0.72       6    55
+   16.0     90%   64- 98%     0.72       0    52
+   17.0     89%   63- 98%     0.72       0    49
+   18.0     89%   63- 98%     0.72       0    46
+   19.0   100%  (unconscious: event shown)  consciousness just before 0 -> snaps to 0;  grip 43
+
+Constants: SQUEEZE = {'version': 'v0.5', 'w_jaw': 0.15, 'w_one_arm': 0.45, 'chin_relief': 0.3, 'two_relief_open': 0.35, 'two_relief_locked': 0.1, 'hand_bonus': 0.15} | CONSCIOUSNESS = {'secs_to_out': 7.5, 'lingering_share': 0.3, 'blood_recovery_secs': 3.0, 'fatigue_recovery_secs': 120.0, 'light_below': 0.3} | DEEP_TWO_ON_ONE_KEEP = 0.25 | FATIGUE_SCALE = 12.0

@@ -39,6 +39,7 @@ def boot_diff(a, b, n=4000, seed=0):
 
 
 def main():
+    sm.use_v04_gauge()   # this report is the v0.3 record (v0.4 squeeze + gauge)
     rows = sm.load()
     res = {"v0.2 placeholders, no fatigue": run("priors_placeholder.csv", False),
            "v0.3 owner buckets, no fatigue": run("priors_owner.csv", False),

@@ -1,0 +1,42 @@
+MODE: tap-aware (unconscious -> 0 at the end; tap -> consciousness <= 40 at the tap; survivors >= 20, weight 1)
+35 attempts (17 finishes), 19 rounds
+
+BEFORE (v0.4 constants):      finishes at 0 within +-2 s of the end: 3/17 (early 7, late 7); survivors wrongly at 0: 6/18 (below 20: 10/18)
+v0.4 constants + G2 rule only: finishes at 0 within +-2 s of the end: 4/17 (early 7, late 6); survivors wrongly at 0: 6/18 (below 20: 11/18)
+AFTER, leave-one-fight-out:   finishes at 0 within +-2 s of the end: 2/17 (early 4, late 11); survivors wrongly at 0: 4/18 (below 20: 5/18)
+    taps with consciousness <= 40 at the tap: 5/13
+AFTER, refit on all (in-sample): finishes at 0 within +-2 s of the end: 2/17 (early 4, late 11); survivors wrongly at 0: 3/18 (below 20: 4/18)
+
+Fitted constants (all fights) [v0.4 value] (LOFO range):
+  w_jaw        0.099  [0.15]  (0.084-0.169)
+  w_one_arm    0.478  [0.45]  (0.348-0.799)
+  chin_relief  0.700  [0.3]  (0.625-0.710)
+  secs_to_out  6.321  [7.5]  (5.976-6.922)
+  fixed: two-on-one relief 0.35 open / 0.1 locked under chin; hand bonus 0.15
+
+Per finish (LOFO): labeled end vs time the gauge hits 0
+  Khabib Nurmagomedo tap          end   4.8s  zero at  18.4s  (+13.6)
+  Deiveson Figueired unconscious  end  12.4s  zero at  42.4s  (+30.0)
+  Anthony Smith      unconscious  end  11.0s  zero at  41.0s  (+30.0)
+  Dricus Du Plessis  tap          end   8.4s  zero at  23.7s  (+15.3)
+  Jailton Almeida    tap          end   9.6s  zero at   6.3s  (-3.3)
+  Charles Oliveira   tap          end  24.1s  zero at  19.8s  (-4.3)
+  Islam Makhachev    tap          end   9.3s  zero at  21.5s  (+12.2)
+  Charles Oliveira   tap          end   9.9s  zero at   4.1s  (-5.9)
+  Alexandre Pantoja  tap          end  19.2s  zero at  18.3s  (-0.9)
+  Glover Teixeira    tap          end   7.5s  zero at  37.5s  (+30.0)
+  Charles Oliveira   tap          end  20.0s  zero at  50.0s  (+30.0)
+  Aljamain Sterling  tap          end  11.7s  zero at  16.2s  (+4.5)
+  Darren Elkins      tap          end   9.8s  zero at  15.2s  (+5.4)
+  Alexandre Pantoja  unconscious  end  19.0s  zero at  26.9s  (+7.9)
+  Daniel Cormier     tap          end   6.6s  zero at   6.3s  (-0.3)
+  Jussier Formiga    unconscious  end   8.6s  zero at   6.2s  (-2.4)
+  Jiri Prochazka     tap          end  10.5s  zero at  18.5s  (+8.0)
+Survivors that reach 0 or below 20 (LOFO):
+  Charles Oliveira   escape          dur   7.2s  min consciousness   0
+  Aljamain Sterling  position_change dur  17.4s  min consciousness  18
+  Darren Elkins      position_change dur   7.2s  min consciousness   0
+  Charles Oliveira   position_change dur  28.6s  min consciousness   0
+  Charles Oliveira   position_change dur  33.5s  min consciousness   0
+
+Pantoja-Asakura (fight left out): zero at 26.9s, out at 19.0s (v0.4: 16 s)

@@ -189,12 +189,30 @@ GAUGE = {"secs_to_out": 9.0, "recovery_secs": 8.0, "leak_below": 0.3}   # placeh
 # fight chokes are rarely full, so a little longer. Not tuned on any clip.
 
 
-def squeeze(x):
-    """How hard the visible state squeezes, 0..1 (placeholder weights; owner cards Q-G3).
-    Under chin + locked = 1; over the jaw ~0.15; a two-on-one or a tucked chin takes some of it away."""
+# squeeze weights. v0.4 = placeholders. v0.5 (default) = v0.4 + owner G2 (locked under the chin + two-on-one = 0.9 of
+# full), secs_to_out stays at the owner's 7.5 s. V05_FIT = weights + secs_to_out fitted to the labels
+# (research/model/calibrate_squeeze.py): survivors stop hitting 0, but finishes read far too high (MODEL_SPEC §4d).
+SQUEEZE_V04 = {"version": "v0.4", "w_jaw": 0.15, "w_one_arm": 0.45, "chin_relief": 0.30,
+               "two_relief_open": 0.35, "two_relief_locked": 0.35, "hand_bonus": 0.15}
+SQUEEZE_V05 = {"version": "v0.5", "w_jaw": 0.15, "w_one_arm": 0.45, "chin_relief": 0.30,
+               "two_relief_open": 0.35, "two_relief_locked": 0.10, "hand_bonus": 0.15}
+SQUEEZE_V05_FIT = dict(SQUEEZE_V05, w_jaw=0.06, w_one_arm=0.61, chin_relief=0.70)
+SQUEEZE = SQUEEZE_V05
+
+
+def squeeze(x, p=None):
+    """How hard the visible state squeezes, 0..1. Under chin + locked = 1; over the jaw = w_jaw; under the chin
+    without a lock = w_one_arm; a two-on-one or a tucked chin takes some of it away.
+    v0.4 used the finish model's shrunk two-on-one value; v0.5 uses the raw one with its own relief:
+    two_relief_locked when the choke is locked under the chin (owner G2), two_relief_open otherwise."""
+    p = p or SQUEEZE
     arm, grip, legs, two, chin, hand, flat = x[:7]
-    base = arm * (0.45 + 0.55 * grip) + (1 - arm) * 0.15
-    return float(np.clip(base * (1 - 0.35 * two) * (1 - 0.3 * chin) * (1 + 0.15 * hand), 0, 1))
+    if p["version"] != "v0.4":
+        two = min(1.0, two / (1 - (1 - DEEP_TWO_ON_ONE_KEEP) * arm * grip * hand))   # undo the finish-model shrink
+    base = arm * (p["w_one_arm"] + (1 - p["w_one_arm"]) * grip) + (1 - arm) * p["w_jaw"]
+    relief = p["two_relief_open"] + (p["two_relief_locked"] - p["two_relief_open"]) * arm * grip
+    chin = chin * (1 - (1 - p.get("chin_keep_locked", 1.0)) * arm * grip)   # v0.5b: a tucked chin helps less once locked under it
+    return float(np.clip(base * (1 - relief * two) * (1 - p["chin_relief"] * chin) * (1 + p["hand_bonus"] * hand), 0, 1))
 
 
 def health_trace(row, dt=0.1, g=GAUGE):
@@ -210,20 +228,30 @@ def health_trace(row, dt=0.1, g=GAUGE):
 
 
 # ---- v0.4 defender gauge: CONSCIOUSNESS = fast blood-flow deficit + slow lingering fatigue (owner G1, G3) ----
-CONSCIOUSNESS = {
+CONSCIOUSNESS_V04 = {
     "secs_to_out": 7.5,        # G1: a fully locked RNC under the chin, squeezing hard -> out in 5-10 s
     "lingering_share": 0.3,    # share of each squeeze-second that becomes lingering fatigue instead of blood deficit
     "blood_recovery_secs": 3.0,    # blood deficit drains with this time constant once the squeeze is light ("recovers fairly quickly")
     "fatigue_recovery_secs": 120.0,  # lingering fatigue drains this slowly: it does not recover within the exchange
     "light_below": 0.3,        # squeeze < this = he's getting blood flow again (recovery on)
 }
+CONSCIOUSNESS_V05 = dict(CONSCIOUSNESS_V04)                   # v0.5: owner's 7.5 s kept (the label fit is not usable)
+CONSCIOUSNESS_V05_FIT = dict(CONSCIOUSNESS_V04, secs_to_out=7.8)   # label-fitted preset (prior 7.5)
+CONSCIOUSNESS = CONSCIOUSNESS_V05
 
 
-def consciousness_trace(row, dt=0.1, g=CONSCIOUSNESS, start=(0.0, 0.0)):
+def use_v04_gauge():
+    """Restore the v0.4 squeeze weights + gauge (keeps the v0.2-v0.4 report scripts reproducible)."""
+    global SQUEEZE, CONSCIOUSNESS
+    SQUEEZE, CONSCIOUSNESS = SQUEEZE_V04, CONSCIOUSNESS_V04
+
+
+def consciousness_trace(row, dt=0.1, g=None, start=(0.0, 0.0)):
     """[(t, consciousness 0-100, blood deficit B, lingering fatigue D)].
     While squeezing at s(state): B grows at (1 - share) * s, D at share * s, so a continuous full squeeze reaches
     B + D = secs_to_out (consciousness 0) after secs_to_out seconds. When the squeeze is light, B drains fast and D
     barely moves. `start` = (B, D) carried over from an earlier attempt in the same round."""
+    g = g or CONSCIOUSNESS
     B, D = start
     out, t, dur = [], 0.0, duration(row)
     while t <= dur + 1e-9:
@@ -321,6 +349,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--priors", default=str(ROOT / "research/model/priors_placeholder.csv"))
     a = ap.parse_args()
+    global DEEP_TWO_ON_ONE_KEEP
+    DEEP_TWO_ON_ONE_KEEP = 1.0                               # this report is the v0.2/v0.3 record
+    use_v04_gauge()
     rows = load()
     cards = list(csv.DictReader(open(a.priors, encoding="utf-8")))
     y = [r["outcome"] in SUCCESS for r in rows]

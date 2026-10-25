@@ -39,6 +39,7 @@ def round_gauges(rows, g=sm.CONSCIOUSNESS):
 
 
 def main():
+    sm.use_v04_gauge()   # this report is the v0.4 record (v0.4 squeeze + gauge)
     rows = sm.load()
     v03 = run("priors_owner.csv", 1.0)
     v04 = run("priors_owner_v04.csv", sm.DEEP_TWO_ON_ONE_KEEP_V04)
