@@ -2,7 +2,8 @@
 
 🟢 done · 🟡 in progress · 🔴 needs the owner · ⚪ not started
 
-## ▶ Next session starts here (2026-10-25)
+## ▶ Next session starts here (2026-10-26)
+0. **Today's work session:** README is outward-facing, with honest results and a footage-free GIF. Detector v2 ROC-AUC 0.74 (from 0.70). Model v0.7c = v0.7 + coach priors (Brier 0.228, tied with v0.6). Pre-registered analysis script tested on simulated data. Paper outline is in `docs/paper/`. Two detector ideas (onset model, neck crops) were tried and rejected: **the detector is data-limited.** Owner decisions are in [HUMAN_TASKS.md](HUMAN_TASKS.md).
 1. **Labels:** 36 attempts / 20 fights (main-card successes + failure rounds), QA clean. Fastest next fights: [phase3_labels/FINDABLE_TOP18.md](phase3_labels/FINDABLE_TOP18.md).
 2. **MVP 0.1** (`tools/mvp/demo.py`, a replay overlay: finish % for the attacker, a health bar for the defender) was **rejected on the math**: the time ramp made a locked figure-four read ~2% and a knockout ~30%. **Redesign first:** a math/model expert session writes `docs/MODEL_SPEC.md` (expert priors + labels; the number = chance this attempt finishes given the current state; tap → ~100%). The owner is answering alignment questions in batches.
 3. **Automatic detection:** pose is parked (4/48 frames correct, [research/pose_review/REVIEW.md](research/pose_review/REVIEW.md)); the no-pose attempt detector is at ROC-AUC 0.70 on 20 fights. Re-test at ~40 fights: `research/attempt_clf/attempt_clf.py --crop --refresh`.
