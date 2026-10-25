@@ -153,6 +153,8 @@ def main():
     ap.add_argument("--no-track", action="store_true", help="skip the fighter tracking layer")
     ap.add_argument("--model", choices=["v06", "v07c"], default="v06",
                     help="v06 = current model; v07c = v0.7 structure (grip type, body triangle) + coach priors")
+    ap.add_argument("--panel-only", action="store_true",
+                    help="footage-free output: only the readout panel around the attempts (+ a GIF), shareable")
     a = ap.parse_args()
     clip = Path(a.clip)
     rows = list(csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8")))
@@ -187,9 +189,15 @@ def main():
     vw, vh = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     s = min((W - PANEL) / vw, H / vh); nw, nh = int(vw * s), int(vh * s)
     ox, oy = (W - PANEL - nw) // 2, (H - nh) // 2
-    wr = cv2.VideoWriter(str(out), cv2.VideoWriter_fourcc(*"mp4v"), fps, (W, H))
+    po = a.panel_only
+    if po:                                       # no UFC pixels: panel only, attempts +- a few seconds
+        out = out.with_name(out.stem.replace("_demo", "") + "_panel.mp4")
+        t_lo = float(mine[0]["video_time_start"]) - 2.0
+        t_hi = float(mine[-1]["video_time_end"]) + 4.0
+        gif = []
+    wr = cv2.VideoWriter(str(out), cv2.VideoWriter_fourcc(*"mp4v"), fps, (PANEL, H) if po else (W, H))
     layer = None
-    if not a.no_track:
+    if not a.no_track and not po:
         sys.path.insert(0, str(ROOT / "tools/mvp"))
         import tracking
         layer = tracking.Layer(*tracking.compute(clip))
@@ -234,8 +242,19 @@ def main():
                 air = min(1.0, air + 0.02); grip = min(1.0, grip + 0.02)
         img = Image.fromarray(cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB))
         panel(img, att, dfn, shown, hist[-240:], st, att_t, banner, model, live, air, grip, band)
+        if po:
+            if t_lo <= t <= t_hi:
+                pim = img.crop((W - PANEL, 0, W, H - 100))
+                wr.write(cv2.cvtColor(np.asarray(img.crop((W - PANEL, 0, W, H))), cv2.COLOR_RGB2BGR))
+                if i % 3 == 0:
+                    gif.append(pim.resize((PANEL // 2 * 2 * 3 // 4, (H - 100) * 3 // 4)))
+            continue
         wr.write(cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR))
     cap.release(); wr.release()
+    if po and gif:
+        g = out.with_suffix(".gif")
+        gif[0].save(g, save_all=True, append_images=gif[1:], duration=int(3000 / fps), loop=0, optimize=True)
+        print("wrote", g)
     print("wrote", out)
 
 

@@ -30,6 +30,12 @@ Model details: [docs/MODEL_SPEC.md](docs/MODEL_SPEC.md) · Expert review: [resea
 
 Readouts come from **labeled positions** for now, not from live computer vision.
 
+<img src="docs/media/pantoja_asakura_panel.gif" width="315" align="right" alt="Readout panel replaying Pantoja vs Asakura">
+
+**Example (footage-free replay of the readouts):** Pantoja vs Asakura, UFC flyweight title, round 2, scored by a model that never saw this fight. The finish chance sits near 30% while the arm is over the jaw. It jumps to ~92% when the figure-four locks under the chin, and holds ~88% through Asakura's late two-on-one, because the choking hand is hidden. The choke meter drains to 0 at about 18 s; he went out at 19 s. Made with `python tools/mvp/demo.py <clip> --model v07c --panel-only`, which writes only the panel, never video pixels.
+
+<br clear="right">
+
 ---
 
 ## Repo map
