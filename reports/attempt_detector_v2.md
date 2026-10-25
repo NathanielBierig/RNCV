@@ -21,3 +21,6 @@ Script: [research/attempt_clf/detector_v2.py](../research/attempt_clf/detector_v
 
 ## Tried and rejected: a separate "choke is starting" model
 [onset_try.py](../research/attempt_clf/onset_try.py) ([output](../research/attempt_clf/onset_try_output.txt)) trained a model to tell the first 3 s of an attempt from the 1–8 s just before it. It scored **ROC-AUC 0.56**, close to guessing, and gating the detector with it did not raise the share of correct windows (≤ 8%). **Whole-image features can't see the moment the arm comes across the neck.** The timing needs a signal focused on the neck and arms, for example crops around the defender's head, or the head reticles the tracking layer already finds, plus more fights.
+
+## Tried and rejected: head/neck crops
+[extract_neck.py](../research/attempt_clf/extract_neck.py) built a square crop around the fighters' confident head keypoints. Alone it scored **ROC-AUC 0.69**; combined with the pair crop, **0.73**. Neither beats v2 (0.74), and correct windows stayed at ~14%, which is within noise. At 2 frames per second, with a 224-px CLIP input on broadcast-size heads, the arm-across-neck detail is still too small or too often hidden. **Verdict: the detector is data-limited, not feature-limited.** Next is ~40 fights plus hard-negative rounds, then re-test with `detector_v2.py`.
