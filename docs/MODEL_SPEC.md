@@ -1,6 +1,6 @@
 # Finish model spec: the two numbers on screen and how they're computed
 
-Draft v0.3, 2026-10-25, model-expert session. v0.3 runs on the owner's bucket answers for C1–C4 (§4b) and adds **attacker fatigue** (§2c, a slow downward drift with time held that starts at zero, so it's not the rejected ramp) and **bucket answers** for cards (§3). v0.2 added the owner's answers (batches 1–2): portfolio showcase, **two** numbers (attacker finish % + defender gauge), priors + data, n ≈ 40–80 attempts, an attempt detector in the next version, and the live model kept separate from the frozen study. Replaces the MVP 0.1 math in `tools/mvp/demo.py` (rejected by the owner).
+Draft v0.4, 2026-10-25, model-expert session. **v0.4 (owner batch 3, §4c):** the defender gauge is now **CONSCIOUSNESS** (fast blood-flow deficit + slow lingering fatigue, out after 7.5 s of full squeeze); a late two-on-one keeps only 25% of its effect once the choke is locked under the chin with the hand hidden; fatigue is data-driven (C10 card dropped). v0.3 ran on the owner's bucket answers for C1–C4 (§4b) and adds **attacker fatigue** (§2c, a slow downward drift with time held that starts at zero, so it's not the rejected ramp) and **bucket answers** for cards (§3). v0.2 added the owner's answers (batches 1–2): portfolio showcase, **two** numbers (attacker finish % + defender gauge), priors + data, n ≈ 40–80 attempts, an attempt detector in the next version, and the live model kept separate from the frozen study. Replaces the MVP 0.1 math in `tools/mvp/demo.py` (rejected by the owner).
 
 🟢 done · 🟡 in progress · 🔴 needs the owner · ⚪ not started
 
@@ -12,7 +12,8 @@ Draft v0.3, 2026-10-25, model-expert session. v0.3 runs on the owner's bucket an
 - 🟢 **Attacker fatigue (v0.3):** the longer he squeezes, the more his arms and grip tire, so the same position slowly becomes *less* likely to finish. It enters as one extra factor that is **exactly 0 at the start** and grows with seconds of squeezing (≈0.4 after 6 s, 0.8 after 20 s). It can only nudge the number down from where the position puts it, never start an attempt low. It has a matching **GRIP gauge** for the attacker (100 → down). Placeholder prior "80% fresh → 70% after 6 s" + labels gives a small effect (−0.32 log-odds at full fatigue): Pantoja–Asakura 96% → 95%, and 87% → 85% at the end.
 - 🟢 **Knowledge = your BJJ judgment + labels.** You give a % (and a range) for ~10 plain-BJJ **scenario cards**, or just a **bucket** (<20 / 20–45 / 45–70 / >70%) when unsure: a bucket counts as 3 attempts, so labels decide. A narrow range counts for more, up to 10 attempts' worth per card. The labels pull the numbers toward what UFC fights actually show. Built for **40–80 attempts**: the cards do real work, and every number carries an **uncertainty band**.
 - 🟢 **Prototype (35 attempts, 19 fights, each fight scored by a model that never saw it):** Brier score (0 = perfect, 0.25 = coin flip) is **0.216**, vs 0.270 for always guessing the average and **0.413 for MVP 0.1**. The gain over the average is small and uncertain (95% CI 0.001–0.099). **Pantoja–Asakura:** finish ~35% → **~96%** (figure-four under the chin) → ~87% (late two-on-one) → 100%; air 100 → 0 at 19 s.
-- 🟢 **v0.3 = the model for MVP 0.2:** your bucket answers for C1–C4 (3 attempts' worth each), C5–C10 placeholders at lower weight (2 each), and fatigue on. Brier **0.222** vs 0.216 for the v0.2 placeholder cards and 0.270 for the average. That's a statistical tie with v0.2 (+0.006, CI −0.001 to +0.013). Expected: your answers are deliberately wide, and my placeholders were written after seeing the labels. **Pantoja–Asakura:** 29% → **95%** → 94% (fatigue) → 83% (late two-on-one) → 100%; Air 100 → 4 at 18 s; Grip 100 → 46 (§4b).
+- 🟢 **v0.4 = the model for MVP 0.2 (§4c):** Brier **0.227**, a tie with v0.3 (0.222; difference +0.004, CI −0.011 to +0.017) and better than the average (0.270). **Pantoja–Asakura:** 32% → **93%** (locked) → 92% (fatigue) → **90%** (late two-on-one now costs only 2 points) → 100%. CONSCIOUSNESS 100 → 7 at 14.9 s → 0 at 16 s (3 s before he went out); Grip 100 → 43.
+- 🟢 **v0.3 (superseded by v0.4):** your bucket answers for C1–C4 (3 attempts' worth each), C5–C10 placeholders at lower weight (2 each), and fatigue on. Brier **0.222** vs 0.216 for the v0.2 placeholder cards and 0.270 for the average. That's a statistical tie with v0.2 (+0.006, CI −0.001 to +0.013). Expected: your answers are deliberately wide, and my placeholders were written after seeing the labels. **Pantoja–Asakura:** 29% → **95%** → 94% (fatigue) → 83% (late two-on-one) → 100%; Air 100 → 4 at 18 s; Grip 100 → 46 (§4b).
 - 🔴 **Attempt detection is the bottleneck for "drop a clip".** The current detector (frame ROC-AUC 0.70) is "on" for the whole grappling exchange. It puts a correctly placed window on only **~6% of attempts** (start within 2 s, mostly the right span). Target for the app: **≥ 80% of attempts and ≥ 95% of finishes**, start within 2 s, **≤ 1 false alarm per 5-min round**. Until then the app uses a one-key "attempt starts" fallback.
 - 🟢 **Science stays separate.** The frozen study is unchanged. The live model can use priors and change freely; **no PREREG amendment is needed for it.** One disclosure note is still needed, because MVP 0.1 showed pilot odds ratios (§8).
 - 🔴 **Owner:** answer the question batches in §9 (plain BJJ terms, ~5 min per batch).
@@ -44,7 +45,10 @@ Every attempt in the file read 7–10% at 2 s, because `ramp(2 s) = 0.18`. The r
 - **Ends:** tap / ref stop / knockout frame → 100%. Escape / position change → 0%. Bell → 0% ("saved", Q-D2).
 - **Optional "fading" state** (Q-D1): arms drop, body goes slack, ref leans in, logged with G. It lets F reach ~95% a second *before* the tap, still without seeing the future. This needs a new label field (main session).
 
-### 2b. Defender AIR gauge (the health bar, an accumulator)
+### 2b. Defender AIR gauge (v0.2–v0.3; replaced by the CONSCIOUSNESS gauge in §4c)
+
+> v0.4: Air is superseded. The owner pointed out that an RNC is a **blood** choke, not an air choke, and that it fatigues a lot. The new two-part gauge is defined in §4c; this section is kept for the record.
+
 - **Definition:** `Air(t) = 100 × (1 − E(t) / E_out)`, floored at 0, where `E(t)` = **squeeze exposure**, the seconds of effective choking absorbed so far:
   - `dE/dt = s(state) − recovery`. `s` = how hard the visible state squeezes, from 0 to 1: a locked choke under the chin = 1, over the jaw ≈ 0.15, and a two-on-one or a tucked chin takes some of it away. **Recovery** = `E / 8 s`, applied only while the squeeze is light (s < 0.3), i.e. once he's breathing again.
   - `E_out` = seconds of full squeeze until a UFC fighter goes out. Placeholder **9 s**: full blockage of the neck arteries causes unconsciousness in ~6–7 s (Rossen, Kabat & Anderson 1943), and fight chokes are rarely full. It wasn't tuned on any clip.
@@ -147,6 +151,44 @@ The lowest bin under-predicts (2 of 5 finished at ~14%), but n = 5. Watch it as 
 
 All three owner complaints are fixed: an arm under the chin with the figure-four reads 95%, not 2%; the knockout moment reads 83% and then 100%, not 30%; the tap/knockout frame reads 100%.
 
+## 4c. v0.4: owner batch 3 (the model for MVP 0.2)
+
+**Changes:**
+1. **Late two-on-one in a deep lock (Q-D4, "matters a little").** The two-on-one factor is multiplied by `1 − 0.75 × deep`, where `deep = arm under chin × grip locked × hand hidden` (each 0–1, unknown = 0.5). In a full deep lock a two-on-one keeps **25%** of its usual effect (`DEEP_TWO_ON_ONE_KEEP = 0.25`). It's a fixed rule from your answer; 35 attempts can't test it. The same rule also softens the two-on-one's effect on squeeze strength.
+2. **Fatigue (C10, "no preference").** The C10 card is dropped. The fatigue term now has only a weak prior centered on zero (normal, sd 1.5 on log-odds), so its size comes from the labels. Fitted: **−0.54** log-odds at full fatigue (×0.58 on the odds). It's larger than in v0.3 but very uncertain.
+3. **CONSCIOUSNESS gauge (G1 + G3), replacing Air.** Suggested on-screen label: **CONSCIOUSNESS**, a bar with two shaded parts: "blood flow" (fast) and "fatigue" (lingering).
+   - `B` = blood-flow deficit, `D` = lingering fatigue (both in "seconds of full squeeze"), `s(state)` = squeeze strength 0–1 (as before).
+   - While squeezing: `dB/dt = 0.7·s`, `dD/dt = 0.3·s`, so a continuous full squeeze reaches `B + D = 7.5 s` → **consciousness 0 after 7.5 s** (G1: "5–10 s").
+   - When the squeeze is light (`s < 0.3`): `B` drains with a **3-s** time constant (blood flow comes back quickly) and `D` with a **120-s** one (it doesn't recover within the exchange).
+   - `CONSCIOUSNESS = 100 × max(0, 1 − (B + D)/7.5)`. `B` and `D` carry over between attempts in the same round, recovering over the gap.
+   - **Display rules for Main:** floor the bar at 5 until a finish event (so it never reads 0 while he's still defending), snap to 0 at a finish frame, and let it refill after an escape (blood part fast, fatigue part stays).
+
+**Exact constants:** `DEEP_TWO_ON_ONE_KEEP = 0.25`; `FATIGUE_SCALE = 12.0 s` (unchanged); `CONSCIOUSNESS = {secs_to_out: 7.5, lingering_share: 0.3, blood_recovery_secs: 3.0, fatigue_recovery_secs: 120.0, light_below: 0.3}`; squeeze weights unchanged (placeholders until G2). Cards: [priors_owner_v04.csv](../research/model/priors_owner_v04.csv) (C1–C4 your buckets at weight 3, C5–C9 placeholders at weight 2, no C10). Run: [run_v04.py](../research/model/run_v04.py) → [run_v04_output.txt](../research/model/run_v04_output.txt).
+
+| Model (LOFO, 35 attempts / 19 fights) | Brier at 2 s | Brier over every second | Log loss at 2 s |
+|---|---|---|---|
+| Always the average | 0.270 | 0.270 | 0.733 |
+| v0.3 (buckets + C10 card + fatigue) | 0.222 | 0.196 | 0.632 |
+| v0.4 without the deep-lock rule | 0.223 | 0.196 | 0.632 |
+| **v0.4** | **0.227** | **0.205** | **0.643** |
+
+v0.4 minus v0.3: +0.004 (CI −0.011 to +0.017), a tie. v0.4 minus the average: −0.043 (CI −0.088 to +0.009). The deep-lock rule costs a little on these labels: in this sample, attempts that kept a two-on-one late often still escaped. That's a judgment call the labels can't settle at n = 35. It's your BJJ view against a handful of attempts, and §7's checks will show if it hurts as data grows.
+
+Calibration at 2 s: 0–20% → 25% observed (n = 4), 20–40% → 57% (n = 7), 40–60% → 25% (n = 12), 60–80% → 67% (n = 9), 80–100% → 100% (n = 3). Noisy; the middle bins swap.
+
+**Consciousness gauge check** (end of attempt, carried across a round): median **0 for finishes vs 15 for non-finishes** (AUC 0.63); ≤ 20 at the end: 11/17 finishes, **10/18 non-finishes**. The gauge drains too readily on attempts that were survived. Likely cause: the placeholder squeeze strengths (G2), since labels can't see how hard he's actually squeezing. Your G2 answers are the fix; until then, read the gauge as "danger dose", not "he's out".
+
+**Pantoja–Asakura R2** (fight left out; MVP 0.2 values):
+
+| Time | Visible state | Finish % (80% band) | CONSCIOUSNESS (blood / fatigue deficit, s) | Grip |
+|---|---|---|---|---|
+| 0–6.6 s | arm over the jaw, two-on-one, chin tucked | **32%** (9–70%) | 100 → 97 (0.1 / 0.1) | 100 → 96 |
+| 6.6 s | figure-four under the chin, hand hidden | **93%** (75–99%) | 97 | 96 |
+| 10 s | same | 93% | 60 (2.0 / 1.0) | 77 |
+| 14.9 s | late two-on-one | **90%** (65–98%), was 83% in v0.3 | 7 (4.8 / 2.1) | 55 |
+| 16–18 s | same | 90% | 0 → floor 5 on screen (6.4 / 2.8) | 52 → 46 |
+| 19.0 s | **unconscious** (event shown) | **100%** | 0 | 43 |
+
 ## 5. Other designs considered
 - **B. Competing-risks hazard model (switch at ~100+ attempts).** Each second the attempt finishes, fails or continues (a discrete-time hazard model: Allison 1982; Singer & Willett 2003; competing risks: Putter et al. 2007). The bell **censors**: the observation stops without an outcome. It handles the round clock properly (less time left → lower finish %), gives a "danger in the next 3 s" readout, and matches PREREG §7's secondary model. Too few finishes (17) to fit today.
 - **C. Points rubric + calibration curve.** Fully transparent, but the points aren't a probability until calibrated, and 40–80 attempts can't calibrate a curve. Design A is the same idea with the calibration built in.
@@ -242,7 +284,8 @@ For every card: **"Out of 100 of these in the UFC, how many end in a tap or knoc
 ## 11. Files and hand-off to Main
 - [research/model/state_model.py](../research/model/state_model.py): finish model (fit, Laplace bands, leave-one-fight-out scores, calibration), the Air gauge (`health_trace`), and card weights from ranges (`card_weight`). Run: `C:/Users/netan/.venvs/ufc-cv/Scripts/python -I research/model/state_model.py [--priors <cards.csv>]`.
 - [research/model/priors_placeholder.csv](../research/model/priors_placeholder.csv): 9 placeholder cards (8 positions + C10 fatigue). Your answers go into `priors_owner.csv` with the same columns, plus optional `p_low,p_high` or `bucket` (`<20`, `20-45`, `45-70`, `>70`). `USE_FATIGUE` in `state_model.py` switches the fatigue term on (runs M5); M6 = all cards as buckets.
-- [research/model/priors_owner.csv](../research/model/priors_owner.csv): **the v0.3 cards MVP 0.2 should use** (your buckets C1–C4 + lower-weight placeholders C5–C10). [run_v03.py](../research/model/run_v03.py) reproduces §4b. For MVP 0.2: `sm.USE_FATIGUE = True; beta = sm.fit(other_fights_rows, cards("priors_owner.csv"))`; per frame `x = sm.x_at(row, t)` → `sm.predict(beta, x, sample=False)` and `sm.interval(...)`.
+- **v0.4 (use this for MVP 0.2):** cards [priors_owner_v04.csv](../research/model/priors_owner_v04.csv); `sm.USE_FATIGUE = True` (`DEEP_TWO_ON_ONE_KEEP = 0.25` is the default); finish % as below; defender bar = `sm.consciousness_trace(row, start=(B, D))` (columns t, consciousness, blood deficit, lingering fatigue; carry `(B, D)` between attempts in a round, decayed over the gap as in `run_v04.round_gauges`); label **CONSCIOUSNESS** with "blood flow" / "fatigue" shading; floor 5 until a finish frame.
+- [research/model/priors_owner.csv](../research/model/priors_owner.csv): the v0.3 cards (kept for the record) (your buckets C1–C4 + lower-weight placeholders C5–C10). [run_v03.py](../research/model/run_v03.py) reproduces §4b. For MVP 0.2: `sm.USE_FATIGUE = True; beta = sm.fit(other_fights_rows, cards("priors_owner.csv"))`; per frame `x = sm.x_at(row, t)` → `sm.predict(beta, x, sample=False)` and `sm.interval(...)`.
 - [research/model/detector_events.py](../research/model/detector_events.py): event-level detector check (clip venv).
 - [research/model/diagnose_mvp01.py](../research/model/diagnose_mvp01.py): reproduces the MVP 0.1 numbers.
 - For `tools/mvp/demo.py` (Main): replace `fit`/`finish_prob` and the ramp with `state_model.fit` + `predict(..., sample=False)` (+ `interval` for the band); drive the defender bar with `health_trace` instead of `1 − finish %`; drive the attacker GRIP gauge from the same squeeze effort `G` (`100·e^(−G/12)`); snap to 100% / Air 0 at a finish frame and 0% at an escape; drop the 3-s post-event easing.

@@ -30,6 +30,9 @@ BUCKETS = {"<20": 0.10, "20-45": 0.325, "45-70": 0.575, ">70": 0.85}   # coarse-
 LOCKED = {"figure_four", "palm_to_palm", "gable", "wrist_pull"}
 OPEN = {"one_arm", "short_choke"}
 LANDMARK = 2.0
+DEEP_TWO_ON_ONE_KEEP_V04 = 0.25
+DEEP_TWO_ON_ONE_KEEP = DEEP_TWO_ON_ONE_KEEP_V04   # v0.4 (owner Q-D4): with the arm under the chin + locked + hand hidden, a two-on-one keeps
+                              # only 25% of its usual effect ("matters a little"). 1.0 = v0.2/v0.3 behaviour.
 
 
 def load():
@@ -47,8 +50,10 @@ def encode(st, fat=0.0):
     grip = 1.0 if g in LOCKED else 0.0 if g in OPEN else 0.5
     c = st.get("control", "")
     legs = 1.0 if c in ("two_hooks", "body_triangle") else 0.0 if c in ("one_hook", "none") else 0.5
-    return np.array([arm, grip, legs, b(st.get("defender_two_on_one", "")), b(st.get("chin_tucked", "")),
-                     b(st.get("choking_hand_tucked", "")), b(st.get("opponent_flattened", "")), fat])
+    hand = b(st.get("choking_hand_tucked", ""))
+    deep = arm * grip * hand                                 # 1 = locked under the chin with the hand hidden
+    two = b(st.get("defender_two_on_one", "")) * (1 - (1 - DEEP_TWO_ON_ONE_KEEP) * deep)
+    return np.array([arm, grip, legs, two, b(st.get("chin_tucked", "")), hand, b(st.get("opponent_flattened", "")), fat])
 
 
 def changes(row):
@@ -200,6 +205,33 @@ def health_trace(row, dt=0.1, g=GAUGE):
         s_ = squeeze(encode(state_at(row, t)))
         E = max(0.0, E + dt * (s_ - (E / g["recovery_secs"] if s_ < g["leak_below"] else 0.0)))
         out.append((t, 100 * max(0.0, 1 - E / g["secs_to_out"])))
+        t += dt
+    return out
+
+
+# ---- v0.4 defender gauge: CONSCIOUSNESS = fast blood-flow deficit + slow lingering fatigue (owner G1, G3) ----
+CONSCIOUSNESS = {
+    "secs_to_out": 7.5,        # G1: a fully locked RNC under the chin, squeezing hard -> out in 5-10 s
+    "lingering_share": 0.3,    # share of each squeeze-second that becomes lingering fatigue instead of blood deficit
+    "blood_recovery_secs": 3.0,    # blood deficit drains with this time constant once the squeeze is light ("recovers fairly quickly")
+    "fatigue_recovery_secs": 120.0,  # lingering fatigue drains this slowly: it does not recover within the exchange
+    "light_below": 0.3,        # squeeze < this = he's getting blood flow again (recovery on)
+}
+
+
+def consciousness_trace(row, dt=0.1, g=CONSCIOUSNESS, start=(0.0, 0.0)):
+    """[(t, consciousness 0-100, blood deficit B, lingering fatigue D)].
+    While squeezing at s(state): B grows at (1 - share) * s, D at share * s, so a continuous full squeeze reaches
+    B + D = secs_to_out (consciousness 0) after secs_to_out seconds. When the squeeze is light, B drains fast and D
+    barely moves. `start` = (B, D) carried over from an earlier attempt in the same round."""
+    B, D = start
+    out, t, dur = [], 0.0, duration(row)
+    while t <= dur + 1e-9:
+        s_ = squeeze(encode(state_at(row, t)))
+        light = s_ < g["light_below"]
+        B = max(0.0, B + dt * ((1 - g["lingering_share"]) * s_ - (B / g["blood_recovery_secs"] if light else 0.0)))
+        D = max(0.0, D + dt * (g["lingering_share"] * s_ - (D / g["fatigue_recovery_secs"] if light else 0.0)))
+        out.append((t, 100 * max(0.0, 1 - (B + D) / g["secs_to_out"]), B, D))
         t += dt
     return out
 

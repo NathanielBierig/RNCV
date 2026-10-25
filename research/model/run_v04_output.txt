@@ -1,0 +1,57 @@
+35 attempts, 19 fights, LOFO
+
+model                                     Brier@2s  Brier all-sec  logloss@2s
+always the average                           0.270          0.270       0.733
+v0.3 (buckets + C10 card + fatigue)          0.222          0.196       0.632
+v0.4 without the deep-lock shrink            0.223          0.196       0.632
+v0.4 (shrink 25%, fatigue prior only)        0.227          0.205       0.643
+v0.4 minus average : -0.043  95% CI [-0.088, +0.009]  (negative = v0.4 better)
+v0.4 minus v0.3    : +0.004  95% CI [-0.011, +0.017]  (negative = v0.4 better)
+
+Calibration, v0.4, at the 2-s landmark:
+  0.0-0.2  n= 4  predicted 0.12  observed 0.25  [0.05, 0.70]
+  0.2-0.4  n= 7  predicted 0.30  observed 0.57  [0.25, 0.84]
+  0.4-0.6  n=12  predicted 0.48  observed 0.25  [0.09, 0.53]
+  0.6-0.8  n= 9  predicted 0.66  observed 0.67  [0.35, 0.88]
+  0.8-1.0  n= 3  predicted 0.90  observed 1.00  [0.44, 1.00]
+
+Coefficients, all data (log-odds) [cards only]:
+  intercept (world)  -1.46 [-0.82]
+  delta (sample)     -0.44 [+0.00]
+  arm_under          +1.31 [+0.85]
+  grip_locked        +0.75 [+0.58]
+  legs_strong        +0.12 [+0.57]
+  two_on_one         -0.89 [-0.73]
+  chin_tucked        +0.04 [-0.47]
+  hand_tucked        +0.60 [+0.11]
+  flattened          +1.46 [+0.11]
+  fatigue            -0.54 [+0.00]
+
+Consciousness gauge at the end of the attempt (carried across a round): median finishes 0, non-finishes 15; AUC (lower = finish) 0.63; <= 20 at the end: finishes 11/17, non-finishes 10/18
+
+Pantoja vs Asakura R2 (fight left out), on-screen values (real-world scale):
+      t  finish   80% band  consc. blood def. ling. fat.  grip
+    0.0     33%    9- 70%     100        0.0        0.0   100
+    1.0     32%    9- 70%      99        0.0        0.0    99
+    2.0     32%    9- 70%      98        0.1        0.0    99
+    3.0     32%    9- 70%      98        0.1        0.1    98
+    4.0     32%    9- 70%      97        0.1        0.1    98
+    5.0     32%    9- 70%      97        0.1        0.1    97
+    6.0     32%    9- 70%      97        0.1        0.1    97
+    6.6     93%   75- 99%      97        0.1        0.1    96
+    7.0     93%   75- 99%      92        0.4        0.2    94
+    8.0     93%   74- 98%      81        0.9        0.5    88
+    9.0     93%   74- 98%      71        1.5        0.7    82
+   10.0     93%   73- 98%      60        2.0        1.0    77
+   11.0     93%   72- 98%      49        2.6        1.2    72
+   12.0     92%   72- 98%      39        3.2        1.4    67
+   13.0     92%   71- 98%      28        3.7        1.7    63
+   14.0     92%   70- 98%      17        4.3        1.9    59
+   14.9     90%   65- 98%       7        4.8        2.1    55
+   15.0     90%   65- 98%       6        4.9        2.2    55
+   16.0     90%   65- 98%       0        5.4        2.4    52
+   17.0     90%   64- 98%       0        5.9        2.6    49
+   18.0     90%   63- 98%       0        6.4        2.8    46
+   19.0   100%  (unconscious: event shown; gauge snaps to 0)  grip 43
+
+Constants: DEEP_TWO_ON_ONE_KEEP = 0.25 | FATIGUE_SCALE = 12.0 | CONSCIOUSNESS = {'secs_to_out': 7.5, 'lingering_share': 0.3, 'blood_recovery_secs': 3.0, 'fatigue_recovery_secs': 120.0, 'light_below': 0.3}

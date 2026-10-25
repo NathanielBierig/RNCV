@@ -1,0 +1,10 @@
+scenario,arm_under,grip_locked,legs_strong,two_on_one,chin_tucked,hand_tucked,flattened,fatigue,p_finish,bucket,n0,source,note
+C1_any_attempt,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0,,20-45,3,owner 2026-10-25 (Sometimes),any RNC attempt; nothing else known = every field halfway
+C2_loose_jaw_defended,0,0,0,1,1,0,0,0,,<20,3,owner 2026-10-25 (Rarely),arm over the jaw; no lock; one hook; defender two-on-one; chin tucked
+C3_locked_strong_legs_defended,1,1,1,1,1,0,0,0,,45-70,3,owner 2026-10-25 (Coin flip),figure-four under chin + body triangle; defender two-on-one; chin tucked
+C4_locked_strong_legs_open,1,1,1,0,0,0,0,0,,>70,3,owner 2026-10-25 (Usually),figure-four under chin + body triangle; no two-on-one; chin not tucked
+C5_dream_choke,1,1,1,0,0,1,1,0,0.90,,2,placeholder (lower weight),C4 + choking hand tucked deep + defender flattened
+C6_under_chin_one_arm_defended,1,0,0,1,1,0,0,0,0.20,,2,placeholder (lower weight),arm under chin; no second hand; one hook; two-on-one; chin tucked
+C7_locked_over_jaw_defended,0,1,1,1,1,0,0,0,0.20,,2,placeholder (lower weight),locked grip but over the jaw; body triangle; two-on-one; chin tucked
+C8_locked_weak_legs_open,1,1,0,0,0,0,0,0,0.65,,2,placeholder (lower weight),figure-four under chin; no hooks; no two-on-one; chin not tucked
+C9_locked_strong_legs_two_on_one_chin_open,1,1,1,1,0,0,0,0,0.55,,2,placeholder (lower weight),figure-four under chin + body triangle; two-on-one; chin not tucked

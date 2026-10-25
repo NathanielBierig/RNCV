@@ -21,6 +21,7 @@ def cards(name):
 
 def run(card_file, fatigue):
     sm.USE_FATIGUE = fatigue
+    sm.DEEP_TWO_ON_ONE_KEEP = 1.0   # v0.3 had no deep-lock shrink; keeps this file reproducible after v0.4
     return sm.lofo(sm.load(), cards(card_file))
 
 
@@ -59,6 +60,7 @@ def main():
         print(f"  {lo:.1f}-{min(hi, 1):.1f}  n={n:2d}  predicted {mp:.2f}  observed {ob:.2f}  [{lo_ci:.2f}, {hi_ci:.2f}]")
 
     sm.USE_FATIGUE = True
+    sm.DEEP_TWO_ON_ONE_KEEP = 1.0
     c = cards("priors_owner.csv")
     beta = sm.fit(rows, c)
     b0 = sm.fit([], c)
