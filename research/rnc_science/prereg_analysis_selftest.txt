@@ -1,0 +1,2 @@
+CI coverage (target 0.95): [1.   0.95 0.95 0.98]
+power H1,H2,H3 at n=150: [1.   0.42 0.92]
