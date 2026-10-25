@@ -1,6 +1,6 @@
 """v0.5: calibrate the CONSCIOUSNESS gauge's squeeze weights and secs_to_out from the labels (owner batch 4).
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python -I research/model/calibrate_squeeze.py
+    C:/Users/netan/.venvs/ufc-cv/Scripts/python research/model/calibrate_squeeze.py
 
 Fixed by the owner (G2): figure-four locked under the chin WITH a two-on-one = 0.9 of a full squeeze.
 Fitted (weak priors at the v0.4 values): w_jaw (arm over the jaw), w_one_arm (under the chin, no lock),

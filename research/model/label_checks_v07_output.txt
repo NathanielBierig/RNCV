@@ -1,0 +1,50 @@
+35 attempts (bell excluded), 17 finishes; finish-enriched sample
+
+1. Grip style at the 2-s landmark:
+  figure_four                         9/19 =  47%  [ 27- 68%]
+  one_arm                             4/8  =  50%  [ 22- 78%]
+  palm_to_palm                        1/1  = 100%  [ 21-100%]
+  unclear                             1/3  =  33%  [  6- 79%]
+  wrist_pull                          2/4  =  50%  [ 15- 85%]
+
+1b. Grip style ever reached (descriptive; finishes often switch to figure-four late):
+  figure_four ever                   14/24 =  58%  [ 39- 76%]
+  never locked / unclear              2/8  =  25%  [  7- 59%]
+  other lock ever (no f4)             1/3  =  33%  [  6- 79%]
+
+1c. Grip at landmark, arm under the chin only:
+  (not under chin)                    2/9  =  22%  [  6- 55%]
+  figure_four                         8/13 =  62%  [ 36- 82%]
+  one_arm                             4/6  =  67%  [ 30- 90%]
+  palm_to_palm                        1/1  = 100%  [ 21-100%]
+  unclear                             0/2  =   0%  [  0- 66%]
+  wrist_pull                          2/4  =  50%  [ 15- 85%]
+
+2. Choking hand tucked x defender two-on-one (landmark):
+  hand tucked=False, 2-on-1=False     9/20 =  45%  [ 26- 66%]
+  hand tucked=False, 2-on-1=True      1/4  =  25%  [  5- 70%]
+  hand tucked=True, 2-on-1=False      5/5  = 100%  [ 57-100%]
+  hand tucked=True, 2-on-1=True       2/6  =  33%  [ 10- 70%]
+
+3. Legs at the landmark:
+  body_triangle                       6/14 =  43%  [ 21- 67%]
+  none                                2/2  = 100%  [ 34-100%]
+  one_hook                            4/9  =  44%  [ 19- 73%]
+  two_hooks                           5/10 =  50%  [ 24- 76%]
+
+3b. Legs ever reached:
+  body triangle ever                  8/19 =  42%  [ 23- 64%]
+  one hook / none only                4/6  =  67%  [ 30- 90%]
+  two hooks ever (no BT)              5/10 =  50%  [ 24- 76%]
+
+4. Re-attacks: attempt number within the round (by video time)
+ found_via = finish_list:
+  1st attempt                        10/17 =  59%  [ 36- 78%]
+  2nd+ attempt                        7/10 =  70%  [ 40- 89%]
+ found_via = candidate_round:
+  1st attempt                         0/2  =   0%  [  0- 66%]
+  2nd+ attempt                        0/6  =   0%  [  0- 39%]
+  finish-list rounds: LAST attempt    7/7  = 100%  [ 65-100%]
+  finish-list rounds: earlier attempts  0/10 =   0%  [  0- 28%]
+  -> by construction: a finish-list round ends with the finish, so its last attempt is always the success and every
+     earlier one a failure. Re-attack effects can't be tested on these labels (needs random_fight rounds).

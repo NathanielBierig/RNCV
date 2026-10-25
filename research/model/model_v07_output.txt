@@ -1,0 +1,75 @@
+35 attempts, 19 fights, leave-one-fight-out
+
+model                                           Brier@2s  Brier all-sec  logloss@2s
+always the average                                 0.270          0.270       0.733
+v0.6                                               0.226          0.205       0.644
+v0.7 (re-attack term off, recommended)             0.237          0.218       0.666
+v0.7 + re-attack term (card only)                  0.248          0.228       0.691
+v0.7 + re-attack term (card + labels)              0.239          0.221       0.668
+v0.7 minus v0.6   : +0.011  95% CI [-0.004, +0.023]
+v0.7 minus average: -0.033  95% CI [-0.077, +0.015]
+
+Calibration, v0.7, at the 2-s landmark:
+  0.0-0.2  n= 4  predicted 0.12  observed 0.25  [0.05, 0.70]
+  0.2-0.4  n= 8  predicted 0.33  observed 0.50  [0.22, 0.78]
+  0.4-0.6  n=12  predicted 0.51  observed 0.50  [0.25, 0.75]
+  0.6-0.8  n= 7  predicted 0.65  observed 0.29  [0.08, 0.64]
+  0.8-1.0  n= 4  predicted 0.86  observed 1.00  [0.51, 1.00]
+
+Weights, all data: odds multiplier (80% range) [cards only]; def_fatigue from the re-attack-on fit {card + labels variant}
+  (real-world base, all zero)  x 0.23 ( 0.06- 0.91)  [x 0.36]
+  (sample oversampling)        x 0.75 ( 0.32- 1.75)  [x 1.00]
+  arm_under                    x 3.70 ( 1.38- 9.90)  [x 2.06]
+  grip_f4                      x 2.02 ( 0.90- 4.54)  [x 2.55]
+  grip_other                   x 1.83 ( 0.65- 5.20)  [x 1.22]
+  legs_bt                      x 1.10 ( 0.50- 2.41)  [x 1.50]
+  legs_hooks                   x 1.09 ( 0.43- 2.75)  [x 1.25]
+  two_on_one                   x 0.43 ( 0.18- 1.03)  [x 0.49]
+  chin_tucked                  x 1.04 ( 0.45- 2.38)  [x 0.71]
+  flattened                    x 4.42 ( 1.50-13.01)  [x 1.16]
+  def_fatigue                  x 1.56 ( 0.32- 7.58)  [x 1.00]  {x0.64}
+  hand_tucked                  x 1.24 ( 0.72- 2.16)  [x 1.02]
+  fatigue                      x 0.64 ( 0.13- 3.04)  [x 1.00]
+
+Re-attack inputs (lingering fatigue at the start of each 2nd+ attempt):
+  Khabib Nurmagome R3 attempt 2: D0 0.02 s -> def_fatigue 0.02  (tap)
+  Deiveson Figueir R1 attempt 4: D0 0.37 s -> def_fatigue 0.31  (unconscious)
+  Deiveson Figueir R1 attempt 2: D0 1.31 s -> def_fatigue 0.73  (escape)
+  Deiveson Figueir R1 attempt 3: D0 2.57 s -> def_fatigue 0.92  (escape)
+  Anthony Smith    R4 attempt 2: D0 0.13 s -> def_fatigue 0.12  (unconscious)
+  Charles Oliveira R1 attempt 2: D0 1.09 s -> def_fatigue 0.66  (tap)
+  Jan Blachowicz   R1 attempt 2: D0 0.33 s -> def_fatigue 0.28  (escape)
+  Jan Blachowicz   R1 attempt 3: D0 0.64 s -> def_fatigue 0.47  (position_change)
+  Jan Blachowicz   R1 attempt 4: D0 1.88 s -> def_fatigue 0.85  (escape)
+  Charles Oliveira R3 attempt 2: D0 0.03 s -> def_fatigue 0.03  (tap)
+  Aljamain Sterlin R1 attempt 2: D0 1.79 s -> def_fatigue 0.83  (escape)
+  Aljamain Sterlin R1 attempt 3: D0 1.54 s -> def_fatigue 0.79  (tap)
+  Darren Elkins    R2 attempt 2: D0 1.07 s -> def_fatigue 0.66  (tap)
+  Charles Oliveira R1 attempt 4: D0 3.23 s -> def_fatigue 0.96  (escape)
+  Charles Oliveira R1 attempt 2: D0 0.15 s -> def_fatigue 0.14  (position_change)
+  Charles Oliveira R1 attempt 3: D0 4.05 s -> def_fatigue 0.98  (position_change)
+
+Pantoja vs Asakura R2 (fight left out), v0.7 on-screen values (real-world scale):
+      t  finish   80% band  consc.
+    0.0     36%   11- 73%     100
+    1.0     36%   11- 73%     100
+    2.0     36%   11- 73%     100
+    3.0     36%   11- 73%      99
+    4.0     36%   11- 73%      99
+    5.0     36%   11- 73%      99
+    6.0     36%   11- 73%      99
+    6.6     90%   67- 97%      99
+    7.0     90%   67- 97%      96
+    8.0     89%   66- 97%      87
+    9.0     89%   66- 97%      78
+   10.0     89%   65- 97%      69
+   11.0     89%   64- 97%      60
+   12.0     89%   64- 97%      51
+   13.0     88%   63- 97%      42
+   14.0     88%   62- 97%      33
+   14.9     85%   57- 96%      25
+   15.0     85%   57- 96%      24
+   16.0     85%   56- 96%      16
+   17.0     85%   56- 96%       8
+   18.0     85%   55- 96%       0
+   19.0   100%  (unconscious: event shown)

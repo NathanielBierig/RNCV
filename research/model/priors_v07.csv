@@ -1,0 +1,14 @@
+scenario,arm_under,grip_f4,grip_other,legs_bt,legs_hooks,two_on_one,chin_tucked,flattened,def_fatigue,hand_tucked,fatigue,p_finish,bucket,n0,source,note
+C1_any_attempt,0.5,0.5,0.2,0.25,0.25,0.5,0.5,0.5,0,0.5,0,,20-45,3,owner 2026-10-25 (Sometimes),any RNC attempt; nothing else known (evidence 35%)
+C2_loose_jaw_defended,0,0,0,0,0,1,1,0,0,0,0,,<20,3,owner 2026-10-25 (Rarely),arm over the jaw; no lock; one hook; two-on-one; chin tucked (evidence 8%)
+C3_f4_bt_defended,1,1,0,1,0,1,1,0,0,0,0,,45-70,3,owner 2026-10-25 (Coin flip),figure-four under chin + body triangle; two-on-one; chin tucked (evidence 35%: mild disagreement)
+C4_f4_bt_open,1,1,0,1,0,0,0,0,0,0,0,,>70,3,owner 2026-10-25 (Usually),figure-four under chin + body triangle; no two-on-one; chin not tucked (evidence 72%)
+C5_dream_choke,1,1,0,1,0,0,0,1,0,1,0,0.85,,2,evidence (low),C4 + hand hidden + flattened
+C6_one_arm_defended,1,0,0,0,0,1,1,0,0,0,0,0.18,,2,evidence (low),arm under chin; one arm; one hook; two-on-one; chin tucked
+C7_locked_over_jaw_defended,0,0.5,0.5,1,0,1,1,0,0,0,0,0.15,,2,evidence (low; addendum 2026-10-26: 15%),locked grip (any) over the jaw; body triangle; two-on-one; chin tucked
+C8_f4_no_hooks_open,1,1,0,0,0,0,0,0,0,0,0,0.60,,2,evidence (low),figure-four under chin; no hooks; no two-on-one; chin not tucked
+C9_f4_bt_two_on_one_chin_open,1,1,0,1,0,1,0,0,0,0,0,0.50,,2,evidence (low),figure-four under chin + body triangle; two-on-one; chin not tucked
+C12_other_lock_bt_open,1,0,1,1,0,0,0,0,0,0,0,0.65,,3,owner structure v0.7 (placeholder %),palm-to-palm / gable / wrist pull under chin + body triangle; open: weaker than figure-four (C4)
+C13_one_arm_bt_open,1,0,0,1,0,0,0,0,0,0,0,0.40,,3,owner structure v0.7 (placeholder %),one arm / short choke under chin + body triangle; open: weaker than any lock
+C14_f4_two_hooks_open,1,1,0,0,1,0,0,0,0,0,0,0.75,,3,owner structure v0.7 (placeholder %),figure-four under chin + two hooks (no body triangle); open: body triangle stronger (C4)
+C15_f4_bt_open_reattack,1,1,0,1,0,0,0,0,0.8,0,0,0.87,,2,owner structure v0.7 (placeholder %),C4 on a re-attack: defender still carrying fatigue from an earlier attempt this round (def_fatigue 0.8)

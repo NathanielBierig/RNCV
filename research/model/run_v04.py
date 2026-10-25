@@ -2,7 +2,7 @@
 only (C10 card dropped), and the two-part CONSCIOUSNESS gauge (G1 secs_to_out 7.5, G3 fast blood + slow fatigue).
 Compares against v0.3; LOFO Brier, bootstrap, calibration, gauge check, Pantoja-Asakura trace.
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python -I research/model/run_v04.py
+    C:/Users/netan/.venvs/ufc-cv/Scripts/python research/model/run_v04.py
 """
 import math
 from collections import defaultdict
