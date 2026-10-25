@@ -1,14 +1,13 @@
-# RNCV progress (as of 2026-10-21)
+# RNCV progress (as of 2026-10-25)
 
 🟢 done · 🟡 in progress · 🔴 needs the owner · ⚪ not started
 
-## ▶ Next session starts here (2026-10-21)
-1. **Labeling is the bottleneck for everything now.** Successes first (finish time known), then failure rounds. 16 attempts / 6 fights so far; science needs ~150, automatic detection needs ~15–20+ fights before re-testing.
-2. **Automatic detection status (all measured, all committed):**
-   - Pose: combined fine-tuned v1 + RTMO fallback looks like 94% "tracked", but **by eye only 4/48 frames have both fighters correct**. Mixed skeletons are the root cause ([research/pose_review/REVIEW.md](research/pose_review/REVIEW.md)). The joint-role reframe was a NO-GO. Referee dark-pixel fix applied. Kaggle v2 is no better than v1.
-   - No-pose image classifier (CLIP + logistic, leave-one-fight-out): chance level (AUC 0.46) with 6 fights ([reports/attempt_clf.md](reports/attempt_clf.md)); a fighter-crop variant is ready (`--crop`). **Re-test both after ~15–20 labeled fights**, with one command each.
-3. **Kaggle:** VICOS keypoints re-extracted with RTMO (`yolo-pose` kernel, v3). When COMPLETE: `kaggle kernels output nathanielbierig/yolo-pose -p data/raw/vicos/` → retrain the classifier with `--annotations data/raw/vicos/annotations_rtmo-m_stride1.json` (or stride3 if the CPU fallback was used).
-4. PREREG: v1.0 + A1 (men only) + A2 (upper_body, change log) + A3 (cap = 3 attacking rounds / 20 attempts per attacker).
+## ▶ Next session starts here (2026-10-25)
+1. **Labels:** 36 attempts / 20 fights (main-card successes + failure rounds), QA clean. Fastest next fights: [phase3_labels/FINDABLE_TOP18.md](phase3_labels/FINDABLE_TOP18.md).
+2. **MVP 0.1** (`tools/mvp/demo.py`, a replay overlay: finish % for the attacker, a health bar for the defender) was **rejected on the math**: the time ramp made a locked figure-four read ~2% and a knockout ~30%. **Redesign first:** a math/model expert session writes `docs/MODEL_SPEC.md` (expert priors + labels; the number = chance this attempt finishes given the current state; tap → ~100%). The owner is answering alignment questions in batches.
+3. **Automatic detection:** pose is parked (4/48 frames correct, [research/pose_review/REVIEW.md](research/pose_review/REVIEW.md)); the no-pose attempt detector is at ROC-AUC 0.70 on 20 fights. Re-test at ~40 fights: `research/attempt_clf/attempt_clf.py --crop --refresh`.
+4. **Position classifier (VICOS):** 0.63 macro-F1 on original keypoints, 0.47 on YOLO, 0.50 on RTMO keypoints.
+5. PREREG: v1.0 + A1 (men only) + A2 (upper_body, change log) + A3/A4 (cap = 5 attacking rounds / 20 attempts per attacker).
 
 ## Shelved (owner, 2026-10-21)
 - **MVP (clip → pose → attempt detection → overlay with a danger bar):** wait for a more concrete model (needs ~100+ labeled attempts for a learned probability).
