@@ -1,0 +1,28 @@
+35 attempts, 19 fights, leave-one-fight-out
+
+model                                         Brier@2s  Brier all-sec  logloss@2s
+always the average                               0.270          0.270       0.733
+v0.7                                             0.237          0.218       0.666
+v0.7 + coach priors                              0.229          0.206       0.646
+v0.7 + coach priors + coach deep-lock 40%        0.228          0.204       0.643
+v0.7 + coach priors minus v0.7: -0.008  95% CI [-0.020, +0.005]
+v0.7 + coach priors + coach deep-lock 40% minus v0.7: -0.009  95% CI [-0.021, +0.003]
+
+Weights with coach priors, all data: odds multiplier (80% range) [coach]
+  arm_under      x 4.52 ( 2.23- 9.16)  [x4.00]
+  grip_f4        x 2.39 ( 1.28- 4.46)  [x2.60]
+  grip_other     x 2.14 ( 1.05- 4.39)  [x1.90]
+  legs_bt        x 1.35 ( 0.73- 2.47)  [x1.60]
+  legs_hooks     x 1.30 ( 0.67- 2.53)  [x1.30]
+  two_on_one     x 0.39 ( 0.20- 0.74)  [x0.40]
+  chin_tucked    x 0.99 ( 0.53- 1.86)  [x0.85]
+  flattened      x 3.63 ( 1.73- 7.62)  [x2.50]
+  def_fatigue    x 1.00 ( 0.15- 6.84)  [x1.00]
+  hand_tucked    x 1.61 ( 0.82- 3.16)  [x1.25]
+  fatigue        x 0.53 ( 0.22- 1.23)  [x0.60]
+
+Pantoja vs Asakura (fight left out), v0.7 + coach priors:
+    0.0 s   30%  (11-58%)
+    6.6 s   92%  (78-97%)
+   10.0 s   91%  (76-97%)
+   14.9 s   88%  (69-96%)
