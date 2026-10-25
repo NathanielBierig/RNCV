@@ -1,7 +1,7 @@
 # RNCV code tour
 
 For the owner: you know BJJ and Python, you're new to ML and computer vision. Read top to bottom, or jump to the stop you want.
-Updated 2026-10-21. Legend: 🟢 works today · 🟡 partial · ⚪ planned. All commands run from the repo root. Three short-path venvs exist (Windows long-path DLL issue, see CLAUDE.md): `rncv` (pose + training), `ufc-cv` (OpenCV overlay), `ufc-eval` (eval harness tests).
+Updated 2026-10-25. Legend: 🟢 works today · 🟡 partial · ⚪ planned. All commands run from the repo root. Three short-path venvs exist (Windows long-path DLL issue, see CLAUDE.md): `rncv` (pose + training), `ufc-cv` (OpenCV overlay), `ufc-eval` (eval harness tests).
 
 Timings below are measured on this laptop. `$PY_*` are shorthand for these paths (type them out in PowerShell).
 
@@ -32,9 +32,9 @@ PY_EVAL=C:/Users/netan/.venvs/ufc-eval/Scripts/python.exe
  position classifier              🟢 src/train_baseline.py (GBM, trained on VICOS gym footage)
    │                              🟢 src/back_rule.py (no-training "is this back control?" rule)
    ▼
- attempt detector                 ⚪ "a choke has started, here is when"
+ attempt detector                 🟡 research/attempt_clf: no-pose CLIP + logistic regression, ROC-AUC 0.70 (not usable yet)
    ▼
- finish-probability model         ⚪ P(finish | what we see so far), at 1/2/3/5/8 s horizons
+ finish-probability model         🟡 tools/mvp/demo.py: small stand-in fit on your labels (the real hazard model is ⚪)
    ▼
  preds.csv  (t_s, sub_type, prob, factors)
    │  🟢 tools/overlay/overlay.py   (works now on fake predictions)
@@ -49,7 +49,7 @@ PY_EVAL=C:/Users/netan/.venvs/ufc-eval/Scripts/python.exe
  labeling queues (successes, failures, random_10)
    │  🟢 tools/labeler/index.html   you watch a clip, press keys, code the 12 landmarks
    ▼
- phase3_labels/labels.csv          🟡 16 attempts / 6 fights so far (pilot)
+ phase3_labels/labels.csv          🟡 36 attempts / ~20 fights so far (goal ~150 attempts)
    │  🟢 phase3_labels/qa_labels.py     read-only quality check → reports/labels_qa.md
    │  🟢 src/pose_attempts.py           does pose work INSIDE labeled attempts? → reports/pose_attempts.md
    │  🟢 tools/eval_harness/            scoring rules, already written + tested
@@ -59,6 +59,8 @@ PY_EVAL=C:/Users/netan/.venvs/ufc-eval/Scripts/python.exe
 ```
 
 ---
+
+Big caveat since 2026-10-21: a fresh-eye review found the pose step **mixes the two fighters' skeletons** (see Stop 8c). So the attempt detector deliberately uses *no pose at all*, and the MVP demo takes attempt windows from your labels.
 
 Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton previews (a debugging view of the pose pipeline), and `notebooks/kaggle_finetune_pose/` 🟡 produces the fine-tuned pose model on Kaggle (public datasets only).
 
@@ -125,6 +127,17 @@ Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton prev
 - **In/out:** `labels.csv` + clips → `reports/pose_attempts.md` (read-only on labels).
 - **Try it (about 10 s, verified):** `$PY_RNCV -I -c "import sys; sys.path.insert(0,'src'); import numpy as np, pose_attempts as pa; p=np.random.rand(2,17,3); p[:,:,2]=0.9; print(pa.rnc_ok(p))"` → `True` (two fully visible skeletons). A full run takes minutes on CPU; pass `--out reports/pose_attempts_tmp.md` so you don't overwrite the report.
 
+### Stop 8c · `research/pose_review/REVIEW.md` 🔴 (read this one!): the honest verdict on pose
+- **What:** a by-eye review of 48 real frames from your labeled attempts. The "both fighters tracked" number (76–94%) only means two skeletons exist. Judged by eye, both were the *right two people* in only 1–4 of 48 frames for every pipeline. The main failure is a skeleton that spans both fighters (39–42 of 48), not the referee (3–6 of 48). In the hard frames no model proposes a clean skeleton on the choker, so selection and tracking can't fix it. Verdict: **no-go** for driving an automatic RNC signal from current pose output. Fixing one bug did help: the referee filter ignored too-dark pixels, so a black shirt looked like skin-free "fighter" (AUC 0.92 → 0.99 with a dark-aware version, saved as `referee_dark.patch`, not applied to `src/`).
+- **Look at:** the table in "The eval" and "Root causes" in `REVIEW.md`; scripts `research/pose_review/eval.csv`, `render.py`, `score_roles.py`.
+- **Also:** `reports/pose_attempts_finetuned.md` (fine-tuned v1: median 76% both tracked, 10/16 pass, but only 30% RNC-usable) vs `reports/pose_attempts.md` (RTMO). Read them knowing the numbers flatter the result.
+- **Try it:** just read the one-screen summary at the top of `REVIEW.md` (2 min).
+
+### Stop 8d · `research/attempt_clf/attempt_clf.py` 🟡: detecting an attempt without pose
+- **What:** the workaround for Stop 8c. Frames are sampled 2 per second from every labeled clip; each frame (optionally cropped to the fighters) becomes a CLIP embedding (a general-purpose image model's "fingerprint" of the picture); a logistic regression (a simple yes/no scorer) learns "inside a labeled attempt?". Scored **leave-one-fight-out**: each fight is judged by a model that never saw it. Pooled ROC-AUC 0.66 on the full frame, **0.70** on the fighter crop, 0.72 smoothed over ~2 s; the bigger ViT-B-16 backbone is in `reports/attempt_clf_crop_b16.md`. ROC-AUC 0.5 is guessing; the roadmap wants ≥ 0.80.
+- **Look at:** [`clips_and_windows()`](../research/attempt_clf/attempt_clf.py:50) (what counts as positive), [`extract()`](../research/attempt_clf/attempt_clf.py:62), [`evaluate()`](../research/attempt_clf/attempt_clf.py:116), the `--crop` / `--b16` flags. Needs its own venv (`C:/Users/netan/.venvs/clip`) and caches features in `data/attempt_clf/`.
+- **Try it:** read `reports/attempt_clf_crop.md`; per-fight AUCs range from 0.10 to 1.00, so they're noisy with this few fights. Re-running extracts CLIP features for every clip, which takes many minutes (CPU), so I haven't included a quick command.
+
 ### Stop 9 · `tools/eval_harness/` 🟢: the scoring rules, as code
 - **What:** the anti-cheating rules from the plan, written so a model can't break them by accident. `splits.py`: a fight is in the test set iff a salted hash of its id is below 0.2, fixed forever; same-fighter leakage is purged. `horizons.py`: scores finish probability at 1/2/3/5/8 s after attempt start; `bell` (time ran out) is censored, not a failure; bootstrap over fights; refuses leaky columns and degenerate baselines. `events.py`: turns probabilities into attempt segments and scores them.
 - **Look at:** [`lock_test_groups`/`group_cv`](../tools/eval_harness/splits.py:50), [`horizon_frame()`](../tools/eval_harness/horizons.py:82), [`horizon_metrics()`](../tools/eval_harness/horizons.py:125), [`compare_to_baseline()`](../tools/eval_harness/horizons.py:150), [`segments_from_probs()`](../tools/eval_harness/events.py:12), [`event_metrics()`](../tools/eval_harness/events.py:80).
@@ -156,6 +169,12 @@ Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton prev
 - **What:** makes a preview video with the two tracked fighters in red/blue (corner guessed from glove and trunk colour near wrists and hips), each labelled with pose score and seen/filled, dropped people in thin grey, and a top bar with the running "both tracked" %. A debugging view, not a result. Modern gloves are mostly black, so many corners show "?" (guess).
 - **Look at:** [`color_votes()`](../tools/preview/corner_preview.py:39), [`run_clip()`](../tools/preview/corner_preview.py:77). It reuses `two_fighters.select/TwoSlotTracker`.
 - **Try it:** `$PY_RNCV -I tools/preview/corner_preview.py --clips data/clips/gsp_bisping.mp4 --stride 4` writes `data/pose/gsp_bisping_corners.mp4`. Not run for this refresh (it writes a video); roughly a minute at stride 4 (estimate).
+
+### Stop 12c · `tools/mvp/demo.py` 🟢: the MVP 0.1 replay demo
+- **What:** the first end-to-end picture. For one labeled clip it renders an overlay with a **finish % for the attacker**, a **health bar for the defender**, a live state panel and the final result (TAP / OUT COLD / ESCAPED / ...). Be clear on what is real vs stand-in: attempt windows and factors come from **your labels**, not automatic detection; the finish % comes from a small demo model (base finish rate × odds ratios for arm under chin, strong legs, defender two-on-one, ramped up with time held), fit on the *other* fights only (leave-one-fight-out), and updated live from your G-panel state changes. It never peeks at the clip's own outcome until the replay marker at the end.
+- **Look at:** [`fit()`](../tools/mvp/demo.py:42), [`finish_prob()`](../tools/mvp/demo.py:60), [`state_at()`](../tools/mvp/demo.py:71), [`panel()`](../tools/mvp/demo.py:93).
+- **In/out:** a clip in `data/clips/` + `phase3_labels/labels.csv` → mp4 (default `data/mvp/<clip>_demo.mp4`, git-ignored).
+- **Try it (71 s, verified):** `$PY_CV -I tools/mvp/demo.py data/clips/pantoja_asakura_r2_b.mp4`, then open the mp4 in `data/mvp/`. An earlier result is already there.
 
 ### Stop 13 · `notebooks/kaggle_finetune_pose/` 🟡: teaching the pose model grappling
 - **What:** a generated Kaggle GPU notebook (`build_notebook.py` creates `finetune.ipynb` and `finetune_v2.ipynb`; edit the builder, not the notebooks) that fine-tunes YOLO11m-pose on public grappling/MMA images, then exports one `.onnx`. v1 is done (`models/rncv_pose_v1.onnx`); v2 (bigger: 960 px, ~9 h) is running. `smoke_test.py` is a tiny local CPU rehearsal. **No UFC footage ever goes to Kaggle.** Walkthrough: `docs/KAGGLE_FINETUNE.md`.
@@ -191,18 +210,19 @@ Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton prev
 |---|---|---|
 | RTMO pose on laptop CPU | 🟢 | Works on 8 local clips. Needs score 0.3 / nms 0.65 |
 | Referee filter (`referee.py`) | 🟡 | Skin-vs-black appearance rule inside `select()`; helps, not perfect |
-| Two-fighter selection + tracking | 🟡 | Inside labeled attempts: median 64% both tracked, 8/12 pass the 60% gate (RTMO) |
-| Fine-tuned pose model v1 | 🟡 | Beats base on public grappling images; weak on VICOS; not yet judged on UFC attempts. v2 training |
+| Two-fighter selection + tracking | 🔴 | "Both tracked" 64–94% but only 1–4 of 48 frames had the right two people by eye (REVIEW.md). Parked |
+| Fine-tuned pose models v1/v2 | 🟡 | Beat base on public grappling images; on UFC attempts no better by eye; v2 not better than v1 |
 | Position classifier (VICOS) | 🟢 | Macro-F1 0.63; weak on half guard, takedowns. Not tested on UFC footage |
 | Back-control rule | 🟢 | Recall 0.78–0.83, precision 0.85 on VICOS. UFC comparison still to do |
-| Attempt detector | ⚪ | No code; `events.py` can score it once it exists |
-| Finish-probability model | ⚪ | No code; `horizons.py` is ready to score it |
+| Attempt detector | 🟡 | `research/attempt_clf`: ROC-AUC 0.70 (0.72 smoothed), leave-one-fight-out, no pose. Target 0.80 |
+| Finish-probability model | 🟡 | Only a small demo stand-in inside `tools/mvp/demo.py`. Real hazard model waits on ~150 attempts; `horizons.py` ready to score it |
+| MVP 0.1 replay demo | 🟢/🟡 | Runs end to end on a labeled clip, but uses your labels for windows (see Stop 12c) |
 | Eval harness | 🟢 | 11 tests pass; nothing real scored yet |
 | Candidate lists, priors, queues | 🟢 | CSVs built; leak test exists |
 | Labeler | 🟢 | In real use (X, G, re-read before save); median 1.4 min per attempt |
-| `labels.csv` + QA | 🟡 | 16 attempts / 6 fights, QA clean; far short of the final size |
+| `labels.csv` + QA | 🟡 | 36 attempts / ~20 fights, QA 0 red; goal ~150 attempts. Cap amended to 5 attacking rounds (A4) |
 | Science analysis | ⚪ | PREREG frozen (v1.0, b8d817d); no analysis code until more labels exist |
-| Overlay | 🟡 | Renderer works; only fake predictions |
+| Overlay | 🟡 | Old renderer works on fake predictions; the MVP demo is the newer, nicer version |
 | Corner preview | 🟢 | Debug video; corner guess often "?" |
 
 Housekeeping: check `src/` for stray `*.tmp.*` files (one appeared before); they aren't code to read.
@@ -211,10 +231,10 @@ Housekeeping: check `src/` for stray `*.tmp.*` files (one appeared before); they
 
 ## 5. Suggested 30-minute self-tour
 
-1. **(5 min)** Read `PROGRESS.md` and skim PREREG's headings. Know the question before the code.
-2. **(7 min)** Watch `data/pose/gsp_bisping_preview.mp4` and `sterling_sandhagen_preview.mp4`, then run the Stop 7b command. Spot thin "filled" skeletons and any frame where the referee is kept.
-3. **(8 min)** Read `reports/pose_attempts.md` and `reports/finetune_rncv_pose_v1_results.md`, then [`rnc_ok()`](../src/pose_attempts.py:33). Which attempts fail the 60% gate, and why does "RNC-usable" make sense in back control?
-4. **(5 min)** Run Stop 5 (`back_rule.py`) and read `reports/back_rule.md`, then open `reports/confusion_gbm_swapaug.png`. Which positions get confused?
-5. **(5 min)** Run the overlay demo (Stop 12), then open `reports/labels_qa.md` and the labeler. See the end product and the tool that feeds it.
+1. **(5 min)** Read `PROGRESS.md`, `docs/ROADMAP.md` and skim PREREG's headings. Know the question and the milestones before the code.
+2. **(5 min)** Read the one-screen summary of `research/pose_review/REVIEW.md` (Stop 8c), then watch one `data/pose/*_preview.mp4`. See the mixed-skeleton problem yourself.
+3. **(8 min)** Read `reports/attempt_clf_crop.md` and the top of `research/attempt_clf/attempt_clf.py` (Stop 8d). Why does a no-pose detector sidestep the problem, and why is 0.70 not enough?
+4. **(7 min)** Run the MVP demo (Stop 12c) and watch the output next to your own labels for that fight. Which parts are real, which are stand-in?
+5. **(5 min)** Open the labeler and `reports/labels_qa.md`. This is the bottleneck: the roadmap says labeling is the critical path.
 
 **Your next action:** keep labeling attempts (target size is in PREREG); more labels unlock the ⚪ items.
