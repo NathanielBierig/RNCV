@@ -162,7 +162,7 @@ def main():
     sys.path.insert(0, str(ROOT / "research/model"))
     import state_model as sm                     # finish model v0.6 (docs/MODEL_SPEC.md)
     sm.USE_FATIGUE = True
-    cards = list(csv.DictReader(open(ROOT / "research/model/priors_combined.csv", encoding="utf-8")))
+    cards = list(csv.DictReader(open(ROOT / "research/model/priors_v06.csv", encoding="utf-8")))
     train = [r for r in sm.load() if r["fight_id"] != mine[0]["fight_id"]]
     beta, cov = sm.fit_cov(train, cards)
     model = {"cards": len(cards), "n": len(train)}

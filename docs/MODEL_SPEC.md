@@ -1,6 +1,6 @@
 # Finish model spec: the two numbers on screen and how they're computed
 
-Draft v0.5, 2026-10-26, model-expert session. **v0.5 (owner batch 4, §4d):** a figure-four locked under the chin with a two-on-one squeezes at 0.9 of full. Fitting the other squeeze weights to the labels was tried and **rejected**: the labeled positions can't time a finish. **v0.4 (owner batch 3, §4c):** the defender gauge is now **CONSCIOUSNESS** (fast blood-flow deficit + slow lingering fatigue, out after 7.5 s of full squeeze); a late two-on-one keeps only 25% of its effect once the choke is locked under the chin with the hand hidden; fatigue is data-driven (C10 card dropped). v0.3 ran on the owner's bucket answers for C1–C4 (§4b) and adds **attacker fatigue** (§2c, a slow downward drift with time held that starts at zero, so it's not the rejected ramp) and **bucket answers** for cards (§3). v0.2 added the owner's answers (batches 1–2): portfolio showcase, **two** numbers (attacker finish % + defender gauge), priors + data, n ≈ 40–80 attempts, an attempt detector in the next version, and the live model kept separate from the frozen study. Replaces the MVP 0.1 math in `tools/mvp/demo.py` (rejected by the owner).
+Draft v0.6, 2026-10-26, model-expert session. **v0.6 (§4e):** cards = your answers for C1–C4 + the evidence cards for C5–C9; gauge constants from the evidence review (9 s to out, Stellpflug 2020), not fitted. **v0.5 (owner batch 4, §4d):** a figure-four locked under the chin with a two-on-one squeezes at 0.9 of full. Fitting the other squeeze weights to the labels was tried and **rejected**: the labeled positions can't time a finish. **v0.4 (owner batch 3, §4c):** the defender gauge is now **CONSCIOUSNESS** (fast blood-flow deficit + slow lingering fatigue, out after 7.5 s of full squeeze); a late two-on-one keeps only 25% of its effect once the choke is locked under the chin with the hand hidden; fatigue is data-driven (C10 card dropped). v0.3 ran on the owner's bucket answers for C1–C4 (§4b) and adds **attacker fatigue** (§2c, a slow downward drift with time held that starts at zero, so it's not the rejected ramp) and **bucket answers** for cards (§3). v0.2 added the owner's answers (batches 1–2): portfolio showcase, **two** numbers (attacker finish % + defender gauge), priors + data, n ≈ 40–80 attempts, an attempt detector in the next version, and the live model kept separate from the frozen study. Replaces the MVP 0.1 math in `tools/mvp/demo.py` (rejected by the owner).
 
 🟢 done · 🟡 in progress · 🔴 needs the owner · ⚪ not started
 
@@ -12,7 +12,8 @@ Draft v0.5, 2026-10-26, model-expert session. **v0.5 (owner batch 4, §4d):** a 
 - 🟢 **Attacker fatigue (v0.3):** the longer he squeezes, the more his arms and grip tire, so the same position slowly becomes *less* likely to finish. It enters as one extra factor that is **exactly 0 at the start** and grows with seconds of squeezing (≈0.4 after 6 s, 0.8 after 20 s). It can only nudge the number down from where the position puts it, never start an attempt low. It has a matching **GRIP gauge** for the attacker (100 → down). Placeholder prior "80% fresh → 70% after 6 s" + labels gives a small effect (−0.32 log-odds at full fatigue): Pantoja–Asakura 96% → 95%, and 87% → 85% at the end.
 - 🟢 **Knowledge = your BJJ judgment + labels.** You give a % (and a range) for ~10 plain-BJJ **scenario cards**, or just a **bucket** (<20 / 20–45 / 45–70 / >70%) when unsure: a bucket counts as 3 attempts, so labels decide. A narrow range counts for more, up to 10 attempts' worth per card. The labels pull the numbers toward what UFC fights actually show. Built for **40–80 attempts**: the cards do real work, and every number carries an **uncertainty band**.
 - 🟢 **Prototype (35 attempts, 19 fights, each fight scored by a model that never saw it):** Brier score (0 = perfect, 0.25 = coin flip) is **0.216**, vs 0.270 for always guessing the average and **0.413 for MVP 0.1**. The gain over the average is small and uncertain (95% CI 0.001–0.099). **Pantoja–Asakura:** finish ~35% → **~96%** (figure-four under the chin) → ~87% (late two-on-one) → 100%; air 100 → 0 at 19 s.
-- 🟡 **v0.5 = the model for MVP 0.2 (§4d):** finish model unchanged (Brier 0.226). The gauge keeps your 7.5 s and gets your G2 rule. Fitting the squeeze weights to the labels **failed honestly**: settings that stop survivors hitting 0 make real finishes read far too high (Pantoja 47 at the knockout). The labels can't see how deep a choke is, so the gauge stays a "danger dose" based on your numbers. Pantoja: 93% → 90% → 100%; consciousness 0 at 15.7 s (out at 19.0 s). **To make it timeable, log a "fading" moment (Q-D1).**
+- 🟢 **v0.6 = the model for MVP 0.2 (§4e):** your answers C1–C4 + evidence cards C5–C9 (2 attempts each), gauge constants from published physiology (9 s from lock to out in 81 MMA choke-outs). Brier 0.226 (same as v0.5). The gauge is better timed: **Pantoja consciousness hits 0 at 18.0 s vs out at 19.0 s** (v0.5: 15.7 s), and fewer survivors drop below 20 (7/18 vs 10/18). Pantoja finish %: 29% → 93% → 89% (late two-on-one) → 100%.
+- 🟡 **v0.5 (§4d):** finish model unchanged (Brier 0.226). The gauge keeps your 7.5 s and gets your G2 rule. Fitting the squeeze weights to the labels **failed honestly**: settings that stop survivors hitting 0 make real finishes read far too high (Pantoja 47 at the knockout). The labels can't see how deep a choke is, so the gauge stays a "danger dose" based on your numbers. Pantoja: 93% → 90% → 100%; consciousness 0 at 15.7 s (out at 19.0 s). **To make it timeable, log a "fading" moment (Q-D1).**
 - 🟢 **v0.4 (§4c):** Brier **0.227**, a tie with v0.3 (0.222; difference +0.004, CI −0.011 to +0.017) and better than the average (0.270). **Pantoja–Asakura:** 32% → **93%** (locked) → 92% (fatigue) → **90%** (late two-on-one now costs only 2 points) → 100%. CONSCIOUSNESS 100 → 7 at 14.9 s → 0 at 16 s (3 s before he went out); Grip 100 → 43.
 - 🟢 **v0.3 (superseded by v0.4):** your bucket answers for C1–C4 (3 attempts' worth each), C5–C10 placeholders at lower weight (2 each), and fatigue on. Brier **0.222** vs 0.216 for the v0.2 placeholder cards and 0.270 for the average. That's a statistical tie with v0.2 (+0.006, CI −0.001 to +0.013). Expected: your answers are deliberately wide, and my placeholders were written after seeing the labels. **Pantoja–Asakura:** 29% → **95%** → 94% (fatigue) → 83% (late two-on-one) → 100%; Air 100 → 4 at 18 s; Grip 100 → 46 (§4b).
 - 🔴 **Attempt detection is the bottleneck for "drop a clip".** The current detector (frame ROC-AUC 0.70) is "on" for the whole grappling exchange. It puts a correctly placed window on only **~6% of attempts** (start within 2 s, mostly the right span). Target for the app: **≥ 80% of attempts and ≥ 95% of finishes**, start within 2 s, **≤ 1 false alarm per 5-min round**. Until then the app uses a one-key "attempt starts" fallback.
@@ -241,6 +242,50 @@ Finish model: unchanged apart from the squeeze feeding the fatigue term. LOFO Br
 - `CONSCIOUSNESS_V05 = {secs_to_out 7.5, lingering_share 0.3, blood_recovery_secs 3.0, fatigue_recovery_secs 120.0, light_below 0.3}`
 - `DEEP_TWO_ON_ONE_KEEP 0.25`, `FATIGUE_SCALE 12.0`
 - These are the defaults in `state_model.py`.
+
+## 4e. v0.6: evidence review + your cards (the model for MVP 0.2)
+
+Source: [research/priors_evidence/EVIDENCE.md](../research/priors_evidence/EVIDENCE.md) (bjj-research session), with `priors_evidence.csv` and `gauge_evidence.csv`.
+
+**Cards** ([priors_v06.csv](../research/model/priors_v06.csv)): **your answer wherever you gave one, evidence elsewhere.**
+- **C1–C4: your buckets** (3 attempts each). The evidence agrees on C1 (35%, 22–50), C2 (8%) and C4 (72%).
+- 🟡 **C3 mild disagreement:** you said 45–70%; the evidence says ~35% (15–60) and the labels show 1/4. The ranges overlap. I used yours; if more labels keep showing late two-on-ones escaping, this is the card to revisit.
+- **C5–C9: evidence cards** at **2 attempts each.** The evidence session set them at 2.5; I lowered them because they were sanity-checked against the same `labels.csv` the model fits, which would otherwise count part of the labels twice.
+- No fatigue card; fatigue stays data-driven (−0.57 log-odds at full fatigue).
+
+**Gauge constants** (evidence values, **not fitted to the labels**):
+- **Seconds to out: 9.0.** Lock to unconscious averaged 9.0 s in 81 MMA choke-outs (95% CI 8.3–9.9; RNC 8.9 s; Stellpflug et al. 2020). It's the upper end of your "5–10 s".
+- **Blood recovery: 3 s** (revival 4–8 s after release).
+- **Lingering share: 0.2** and **fatigue recovery: 60 s** (low confidence).
+- **Squeeze over the jaw: 0.05** (the jawbone shields the carotids).
+- Unchanged: one arm 0.45 (evidence 0.5, 0.3–0.7: same within its range), tucked-chin relief 0.30, **locked + two-on-one 0.9 (your G2 kept** over the evidence's 0.55, which has no study behind it).
+
+**Calibration attempt with evidence priors:** I re-ran §4d's label fit with these values as priors ([calibrate_squeeze_evidence_output.txt](../research/model/calibrate_squeeze_evidence_output.txt)). It again pushed the weights to protect survivors (tucked-chin relief 0.30 → 0.69; finishes then read late, Pantoja never 0). Same reason as in §4d: the labels can't see whether a choke is biting. **The plain evidence values do best on the counts that matter, so v0.6 uses them unfitted.**
+
+| Gauge setting | Finishes at 0 in the last 2 s before the end | Finishes out too early | Survivors at 0 | Survivors below 20 | Pantoja 0 at (out at 19.0 s) |
+|---|---|---|---|---|---|
+| v0.5 (7.5 s, v0.4 weights + G2) | 3/17 | 7 | 6/18 | 10/18 | 15.7 s |
+| **v0.6 (evidence constants)** | 4/17 (7/17 if "within 2 s after" also counts) | **3** | 6/18 | **7/18** | **18.0 s** |
+
+Finish model ([run_v06_output.txt](../research/model/run_v06_output.txt)): LOFO Brier **0.226** (v0.5 0.226; difference −0.000, CI −0.002 to +0.002); vs the average −0.044 (CI −0.088 to +0.008). For comparison, Main's `priors_combined.csv` (owner **and** evidence cards both on C1–C4) scores 0.229, and Pantoja reads about 3 points lower. I recommend `priors_v06.csv`: it doesn't count C1–C4 twice.
+
+**Pantoja–Asakura, v0.6:**
+
+| Time | Finish % (80% band) | Squeeze | CONSCIOUSNESS | Grip |
+|---|---|---|---|---|
+| 0–6.6 s (arm over the jaw, two-on-one) | **29%** (8–67%) | 0.02 | 100 → 99 | 100 → 99 |
+| 6.6 s (figure-four under the chin, hand hidden) | **93%** (73–98%) | 0.80 | 99 | 99 |
+| 10 s | 92% | 0.80 | 69 | 79 |
+| 14.9 s (late two-on-one) | **89%** (63–97%) | 0.72 | 25 | 57 |
+| 17 s | 88% | 0.72 | 8 | 50 |
+| 18.0 s | 88% | 0.72 | **0** (shown as 5) | 47 |
+| 19.0 s **unconscious** | **100%** | — | 0 | 44 |
+
+**Exact constants for Main** (already the `state_model.py` defaults: `SQUEEZE_V06`, `CONSCIOUSNESS_V06`):
+- Squeeze: `w_jaw 0.05, w_one_arm 0.45, chin_relief 0.30, two_relief_open 0.35, two_relief_locked 0.10, hand_bonus 0.15`
+- Gauge: `secs_to_out 9.0, lingering_share 0.2, blood_recovery_secs 3.0, fatigue_recovery_secs 60.0, light_below 0.3`
+- `DEEP_TWO_ON_ONE_KEEP 0.25`, `FATIGUE_SCALE 12.0`
+- Cards: `priors_v06.csv`. Display rules as in v0.4/v0.5 (floor 5 until a finish frame, snap to 0 at the finish, refill after an escape).
 
 ## 5. Other designs considered
 - **B. Competing-risks hazard model (switch at ~100+ attempts).** Each second the attempt finishes, fails or continues (a discrete-time hazard model: Allison 1982; Singer & Willett 2003; competing risks: Putter et al. 2007). The bell **censors**: the observation stops without an outcome. It handles the round clock properly (less time left → lower finish %), gives a "danger in the next 3 s" readout, and matches PREREG §7's secondary model. Too few finishes (17) to fit today.

@@ -1,0 +1,56 @@
+model (LOFO)                              Brier@2s  Brier all-sec  logloss@2s
+always the average                           0.270          0.270       0.733
+v0.5 (owner cards C1-C4 + placeholders)      0.226          0.205       0.643
+v0.6 (owner C1-C4 + evidence C5-C9)          0.226          0.205       0.644
+v0.6 minus v0.5   : -0.000  95% CI [-0.002, +0.002]
+v0.6 minus average: -0.044  95% CI [-0.088, +0.008]
+
+Gauge (carried across a round, labeled end):
+  v0.5: finishes at 0 within 2 s before the end: 3/17 (early 7, not by the end 7); survivors at 0: 6/18 (below 20: 10) 
+  v0.6: finishes at 0 within 2 s before the end: 4/17 (early 3, not by the end 10); survivors at 0: 6/18 (below 20: 7)
+
+Calibration, v0.6, at the 2-s landmark:
+  0.0-0.2  n= 4  predicted 0.12  observed 0.25  [0.05, 0.70]
+  0.2-0.4  n= 7  predicted 0.30  observed 0.57  [0.25, 0.84]
+  0.4-0.6  n=12  predicted 0.48  observed 0.25  [0.09, 0.53]
+  0.6-0.8  n= 9  predicted 0.65  observed 0.67  [0.35, 0.88]
+  0.8-1.0  n= 3  predicted 0.90  observed 1.00  [0.44, 1.00]
+
+Coefficients, all data (log-odds) [cards only]:
+  intercept (world)  -1.58 [-0.92]
+  delta (sample)     -0.34 [+0.00]
+  arm_under          +1.35 [+0.91]
+  grip_locked        +0.71 [+0.50]
+  legs_strong        +0.11 [+0.58]
+  two_on_one         -0.88 [-0.76]
+  chin_tucked        +0.05 [-0.43]
+  hand_tucked        +0.60 [+0.10]
+  flattened          +1.43 [+0.10]
+  fatigue            -0.57 [+0.00]
+
+Pantoja vs Asakura R2 (fight left out), v0.6 on-screen values; consciousness first 0 at 18.0 s (out at 19.0 s):
+      t  finish   80% band  squeeze  consc.  grip
+    0.0     29%    8- 67%     0.02     100   100
+    1.0     29%    8- 67%     0.02     100   100
+    2.0     29%    8- 67%     0.02     100   100
+    3.0     29%    8- 67%     0.02      99    99
+    4.0     29%    8- 67%     0.02      99    99
+    5.0     29%    8- 67%     0.02      99    99
+    6.0     29%    8- 67%     0.02      99    99
+    6.6     93%   73- 98%     0.80      99    99
+    7.0     93%   72- 98%     0.80      96    96
+    8.0     92%   72- 98%     0.80      87    90
+    9.0     92%   71- 98%     0.80      78    84
+   10.0     92%   71- 98%     0.80      69    79
+   11.0     92%   70- 98%     0.80      60    74
+   12.0     91%   69- 98%     0.80      51    69
+   13.0     91%   69- 98%     0.80      42    64
+   14.0     91%   68- 98%     0.80      33    60
+   14.9     89%   63- 97%     0.72      25    57
+   15.0     89%   63- 97%     0.72      24    56
+   16.0     89%   62- 97%     0.72      16    53
+   17.0     88%   61- 97%     0.72       8    50
+   18.0     88%   60- 97%     0.72       0    47
+   19.0   100%  (unconscious: event shown)  consciousness just before 0 -> 0;  grip 44
+
+Constants: SQUEEZE = {'version': 'v0.6', 'w_jaw': 0.05, 'w_one_arm': 0.45, 'chin_relief': 0.3, 'two_relief_open': 0.35, 'two_relief_locked': 0.1, 'hand_bonus': 0.15} | CONSCIOUSNESS = {'secs_to_out': 9.0, 'lingering_share': 0.2, 'blood_recovery_secs': 3.0, 'fatigue_recovery_secs': 60.0, 'light_below': 0.3} | DEEP_TWO_ON_ONE_KEEP = 0.25 | FATIGUE_SCALE = 12.0

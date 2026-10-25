@@ -196,7 +196,7 @@ def main():
     print("   ", tally_taps(lofo_res, fit(rounds)))
     p_all = fit(rounds)
     print("AFTER, refit on all (in-sample):", fmt(tally(simulate(rounds, p_all))))
-    print("\nFitted constants (all fights) [v0.4 value] (LOFO range):")
+    print("\nFitted constants (all fights) [prior] (LOFO range):")
     for k in NAMES:
         vals = [q[k] for q in fits]
         print(f"  {k:12s} {p_all[k]:.3f}  [prior {PRIOR_CENTER[k]}]  ({min(vals):.3f}-{max(vals):.3f})")
