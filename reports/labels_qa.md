@@ -1,7 +1,7 @@
 # labels.csv quality check
 
-Rows: **36** · fights: **19** · outcomes: tap 13, escape 10, position_change 8, unconscious 4, bell 1 · found_via: finish_list 27, candidate_round 9
-Label time per attempt (minutes): median **1.2**, total 72 (from `label_min` in notes).
+Rows: **45** · fights: **24** · outcomes: tap 18, escape 12, position_change 10, unconscious 4, bell 1 · found_via: finish_list 36, candidate_round 9
+Label time per attempt (minutes): median **1.4**, total 89 (from `label_min` in notes).
 Watched rounds with **0 RNC attempts** (real negatives, status `watched_no_rnc` in the queues): **1** (Paddy Pimblett vs Jordan Leavitt R1)
 
 🔴 fix before analysis · 🟡 check · ⚪ info
@@ -29,6 +29,15 @@ Watched rounds with **0 RNC attempts** (real negatives, status `watched_no_rnc` 
 | 34 (4dc5039b, R1, 81.3-94.3 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
 | 35 (4dc5039b, R1, 104.6-126.2 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
 | 36 (4dc5039b, R1, 274.5-286.9 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 37 (0f51869f, R3, 95.2-118.1 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 38 (0f51869f, R3, 123.1-130.3 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 39 (0f51869f, R3, 136.5-144.8 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 40 (3eea92e7, R4, 173.2-182.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 41 (d69bd8e5, R2, 86.5-87.2 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 42 (d69bd8e5, R2, 94.0-105.3 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 43 (d69bd8e5, R2, 188.6-191.3 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 44 (68fe62ba, R4, 162.8-165.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 45 (034c04e4, R3, 168.5-177.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
 
 Row numbers count data rows from 1 (the header isn't counted). This script never edits labels.csv: fix rows in the labeler (U = undo last row) or ask Main.
 Compilation sources: put the word `compilation` in notes, so round-time checks are skipped and the analysis treats round times as missing.
