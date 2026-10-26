@@ -7,7 +7,7 @@ From [labeling_queue_findable.csv](labeling_queue_findable.csv) ranks 1–18. Li
 | 1 | Moreno vs Figueiredo 2 (UFC 263, title) | R3, 2:26 | 3:34 | 🟢 [UFC Free Fight](https://www.youtube.com/watch?v=mzJBc5wcxtc) | 🟢 [Flashback](https://www.youtube.com/watch?v=xBKj96X5j-Q) |
 | 2 | Khabib vs McGregor (UFC 229, title) | R4, 3:03 | 2:57 | 🟢 [UFC Full Fight](https://www.youtube.com/watch?v=JuBBIJ7adjM) | 🟡 [Free Fight upload](https://www.youtube.com/watch?v=JEy16F1r1gA) |
 | 3 | Park vs Choi (Lewis vs Spivac, title) | R3, 3:11 | 2:49 | 🔴 not found | Fight Pass / Paramount+ |
-| 4 | Allen vs Duncan (main event) | R5, 2:46 | 3:14 | 🟢 [Round 5 sub clip](https://www.youtube.com/watch?v=VwHu1u7Jc6g) | 🟢 [Highlights](https://www.youtube.com/watch?v=HG2OOrSHbHA) |
+| 4 | Allen vs Duncan (main event) | R5, 2:46 | 3:14 | 🔴 link is an Allen compilation (has #70 Allen vs Silva) | 🟢 [Highlights](https://www.youtube.com/watch?v=HG2OOrSHbHA) |
 | 5 | Silva vs Delgado (Noche UFC, main event) | R3, 2:57 | 3:03 | 🟢 [Eurosport highlights](https://www.youtube.com/watch?v=5L184TA9VDQ) | one-arm choke (excluded from the primary model, still labeled) |
 | 6 | Salkilld vs Gamrot (main event) | R1, 4:25 | 1:35 | 🟢 [Full fight](https://www.youtube.com/watch?v=1CRkiJq9pDE) | 🟢 [Mini highlights](https://www.youtube.com/watch?v=3o78OYPFMmI) |
 | 7 | Moicano vs Duncan (main event) | R2, 3:14 | 2:46 | 🟢 [Mini fight highlights](https://www.youtube.com/watch?v=-BmqMDT3ERE) | — |
