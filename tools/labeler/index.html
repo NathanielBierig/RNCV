@@ -55,7 +55,7 @@
   <label class="btn">Load fight list(s) CSV<input id="fFights" type="file" accept=".csv" multiple></label>
   <label class="btn">Load labels.csv<input id="fLabels" type="file" accept=".csv"></label>
   <button id="bLink" title="Chrome/Edge: write every save straight into labels.csv">Link labels.csv file</button>
-  <label class="btn">Back-control hints CSV<input id="fHints" type="file" accept=".csv"></label>
+  <label class="btn" style="display:none" title="unused (pose parked)">Back-control hints CSV<input id="fHints" type="file" accept=".csv"></label>
   <button id="bExport">Download labels.csv</button>
   <span id="fileState" class="dim"></span>
 </header>
@@ -96,7 +96,7 @@
 
     <div class="card" id="fightCard">
       <div class="grid2">
-        <span>Fight</span><select id="selFight"><option value="">— load fight list CSVs or type below —</option></select>
+        <span>Fight</span><input id="fightSearch" type="search" placeholder="search: name, event, #rank" style="width:14em"> <select id="selFight"><option value="">— load fight list CSVs or type below —</option></select>
         <span>fight_id</span><input id="fight_id" type="text">
         <span>round</span><input id="round" type="number" min="1" max="5" value="1">
         <span>attacker</span><input id="attacker" type="text">
@@ -317,9 +317,9 @@ $("fFights").onchange = async e => {
       const key = [tag, r.fight_id, rounds, attacker].join("|");
       fights.set(key, {
         fight_id: r.fight_id, round: rounds.split(/[;,\s]+/)[0] || "1", rounds, date: r.date, attacker, defender,
-        finish_s, finish_round, found_via, order: Number(r.queue_rank) || 0, list: tag,
+        finish_s, finish_round, found_via, order: Number(r.queue_rank || r.findable_rank) || 0, list: tag,
         jump_s: r.jump_to_elapsed_s ? Number(r.jump_to_elapsed_s) : null, jump_clock: r.jump_to_clock_remaining || "",
-        scope: r.watch_scope || r.jump_note || "", kind: tag + (r.queue_rank ? " #" + r.queue_rank : ""),
+        scope: r.watch_scope || r.jump_note || "", kind: tag + ((r.queue_rank || r.findable_rank) ? " #" + (r.queue_rank || r.findable_rank) : ""), event: r.event || "",
       });
       n++;
     }
@@ -330,9 +330,24 @@ $("fFights").onchange = async e => {
   [...fights.entries()].sort(byQueue).forEach(([k, f]) => {
     const o = document.createElement("option"); o.value = k;
     o.textContent = `${f.kind} · ${f.date} · R${f.rounds || f.round} · ${f.attacker} vs ${f.defender}${f.finish_s != null ? " · finish R" + f.finish_round + " " + fmtClock(f.finish_s) : ""}`;
+    o.dataset.search = (o.textContent + " " + f.event).toLowerCase();
     sel.appendChild(o);
   });
   setStatus(`Loaded ${n} fight-rounds. Pick one in the Fight list.`);
+};
+// Search box: hide fights that don't match every typed word; auto-pick when exactly one is left.
+$("fightSearch").oninput = () => {
+  const words = $("fightSearch").value.toLowerCase().split(/\s+/).filter(Boolean);
+  const opts = [...$("selFight").options].slice(1);
+  let shown = [];
+  for (const o of opts) {
+    const hit = words.every(w => o.dataset.search.includes(w));
+    o.hidden = !hit; if (hit) shown.push(o);
+  }
+  if (shown.length === 1 && $("selFight").value !== shown[0].value) {
+    $("selFight").value = shown[0].value; $("selFight").onchange();
+  }
+  setStatus(words.length ? `${shown.length} fight(s) match` : "");
 };
 $("selFight").onchange = () => {
   const f = fights.get($("selFight").value); if (!f) return;
