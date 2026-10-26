@@ -56,7 +56,7 @@
   <label class="btn">Load labels.csv<input id="fLabels" type="file" accept=".csv"></label>
   <button id="bLink" title="Chrome/Edge: write every save straight into labels.csv">Link labels.csv file</button>
   <label class="btn" style="display:none" title="unused (pose parked)">Back-control hints CSV<input id="fHints" type="file" accept=".csv"></label>
-  <button id="bExport">Download labels.csv</button>
+  <button id="bExport" title="a backup copy; never save it over phase3_labels\labels.csv (use Link instead)">Download backup copy</button>
   <span id="fileState" class="dim"></span>
 </header>
 
@@ -391,11 +391,15 @@ $("bLink").onclick = async () => {
       // The file is the source of truth. Browser-only rows are added only if you say so (labeled while not linked).
       const inFile = new Set(data.map(rowKey));
       const extra = rows.filter(r => !inFile.has(rowKey(r)));
-      const add = extra.length && confirm(`labels.csv has ${data.length} row(s). This browser has ${extra.length} row(s) that are NOT in the file.
+      const list = extra.slice(0, 8).map(r => `  ${r.attacker} vs ${r.defender} R${r.round} ${r.attempt_start_s}s (${r.video_url})`).join("
+");
+      const add = extra.length && confirm(`labels.csv has ${data.length} row(s). This browser has ${extra.length} OLD or unsaved row(s) that are NOT in the file:
+${list}${extra.length > 8 ? "
+  ..." : ""}
 
-OK = add them (only if you labeled while the file was not linked).
-Cancel = use the file as it is (recommended: rows deleted or fixed in the file stay deleted/fixed).`);
-      rows = add ? data.concat(extra) : data;
+Cancel = use the file as it is (RECOMMENDED: these are usually rows that were deleted or fixed on purpose).
+OK = add them back (only if you just labeled them while the file was not linked).`);
+      rows = add ? data.concat(extra) : data;   // stale browser rows are dropped from storage on Cancel (persist below)
       if (add) extra.forEach(r => touched.set(rowKey(r), r));
       extraCols = [...new Set(extraCols.concat(header.filter(h => !COLUMNS.includes(h))))];
     }
@@ -422,7 +426,7 @@ async function writeLinked() {
   const w = await fileHandle.createWritable(); await w.write(toCSV()); await w.close();
 }
 $("bExport").onclick = () => {
-  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([toCSV()], {type: "text/csv"})); a.download = "labels.csv"; a.click();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([toCSV()], {type: "text/csv"})); a.download = "labels_backup_" + new Date().toISOString().slice(0, 10) + ".csv"; a.click();
 };
 
 // ---------- hints (optional back-control segments) ----------
