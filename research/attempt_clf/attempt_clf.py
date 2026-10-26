@@ -43,6 +43,7 @@ def pair_crop(det, frame, pad=0.25):
     x0, y0 = int(max(0, x0 - pad * w)), int(max(0, y0 - pad * h))
     x1, y1 = int(min(W, x1 + pad * w)), int(min(H, y1 + pad * h))
     return frame[y0:y1, x0:x1] if x1 > x0 + 10 and y1 > y0 + 10 else frame
+WATCHED_BEFORE, WATCHED_AFTER = 120.0, 30.0   # seconds kept around the labeled attempts of a clip
 # Fully watched rounds with no RNC: all frames are negatives (clip name -> fight id).
 NEG_CLIPS = {"f22_pimblett_leavitt_r1.mp4": "8e02bdaac8ed50e5"}
 
@@ -60,6 +61,31 @@ def clips_and_windows():
 
 
 def extract(clips):
+    """Features are cached per clip (data/attempt_clf/clips<TAG>/<clip>.npz), so new labels never force a
+    re-extraction: only clips without a cache file are processed; y is recomputed from the current labels."""
+    per = CACHE.parent / f"clips{TAG}"
+    per.mkdir(parents=True, exist_ok=True)
+    todo = {k: v for k, v in clips.items() if not (per / f"{k}.npz").exists()}
+    if todo:
+        _extract_new(todo, per)
+    X, y, fight, clip_id, t_s = [], [], [], [], []
+    for ci, (name, info) in enumerate(sorted(clips.items())):
+        d = np.load(per / f"{name}.npz")
+        keep = np.ones(len(d["t"]), bool)
+        if info["win"]:      # full-fight videos: only the watched stretch (unwatched rounds may hide unlabeled attempts)
+            lo, hi = min(a for a, _ in info["win"]) - WATCHED_BEFORE, max(b for _, b in info["win"]) + WATCHED_AFTER
+            keep = (d["t"] >= lo) & (d["t"] <= hi)
+        ts = d["t"][keep]
+        X.append(d["X"][keep]); t_s.append(ts)
+        y.append(np.array([int(any(a <= t <= b for a, b in info["win"])) for t in ts]))
+        fight += [info["fight"]] * len(ts); clip_id += [ci] * len(ts)
+        print(f"{name}: {len(ts)} frames, {y[-1].sum()} inside attempts", flush=True)
+    CACHE.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(CACHE, X=np.concatenate(X), y=np.concatenate(y), fight=np.array(fight),
+                        clip=np.array(clip_id), t=np.concatenate(t_s))
+
+
+def _extract_new(clips, per):
     import open_clip
     import torch
     from PIL import Image
@@ -70,8 +96,8 @@ def extract(clips):
         sys.path.insert(0, str(ROOT / "src"))
         from yolo_pose_onnx import YoloPoseOnnx
         det = YoloPoseOnnx(ROOT / "models/rncv_pose_v1.onnx")
-    X, y, fight, clip_id, t_s = [], [], [], [], []
-    for ci, (name, info) in enumerate(sorted(clips.items())):
+    for name, info in sorted(clips.items()):
+        X, t_s = [], []
         cap = cv2.VideoCapture(str(ROOT / "data/clips" / name))
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
         step = max(1, int(round(fps / FPS_S)))
@@ -94,15 +120,9 @@ def extract(clips):
             with torch.no_grad():
                 e = model.encode_image(torch.stack(batch)).float()
             X.append((e / e.norm(dim=-1, keepdim=True)).numpy()); t_s += meta
-        n_new = len(t_s) - len(y)
-        ts = t_s[-n_new:]
-        y += [int(any(a <= t <= b for a, b in info["win"])) for t in ts]
-        fight += [info["fight"]] * n_new
-        clip_id += [ci] * n_new
-        print(f"{name}: {n_new} frames, {sum(y[-n_new:])} inside attempts", flush=True)
-    CACHE.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(CACHE, X=np.concatenate(X), y=np.array(y), fight=np.array(fight),
-                        clip=np.array(clip_id), t=np.array(t_s))
+        cap.release()
+        np.savez_compressed(per / f"{name}.npz", X=np.concatenate(X), t=np.array(t_s))
+        print(f"extracted {name}: {len(t_s)} frames", flush=True)
 
 
 def smooth(p, clip, k):
@@ -145,5 +165,5 @@ def evaluate():
 
 if __name__ == "__main__":
     if not CACHE.exists() or "--refresh" in sys.argv:
-        extract(clips_and_windows())
+        extract(clips_and_windows())          # only new clips are extracted; labels are re-applied to all
     evaluate()
