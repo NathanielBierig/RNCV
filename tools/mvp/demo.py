@@ -210,9 +210,6 @@ def main():
         t = i / fps; i += 1
         cur = next((r for r in mine if float(r["video_time_start"]) <= t <= float(r["video_time_end"])), None)
         canvas = np.zeros((H, W, 3), np.uint8); canvas[:] = BG[::-1]
-        if layer is not None:
-            fr = layer.draw(fr, i - 1, t, cur is not None)
-        canvas[oy:oy + nh, ox:ox + nw] = cv2.resize(fr, (nw, nh))
         banner = None
         if cur:
             el = t - float(cur["video_time_start"])
@@ -240,6 +237,9 @@ def main():
             else:
                 shown *= 0.9; hist = [] if shown < .01 else hist
                 air = min(1.0, air + 0.02); grip = min(1.0, grip + 0.02)
+        if layer is not None:                             # tracking + readouts drawn on the fighters
+            fr = layer.draw(fr, i - 1, t, live, fin=shown, air=air, banner=banner[0] if banner else None)
+        canvas[oy:oy + nh, ox:ox + nw] = cv2.resize(fr, (nw, nh))
         img = Image.fromarray(cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB))
         panel(img, att, dfn, shown, hist[-240:], st, att_t, banner, model, live, air, grip, band)
         if po:
