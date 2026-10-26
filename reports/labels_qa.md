@@ -1,7 +1,7 @@
 # labels.csv quality check
 
-Rows: **51** · fights: **29** · outcomes: tap 22, escape 13, position_change 10, unconscious 5, bell 1 · found_via: finish_list 42, candidate_round 9
-Label time per attempt (minutes): median **1.4**, total 99 (from `label_min` in notes).
+Rows: **54** · fights: **31** · outcomes: tap 23, escape 13, position_change 11, unconscious 6, bell 1 · found_via: finish_list 45, candidate_round 9
+Label time per attempt (minutes): median **1.4**, total 102 (from `label_min` in notes).
 Watched rounds with **0 RNC attempts** (real negatives, status `watched_no_rnc` in the queues): **1** (Paddy Pimblett vs Jordan Leavitt R1)
 
 🔴 fix before analysis · 🟡 check · ⚪ info
@@ -44,6 +44,9 @@ Watched rounds with **0 RNC attempts** (real negatives, status `watched_no_rnc` 
 | 49 (9124740f, R1, 266.8-276.5 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
 | 50 (7990b671, R3, 31.0-37.3 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
 | 51 (0730c4e6, R2, 123.1-129.3 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 52 (d1621b3d, R1, 222.2-227.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 53 (241a0833, R3, 214.2-220.8 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 54 (241a0833, R3, 223.4-233.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
 
 Row numbers count data rows from 1 (the header isn't counted). This script never edits labels.csv: fix rows in the labeler (U = undo last row) or ask Main.
 Compilation sources: put the word `compilation` in notes, so round-time checks are skipped and the analysis treats round times as missing.
