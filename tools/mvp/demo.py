@@ -151,8 +151,8 @@ def main():
     ap.add_argument("clip")
     ap.add_argument("--out", default="")
     ap.add_argument("--no-track", action="store_true", help="skip the fighter tracking layer")
-    ap.add_argument("--model", choices=["v06", "v07c"], default="v06",
-                    help="v06 = current model; v07c = v0.7 structure (grip type, body triangle) + coach priors")
+    ap.add_argument("--model", choices=["v06", "v07c"], default="v07c",
+                    help="v07c = current model (v0.7 structure: grip type, body triangle; + coach priors); v06 = previous")
     ap.add_argument("--panel-only", action="store_true",
                     help="footage-free output: only the readout panel around the attempts (+ a GIF), shareable")
     a = ap.parse_args()
