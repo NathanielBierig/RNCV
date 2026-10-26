@@ -1,6 +1,6 @@
 """RNCV finish model prototype (design A in docs/MODEL_SPEC.md): expert-prior Bayesian state model.
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python -I research/model/state_model.py [--priors research/model/priors_placeholder.csv]
+    python -I research/model/state_model.py [--priors research/model/priors_placeholder.csv]
 
 The number on screen = P(this attempt ends in a finish | the state right now, attempt still on).
   logit p = a + delta * selected_sample + sum_k b_k * x_k(state now)

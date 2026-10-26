@@ -3,7 +3,7 @@ CONSCIOUSNESS gauge and the attacker-fatigue term:
   v0.5      = owner-anchored (v0.4 weights + G2: locked under the chin + two-on-one = 0.9; secs_to_out 7.5) [default]
   v0.5-fit  = weights + secs_to_out fitted to the labels by calibrate_squeeze.py
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python research/model/run_v05.py
+    python research/model/run_v05.py
 """
 import math
 

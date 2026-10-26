@@ -1,6 +1,6 @@
 """Score referee-detection methods on the hand-labeled eval set.
 
-    C:/Users/netan/.venvs/clip/Scripts/python -I research/referee/appearance/evaluate.py
+    python -I research/referee/appearance/evaluate.py
 
 Needs data/referee/dets (eval/extract.py) and data/referee/feats (features.py).
 Per-person metrics use people that survive select()'s crowd rule (not small_box).

@@ -15,7 +15,7 @@ head < h. The attacker is the ordering with the larger `behind`.
 Evaluation uses the same time-block folds as the classifier: thresholds are
 picked by grid search on the training blocks and scored on the held-out block.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I src/back_rule.py
+    python -I src/back_rule.py
 """
 import itertools
 import json

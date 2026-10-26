@@ -1,6 +1,6 @@
 """Local CPU check of finetune.ipynb: runs every code cell with a tiny config (RNCV_SMOKE=1).
 
-    C:/Users/netan/.venvs/yolo/Scripts/python.exe notebooks/kaggle_finetune_pose/smoke_test.py <work_dir>
+    python.exe notebooks/kaggle_finetune_pose/smoke_test.py <work_dir>
     (add --plan to only list the full Kaggle subset and print its size; no images are fetched)
 
 Fetches ~60 small images (Harmony4D test/16_mma5 + 20 VICOS frames) with HTTP range reads, converts them,

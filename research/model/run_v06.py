@@ -2,7 +2,7 @@
 constants (secs_to_out 9, lingering 0.2, fatigue recovery 60 s, over-the-jaw 0.05, one arm 0.5), owner G2 kept.
 Compared with v0.5; LOFO Brier, bootstrap, calibration, gauge tallies, Pantoja-Asakura trace.
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python research/model/run_v06.py
+    python research/model/run_v06.py
 """
 import math
 

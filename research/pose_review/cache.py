@@ -7,7 +7,7 @@ Every processed frame gets the raw output of
   rncv_pose_v1.onnx (score 0.25, nms 0.65) -> pipeline B, C
 Saved to data/pose_review/cache.pkl (local, git-ignored); eval frames as JPGs in data/pose_review/frames/.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_review/cache.py [--negatives]
+    python -I research/pose_review/cache.py [--negatives]
 """
 import pickle
 import sys

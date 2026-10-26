@@ -1,6 +1,6 @@
 """Grid-overlaid clean eval frames for by-eye role ground truth (roles_gt.csv).
 Grid: 12 columns A-L x 8 rows 1-8 over the full frame; a cell like 'F4' means its centre.
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_review/gt_sheets.py
+    python -I research/pose_review/gt_sheets.py
 """
 import sys
 from pathlib import Path

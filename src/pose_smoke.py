@@ -6,8 +6,8 @@ Pipeline per processed frame (research/pose_sweep/FINDINGS.md has the evidence):
   people keep the most-overlapping pair) -> 2-slot tracker that fills a missing
   fighter for up to 0.5 s.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I src/pose_smoke.py
-    C:/Users/netan/.venvs/rncv/Scripts/python -I src/pose_smoke.py --clips data/clips/gsp_bisping.mp4 --stride 1
+    python -I src/pose_smoke.py
+    python -I src/pose_smoke.py --clips data/clips/gsp_bisping.mp4 --stride 1
 
 Outputs per clip <name> (local only, data/ is gitignored):
     data/pose/<name>.npz           kpts [F, 2, 17, 3] tracked fighters (x, y, conf; NaN = missing),

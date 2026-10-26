@@ -7,7 +7,7 @@ cached in data/attempt_clf/feats.npz. Then: train on all fights but one, test on
 for every fight. Reports frame-level ROC-AUC / PR-AUC per fold and pooled, with and without
 temporal smoothing (moving average over ~2 s).
 
-    C:/Users/netan/.venvs/clip/Scripts/python -I research/attempt_clf/attempt_clf.py [--crop] [--refresh]
+    python -I research/attempt_clf/attempt_clf.py [--crop] [--refresh]
 """
 import csv
 import sys

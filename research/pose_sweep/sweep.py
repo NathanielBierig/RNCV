@@ -5,7 +5,7 @@ box by IoU > 0.45, and entangled grapplers overlap heavily. This re-runs RTMO-m
 on every k-th frame of data/clips/*.mp4 for a grid of thresholds and reports
 how often 2+ people are found. Video stays local; only numbers are written.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_sweep/sweep.py --every 15
+    python -I research/pose_sweep/sweep.py --every 15
 """
 import argparse
 import glob

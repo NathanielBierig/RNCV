@@ -1,6 +1,6 @@
 """Score roles.py against roles_gt.csv (48 attempt frames + negative frames outside the attempts).
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_review/score_roles.py [--render]
+    python -I research/pose_review/score_roles.py [--render]
 Neck located = predicted defender neck within 1 grid cell (12x8 grid over the frame) of the GT cell centre.
 Writes data/pose_review/roles_pred.csv and, with --render, data/pose_review/roles_fail.jpg.
 """

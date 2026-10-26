@@ -2,7 +2,7 @@
 against the v0.2 placeholder cards. Leave-one-fight-out (LOFO) Brier, calibration, fight-cluster bootstrap,
 and the Pantoja-Asakura trace (finish %, 80% band, Air, Grip).
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python research/model/run_v03.py
+    python research/model/run_v03.py
 """
 import csv
 import math

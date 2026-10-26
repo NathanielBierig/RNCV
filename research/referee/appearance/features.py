@@ -1,6 +1,6 @@
 """Appearance features for every cached RTMO detection (all stride-5 frames of all clips).
 
-    C:/Users/netan/.venvs/clip/Scripts/python -I research/referee/appearance/features.py
+    python -I research/referee/appearance/features.py
 
 Reads data/referee/dets/<clip>.npz (made by eval/extract.py) and the clip video, and
 writes data/referee/feats/<clip>.npz with, per detection (flattened in frame order):

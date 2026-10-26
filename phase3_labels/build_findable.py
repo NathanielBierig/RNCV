@@ -10,7 +10,7 @@ Sampling note: picking by findability favors star and title fights. That is allo
 hand-picked success list (PREREG §2), and `found_via` stays `finish_list`; report the card-position
 mix in the write-up.
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python -I phase3_labels/build_findable.py
+    python -I phase3_labels/build_findable.py
 """
 import csv
 from collections import Counter

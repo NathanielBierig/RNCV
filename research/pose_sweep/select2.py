@@ -14,7 +14,7 @@ but also returns the referee, crowd members and duplicate skeletons. Per frame:
 No labels needed. Writes research/pose_sweep/select2.json + sample frames to
 data/pose/select2/ (local only).
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_sweep/select2.py --every 5
+    python -I research/pose_sweep/select2.py --every 5
 """
 import argparse
 import glob

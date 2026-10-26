@@ -1,6 +1,6 @@
 """RNCV MVP 0.1: replay demo overlay for one labeled clip.
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python -I tools/mvp/demo.py data/clips/<clip>.mp4 [--out data/mvp/<clip>_demo.mp4]
+    python -I tools/mvp/demo.py data/clips/<clip>.mp4 [--out data/mvp/<clip>_demo.mp4]
 
 What is real vs. stand-in (MVP 0.1):
 - Attempt windows and the RNC factors come from YOUR LABELS (phase3_labels/labels.csv), not from automatic

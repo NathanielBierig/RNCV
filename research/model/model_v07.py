@@ -1,6 +1,6 @@
 """RNCV finish model v0.7 (MODEL_SPEC §4f): owner's structural review of the v0.6 weights.
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python research/model/model_v07.py
+    python research/model/model_v07.py
 
 Changes vs v0.6 (same expert-prior logistic state model, same cards-as-pretend-data method; state_model.py is reused):
 1. Grip by type: grip_f4 (figure-four) and grip_other (palm-to-palm / gable / wrist pull), both vs unlocked

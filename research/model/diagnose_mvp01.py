@@ -1,6 +1,6 @@
 """Re-run the rejected MVP 0.1 finish-% math (tools/mvp/demo.py) on the labels and print what it showed.
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python -I research/model/diagnose_mvp01.py
+    python -I research/model/diagnose_mvp01.py
 
 Imports fit/finish_prob/state_at straight from tools/mvp/demo.py so the numbers are the real ones.
 """

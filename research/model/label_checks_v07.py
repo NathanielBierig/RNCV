@@ -2,7 +2,7 @@
 95% CIs. Two views: the state at the 2-s landmark (one row per attempt), and "ever reached during the attempt"
 (descriptive only: longer attempts reach more states, and finishes end the attempt).
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python research/model/label_checks_v07.py
+    python research/model/label_checks_v07.py
 """
 from collections import defaultdict
 

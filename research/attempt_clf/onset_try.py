@@ -1,6 +1,6 @@
 """One-off test: does a separate "choke is starting" model fix the detector's timing? (2026-10-26)
 
-    C:/Users/netan/.venvs/clip/Scripts/python -I research/attempt_clf/onset_try.py
+    python -I research/attempt_clf/onset_try.py
 
 Onset model: positives = frames in [start, start + 3 s]; negatives = frames in [start - 8 s, start - 1 s]
 (the exchange just before the choke). Trained leave-one-fight-out on the v2 context features (fighter crop).

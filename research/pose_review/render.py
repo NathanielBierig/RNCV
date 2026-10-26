@@ -3,7 +3,7 @@ clean crop | A RTMO-m 0.3/0.65 | B fine-tuned v1 0.25 | C = B + RTMO fallback (p
 Kept/tracked slot 0 = orange, slot 1 = cyan (nose ringed white); grey = raw detections not kept.
 Each panel's caption: slot states (S seen, F filled, - missing) and referee_score per slot.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_review/render.py [--pipes A,B,C] [--extra mod:func]
+    python -I research/pose_review/render.py [--pipes A,B,C] [--extra mod:func]
 Outputs data/pose_review/sheets/rowNN.jpg and data/pose_review/tracked_<pipe>.pkl.
 """
 import argparse

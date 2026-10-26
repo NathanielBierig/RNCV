@@ -1,6 +1,6 @@
 """Compare referee-removal variants from the cached model outputs (cache_dets.py first).
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/referee/detector/evaluate.py [--evidence]
+    python -I research/referee/detector/evaluate.py [--evidence]
 
 Variants (all end in src/two_fighters.select + TwoSlotTracker, stride 3, 0.5 s gap fill):
   baseline   RTMO-m people (score 0.3)                   -> select

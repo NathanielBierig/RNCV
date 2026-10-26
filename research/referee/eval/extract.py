@@ -1,6 +1,6 @@
 """Build the referee eval set: RTMO-m detections + person crops + contact sheets.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/referee/eval/extract.py
+    python -I research/referee/eval/extract.py
 
 1. Runs RTMO-m (score 0.3 / nms 0.65, as in src/pose_smoke.py) on every 5th frame of
    each data/clips/*.mp4 and caches all raw detections to data/referee/dets/<clip>.npz

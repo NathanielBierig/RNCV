@@ -3,7 +3,7 @@
 Top: the frame with each person's skeleton + box and index. People whose box is
 < 15% of the largest (what select() calls crowd) get a thin grey box.
 Bottom: crops of the non-crowd people with their skeleton, for judging clothes.
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/referee/eval/sheets.py
+    python -I research/referee/eval/sheets.py
 """
 import csv
 import sys

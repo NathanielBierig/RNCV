@@ -1,6 +1,6 @@
 """Attempt detector v2 experiments on the cached CLIP features (no new extraction, CPU, ~1 min).
 
-    C:/Users/netan/.venvs/clip/Scripts/python -I research/attempt_clf/detector_v2.py
+    python -I research/attempt_clf/detector_v2.py
 
 Same leave-one-fight-out protocol as attempt_clf.py / detector_events.py. Variants:
 - frame: one frame's embedding (the v1 detector)

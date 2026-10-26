@@ -11,7 +11,7 @@ Rows whose notes contain the token "compilation" come from a compilation video w
 an unreliable on-screen clock: their round-time checks are skipped, and the analysis
 treats their round-time fields (attempt_start_s, attempt_end_s, fight_time_s) as missing.
 
-    C:/Users/netan/.venvs/ufc-cv/Scripts/python -I phase3_labels/qa_labels.py
+    python -I phase3_labels/qa_labels.py
 """
 from pathlib import Path
 

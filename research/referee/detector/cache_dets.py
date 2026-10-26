@@ -1,6 +1,6 @@
 """Run the three models once per frame and cache raw outputs (local only, never upload).
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/referee/detector/cache_dets.py
+    python -I research/referee/detector/cache_dets.py
 
 Frames: every frame with i % 3 == 0 (tracking metrics, stride 3) or i % 5 == 0 (the
 ref-appearance eval set uses stride 5). Per frame we store

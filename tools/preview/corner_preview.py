@@ -8,8 +8,8 @@ colors near their wrists (gloves) and hips (trunks). Draws:
   - people dropped as crowd/referee/duplicate in thin gray
   - a top bar: clip time, live "both fighters tracked" %, and the frame's state
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I tools/preview/corner_preview.py
-    C:/Users/netan/.venvs/rncv/Scripts/python -I tools/preview/corner_preview.py --clips data/clips/gsp_bisping.mp4 --stride 1
+    python -I tools/preview/corner_preview.py
+    python -I tools/preview/corner_preview.py --clips data/clips/gsp_bisping.mp4 --stride 1
 
 Output: data/pose/<clip>_corners.mp4 (local only; data/ is gitignored).
 Caveat: modern UFC gloves are mostly black, so the glove signal is often weak;

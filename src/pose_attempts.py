@@ -7,7 +7,7 @@ reports/pose_smoke.md: % frames with both fighters tracked (seen, or filled <= 0
 and % frames where both upper bodies are OK (>= 5 of 7 upper-body joints).
 Read-only on labels.csv.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I src/pose_attempts.py            # stride 2
+    python -I src/pose_attempts.py            # stride 2
 """
 import argparse
 import sys

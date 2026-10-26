@@ -1,6 +1,6 @@
 """Event-level check of the no-pose attempt detector (research/attempt_clf), as the finish model would consume it.
 
-    C:/Users/netan/.venvs/clip/Scripts/python -I research/model/detector_events.py [--crop]
+    python -I research/model/detector_events.py [--crop]
 
 Frame scores (CLIP + logistic, leave-one-fight-out, same as attempt_clf.evaluate) -> ~2 s moving average ->
 hysteresis (turn ON above th_on, OFF after 2 s below th_off) -> detected attempt windows. Then, per threshold:

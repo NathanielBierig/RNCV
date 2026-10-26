@@ -5,7 +5,7 @@ A black shirt is mostly 'too dark' (Y < 30), so referee_score is decided by the 
 (research/referee/eval/labels.csv, cached features in data/referee/feats/) how dark fractions differ
 between fighters and referees, and whether counting dark pixels as 'not skin' helps.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_review/ref_dark.py
+    python -I research/pose_review/ref_dark.py
 """
 import csv
 from pathlib import Path

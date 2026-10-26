@@ -4,7 +4,7 @@ for a few hard eval frames and several detector settings:
 If no candidate sits on the choker, the fix must be in the detector, not in select()/the referee filter.
 Also counts candidates per frame over all 48 eval frames.
 
-    C:/Users/netan/.venvs/rncv/Scripts/python -I research/pose_review/raw_candidates.py
+    python -I research/pose_review/raw_candidates.py
 """
 import sys
 from pathlib import Path
