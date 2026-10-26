@@ -136,6 +136,7 @@ Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton prev
 ### Stop 8d · `research/attempt_clf/attempt_clf.py` 🟡: detecting an attempt without pose
 - **What:** the workaround for Stop 8c. Frames are sampled 2 per second from every labeled clip; each frame (optionally cropped to the fighters) becomes a CLIP embedding (a general-purpose image model's "fingerprint" of the picture); a logistic regression (a simple yes/no scorer) learns "inside a labeled attempt?". Scored **leave-one-fight-out**: each fight is judged by a model that never saw it. Pooled ROC-AUC 0.66 on the full frame, **0.70** on the fighter crop, 0.72 smoothed over ~2 s; the bigger ViT-B-16 backbone is in `reports/attempt_clf_crop_b16.md`. ROC-AUC 0.5 is guessing; the roadmap wants ≥ 0.80.
 - **Look at:** [`clips_and_windows()`](../research/attempt_clf/attempt_clf.py:50) (what counts as positive), [`extract()`](../research/attempt_clf/attempt_clf.py:62), [`evaluate()`](../research/attempt_clf/attempt_clf.py:116), the `--crop` / `--b16` flags. Needs its own venv (`a separate venv (clip)`) and caches features in `data/attempt_clf/`.
+- **v2:** [`detector_v2.py`](../research/attempt_clf/detector_v2.py) adds the past 2–4 s of context: ROC-AUC **0.74**. Two timing ideas (an onset model, head/neck crops) were tried and rejected; see `reports/attempt_detector_v2.md`.
 - **Try it:** read `reports/attempt_clf_crop.md`; per-fight AUCs range from 0.10 to 1.00, so they're noisy with this few fights. Re-running extracts CLIP features for every clip, which takes many minutes (CPU), so I haven't included a quick command.
 
 ### Stop 9 · `tools/eval_harness/` 🟢: the scoring rules, as code
@@ -170,11 +171,11 @@ Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton prev
 - **Look at:** [`color_votes()`](../tools/preview/corner_preview.py:39), [`run_clip()`](../tools/preview/corner_preview.py:77). It reuses `two_fighters.select/TwoSlotTracker`.
 - **Try it:** `$PY_RNCV -I tools/preview/corner_preview.py --clips data/clips/gsp_bisping.mp4 --stride 4` writes `data/pose/gsp_bisping_corners.mp4`. Not run for this refresh (it writes a video); roughly a minute at stride 4 (estimate).
 
-### Stop 12c · `tools/mvp/demo.py` 🟢: the MVP 0.1 replay demo
-- **What:** the first end-to-end picture. For one labeled clip it renders an overlay with a **finish % for the attacker**, a **health bar for the defender**, a live state panel and the final result (TAP / OUT COLD / ESCAPED / ...). Be clear on what is real vs stand-in: attempt windows and factors come from **your labels**, not automatic detection; the finish % comes from a small demo model (base finish rate × odds ratios for arm under chin, strong legs, defender two-on-one, ramped up with time held), fit on the *other* fights only (leave-one-fight-out), and updated live from your G-panel state changes. It never peeks at the clip's own outcome until the replay marker at the end.
-- **Look at:** [`fit()`](../tools/mvp/demo.py:42), [`finish_prob()`](../tools/mvp/demo.py:60), [`state_at()`](../tools/mvp/demo.py:71), [`panel()`](../tools/mvp/demo.py:93).
-- **In/out:** a clip in `data/clips/` + `phase3_labels/labels.csv` → mp4 (default `data/mvp/<clip>_demo.mp4`, git-ignored).
-- **Try it (71 s, verified):** `$PY_CV -I tools/mvp/demo.py data/clips/pantoja_asakura_r2_b.mp4`, then open the mp4 in `data/mvp/`. An earlier result is already there.
+### Stop 12c · `tools/mvp/demo.py` 🟢: the replay demo (finish chance + choke meter)
+- **What:** the end-to-end picture. For one labeled clip it renders the video with a tracking layer (boxes and head reticles from the pose model) and a readout panel. The panel shows the attacker's **finish chance** with an 80% band, a **grip** bar (attacker fatigue), the defender's **choke meter** (a modeled choke dose that drains under a deep choke and refills with air), the state and the result. The finish chance comes from the finish model in `research/model/` (default **v0.7c**: your scenario cards, the evidence review and the coach's numbers, plus the labels of the *other* fights). There's no time ramp, and it never peeks at the clip's outcome. Attempt windows and factors still come from **your labels**, not from the detector.
+- **Look at:** `main()` (model choice: `--model v07c|v06`), [`panel()`](../tools/mvp/demo.py:93), `tools/mvp/tracking.py` (the tracking layer), `research/model/model_v07.py` + `run_v07_coach.py` (the model).
+- **In/out:** a clip in `data/clips/` + `phase3_labels/labels.csv` → `data/mvp/<clip>_demo.mp4` (git-ignored). `--panel-only` writes only the panel, plus a GIF, with no video pixels. That's the shareable version (see the README GIF).
+- **Try it (~1 min):** `python -I tools/mvp/demo.py data/clips/pantoja_asakura_r2_b.mp4 --panel-only`.
 
 ### Stop 13 · `notebooks/kaggle_finetune_pose/` 🟡: teaching the pose model grappling
 - **What:** a generated Kaggle GPU notebook (`build_notebook.py` creates `finetune.ipynb` and `finetune_v2.ipynb`; edit the builder, not the notebooks) that fine-tunes YOLO11m-pose on public grappling/MMA images, then exports one `.onnx`. v1 is done (`models/rncv_pose_v1.onnx`); v2 (bigger: 960 px, ~9 h) is running. `smoke_test.py` is a tiny local CPU rehearsal. **No UFC footage ever goes to Kaggle.** Walkthrough: `docs/KAGGLE_FINETUNE.md`.
@@ -214,9 +215,10 @@ Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton prev
 | Fine-tuned pose models v1/v2 | 🟡 | Beat base on public grappling images; on UFC attempts no better by eye; v2 not better than v1 |
 | Position classifier (VICOS) | 🟢 | Macro-F1 0.63; weak on half guard, takedowns. Not tested on UFC footage |
 | Back-control rule | 🟢 | Recall 0.78–0.83, precision 0.85 on VICOS. UFC comparison still to do |
-| Attempt detector | 🟡 | `research/attempt_clf`: ROC-AUC 0.70 (0.72 smoothed), leave-one-fight-out, no pose. Target 0.80 |
-| Finish-probability model | 🟡 | Only a small demo stand-in inside `tools/mvp/demo.py`. Real hazard model waits on ~150 attempts; `horizons.py` ready to score it |
-| MVP 0.1 replay demo | 🟢/🟡 | Runs end to end on a labeled clip, but uses your labels for windows (see Stop 12c) |
+| Attempt detector | 🟡 | v2: ROC-AUC 0.74, leave-one-fight-out, no pose; window timing still poor (data-limited). Target 0.80 |
+| Finish-probability model | 🟡 | v0.7c (`research/model/`): expert cards + coach priors + labels; Brier 0.228 vs 0.270 base rate. Pre-registered analysis script ready (`research/rnc_science/prereg_analysis.py`), runs at ~150 attempts |
+| Replay demo | 🟢/🟡 | Runs end to end on a labeled clip with labels for windows; footage-free `--panel-only` GIF (Stop 12c) |
+| Release check | 🟢 | `tools/release_check.py`: no video and no secrets in the repo or its history; internal files still to move before going public |
 | Eval harness | 🟢 | 11 tests pass; nothing real scored yet |
 | Candidate lists, priors, queues | 🟢 | CSVs built; leak test exists |
 | Labeler | 🟢 | In real use (X, G, re-read before save); median 1.4 min per attempt |
