@@ -8,7 +8,7 @@ From [labeling_queue_findable.csv](labeling_queue_findable.csv) ranks 1–18. Li
 | 2 | Khabib vs McGregor (UFC 229, title) | R4, 3:03 | 2:57 | 🟢 [UFC Full Fight](https://www.youtube.com/watch?v=JuBBIJ7adjM) | 🟡 [Free Fight upload](https://www.youtube.com/watch?v=JEy16F1r1gA) |
 | 3 | Park vs Choi (Lewis vs Spivac, title) | R3, 3:11 | 2:49 | 🔴 not found | Fight Pass / Paramount+ |
 | 4 | Allen vs Duncan (main event) | R5, 2:46 | 3:14 | 🟢 [Round 5 sub clip](https://www.youtube.com/watch?v=VwHu1u7Jc6g) | 🟢 [Highlights](https://www.youtube.com/watch?v=HG2OOrSHbHA) |
-| 5 | Silva vs Delgado (Noche UFC, main event) | R3, 2:57 | 3:03 | 🟢 [Mini fight highlights](https://www.youtube.com/watch?v=XpVa-9u1Fvk) | — |
+| 5 | Silva vs Delgado (Noche UFC, main event) | R3, 2:57 | 3:03 | 🟢 [Eurosport highlights](https://www.youtube.com/watch?v=5L184TA9VDQ) | one-arm choke (excluded from the primary model, still labeled) |
 | 6 | Salkilld vs Gamrot (main event) | R1, 4:25 | 1:35 | 🟢 [Full fight](https://www.youtube.com/watch?v=1CRkiJq9pDE) | 🟢 [Mini highlights](https://www.youtube.com/watch?v=3o78OYPFMmI) |
 | 7 | Moicano vs Duncan (main event) | R2, 3:14 | 2:46 | 🟢 [Mini fight highlights](https://www.youtube.com/watch?v=-BmqMDT3ERE) | — |
 | 8 | Bautista vs Oliveira (main event) | R2, 4:46 | 1:14 | 🔴 link dead (2026-10-26); only result titled "Bautista vs Mix" (unclear) | Fight Pass |
@@ -23,6 +23,6 @@ From [labeling_queue_findable.csv](labeling_queue_findable.csv) ranks 1–18. Li
 | 17 | Smith vs Oezdemir (main event) | R3, 4:26 | 1:34 | 🟡 [Full fight](https://www.youtube.com/watch?v=BsqYK6ew2eI) | — |
 | 18 | Oleinik vs Hunt (main event) | R1, 4:26 | 1:34 | 🟡 [Hunt vs Oleinik](https://www.youtube.com/watch?v=xh_XxuHaQao) | 🟡 [Oleynik vs Hunt](https://www.youtube.com/watch?v=gPTfm6cSUCU) |
 
-**Downloaded 2026-10-26 (whole videos, 720p, local only in `data/clips/`):** #1 `q01_moreno_figueiredo2`, #4 `q04_allen_duncan`, #5 `q05_silva_delgado`, #7 `q07_moicano_duncan`, #9 `q09_hernandez_dolidze`, #10 `q10_tybura_tuivasa`, #12 `q12_allen_muniz`, #13 `q13_smith_spann`, #14 `q14_brunson_till`, #16 `q16_maia_askren`. #2 was already on disk (`Khabib_conor_r4`). Five original links were dead and have been replaced above (#6 is highlights only).
+**Downloaded 2026-10-26 (whole videos, 720p, local only in `data/clips/`):** #1 `q01_moreno_figueiredo2`, #5 `q05_silva_delgado` (Eurosport highlights; the first fan upload was unusable), #70 `q70_allen_silva` (the #4 link is an Allen compilation with the Silva finish; no real Allen–Duncan video found, only a video-game render), #7 `q07_moicano_duncan`, #9 `q09_hernandez_dolidze`, #10 `q10_tybura_tuivasa`, #12 `q12_allen_muniz`, #13 `q13_smith_spann`, #14 `q14_brunson_till`, #16 `q16_maia_askren`. #2 `q02_khabib_mcgregor` (official full fight). Five original links were dead and have been replaced above (#6 is highlights only).
 
 **Tips:** "Mini highlights" and short sub clips usually show the whole choke; that's enough for a success (the clock anchors to the finish time, no C needed). Fan uploads can be mislabeled (watch out for video-game "simulations"). If a link is dead, use the `youtube_search` column in the CSV.
