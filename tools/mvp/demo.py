@@ -25,6 +25,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[2]
 SUCCESS = {"tap", "ref_stop", "unconscious"}
 W, H, PANEL = 1600, 900, 420
+LEAD = 0.5                # s the overlay fades in before the labeled start (fade only; times are real timestamps now)
 BG, INK, DIM, LINE = (14, 17, 22), (231, 235, 240), (139, 149, 163), (44, 51, 61)
 ATT, DEF, GOOD, BAD = (255, 138, 61), (76, 194, 255), (95, 211, 141), (255, 92, 92)
 F = lambda n, s: ImageFont.truetype(f"C:/Windows/Fonts/{n}", s)
@@ -71,7 +72,8 @@ def finish_prob(m, state):
 def state_at(row, t_rel):
     """Landmark values, then G-panel changes logged up to t_rel seconds into the attempt."""
     st = {k: row.get(k, "") for k in ("choke_arm_position", "control", "defender_two_on_one", "rnc_style_at_L",
-                                      "back_context", "chin_tucked", "upper_body")}
+                                      "back_context", "chin_tucked", "upper_body",
+                                      "opponent_flattened", "choking_hand_tucked")}
     st["rnc_style"] = st.pop("rnc_style_at_L")
     for ch in filter(None, row.get("state_changes", "").split(">")):
         try:
@@ -108,7 +110,7 @@ def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, gr
     # defender: health drains
     hp = 1 - fin if air is None else air
     d.text((x, 228), "DEFENDER", font=MONO, fill=DEF); d.text((x, 246), dfn[:22], font=SANS_B, fill=INK)
-    d.text((x, 278), "CHOKE METER (model)", font=MONO, fill=DIM); d.text((x + PANEL - 110, 278), f"{round(100 * hp):d}/100", font=MONO_B, fill=INK)
+    d.text((x, 278), f"{dfn.split()[-1].upper()} HP (choke model)", font=MONO, fill=DIM); d.text((x + PANEL - 110, 278), f"{round(100 * hp):d}/100", font=MONO_B, fill=INK)
     hcol = GOOD if hp > .6 else (255, 200, 87) if hp > .3 else BAD
     bar(d, x, 300, PANEL - 48, 22, hp, hcol)
     # sparkline of finish % over the attempt
@@ -153,6 +155,7 @@ def main():
     ap.add_argument("--no-track", action="store_true", help="skip the fighter tracking layer")
     ap.add_argument("--model", choices=["v06", "v07c"], default="v07c",
                     help="v07c = current model (v0.7 structure: grip type, body triangle; + coach priors); v06 = previous")
+    ap.add_argument("--full", action="store_true", help="render the whole video (default: the attempts +- a few seconds)")
     ap.add_argument("--panel-only", action="store_true",
                     help="footage-free output: only the readout panel around the attempts (+ a GIF), shareable")
     a = ap.parse_args()
@@ -187,9 +190,18 @@ def main():
     cap = cv2.VideoCapture(str(clip))
     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
     vw, vh = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    s = min((W - PANEL) / vw, H / vh); nw, nh = int(vw * s), int(vh * s)
-    ox, oy = (W - PANEL - nw) // 2, (H - nh) // 2
     po = a.panel_only
+    vid_w = W - PANEL if po else W                 # the video demo is full-frame; numbers live in the on-video HUD
+    s = min(vid_w / vw, H / vh); nw, nh = int(vw * s), int(vh * s)
+    ox, oy = (vid_w - nw) // 2, (H - nh) // 2
+    sys.path.insert(0, str(ROOT / "tools/mvp"))
+    import hud as hudmod
+    mult = {}                                    # factor -> odds multiplier of the current model (chip colour tiers)
+    if a.model == "v07c":
+        mult = {f: math.exp(beta[2 + n]) for n, f in enumerate(m7.FEATS)}
+    hud, peak, cur_id = hudmod.Hud(mult), 0.0, None
+    t_lo = float(mine[0]["video_time_start"]) - 8.0      # full-fight videos: only the attempts (+ lead-in / result)
+    t_hi = float(mine[-1]["video_time_end"]) + 5.0
     if po:                                       # no UFC pixels: panel only, attempts +- a few seconds
         out = out.with_name(out.stem.replace("_demo", "") + "_panel.mp4")
         t_lo = float(mine[0]["video_time_start"]) - 2.0
@@ -201,18 +213,25 @@ def main():
         sys.path.insert(0, str(ROOT / "tools/mvp"))
         import tracking
         layer = tracking.Layer(*tracking.compute(clip))
-    hist, shown, last_end, i = [], 0.0, None, 0
+    hist, shown, last_end, i, fade = [], 0.0, None, 0, 1.0
     air, grip, band = 1.0, 1.0, None
     while True:
         ok, fr = cap.read()
         if not ok:
             break
-        t = i / fps; i += 1
-        cur = next((r for r in mine if float(r["video_time_start"]) <= t <= float(r["video_time_end"])), None)
+        t = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0; i += 1     # real timestamp (webm clips can have a variable frame rate)
+        if not (po or a.full or t_lo <= t <= t_hi):
+            continue
+        # display lead-in: the overlay fades in LEAD s before the labeled start (S marks "arm across + locking";
+        # the setup is visible earlier). Labels and models are unchanged; the model holds the start state.
+        cur = next((r for r in mine if float(r["video_time_start"]) - LEAD <= t <= float(r["video_time_end"])), None)
         canvas = np.zeros((H, W, 3), np.uint8); canvas[:] = BG[::-1]
         banner = None
         if cur:
-            el = t - float(cur["video_time_start"])
+            fade = min(1.0, (t - float(cur["video_time_start"]) + LEAD) / 0.5)
+            if id(cur) != cur_id:
+                cur_id, peak = id(cur), 0.0
+            el = max(0.0, t - float(cur["video_time_start"]))
             st = state_at(cur, el)
             xv = x_at(cur, el)
             target = sm.predict(beta, xv, sample=False)          # P(finish | state now), no time ramp
@@ -221,7 +240,7 @@ def main():
             tr = airs[id(cur)]
             air = tr[min(len(tr) - 1, int(el / 0.1))][1] / 100
             grip = 1 - float(xv[fat_i])
-            hist.append(shown); att_t = el; last_end = cur
+            hist.append(shown); att_t = el; last_end = cur; peak = max(peak, shown)
             att, dfn, live = cur["attacker"], cur["defender"], True
         else:
             st = state_at(last_end, 1e9) if last_end else {}
@@ -238,10 +257,17 @@ def main():
                 shown *= 0.9; hist = [] if shown < .01 else hist
                 air = min(1.0, air + 0.02); grip = min(1.0, grip + 0.02)
         if layer is not None:                             # tracking + readouts drawn on the fighters
-            fr = layer.draw(fr, i - 1, t, live, fin=shown, air=air, banner=banner[0] if banner else None)
+            fr = layer.draw(fr, i - 1, t, live, air=air, ended=banner is not None, fade=fade if live else 1.0)
         canvas[oy:oy + nh, ox:ox + nw] = cv2.resize(fr, (nw, nh))
         img = Image.fromarray(cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB))
-        panel(img, att, dfn, shown, hist[-240:], st, att_t, banner, model, live, air, grip, band)
+        if po:
+            panel(img, att, dfn, shown, hist[-240:], st, att_t, banner, model, live, air, grip, band)
+        else:
+            end = None
+            if banner:
+                held = float(last_end["video_time_end"]) - float(last_end["video_time_start"])
+                end = (banner[0], held, peak, last_end["outcome"] in SUCCESS)
+            hud.draw(img, t, att, dfn, shown, air, st, live, fade if live else 1.0, end)
         if po:
             if t_lo <= t <= t_hi:
                 pim = img.crop((W - PANEL, 0, W, H - 100))
