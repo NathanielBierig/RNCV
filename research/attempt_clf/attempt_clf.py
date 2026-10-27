@@ -113,7 +113,7 @@ def _extract_new(clips, per):
             if not ok:
                 break
             if i % step == 0:
-                t = i / fps
+                t = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0     # real timestamp: webm clips can drift ~10 s from i/fps
                 g = pair_crop(det, f) if det is not None else f
                 batch.append(prep(Image.fromarray(cv2.cvtColor(g, cv2.COLOR_BGR2RGB))))
                 meta.append(t)
