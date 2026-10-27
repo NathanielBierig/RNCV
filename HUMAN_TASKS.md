@@ -1,16 +1,10 @@
 # Your tasks (most urgent first)
 
-## ▶ Now (updated 2026-10-26)
-1. 🔴 **Label toward ~60 attempts** (the critical path; every number in the project waits on it). Labeler: Ctrl+Shift+R first, then Load labels.csv, then Link. Two clips are already on disk and unlabeled: **`gsp_bisping.mp4`** (RNC finish) and **`Khabib_conor_r4.mp4.webm`**. Next fights: [FINDABLE_TOP18.md](phase3_labels/FINDABLE_TOP18.md).
-2. 🔴 **Label 1–2 full rounds with back control but no choke** (tell Main "rank N watched, no RNC"). The detector has **zero** such "hard negative" rounds right now, and it needs them to stop firing on every back take.
-3. 🔴 **Decisions (one word each, reply to Main):**
-   - ✅ Model for the demo: **v0.7c** (decided 2026-10-26).
-   - Defender gauge name: keep **"choke meter"**?
-   - At the tap: show **"RESULT: TAP"** instead of 100%?
-   - Public demo without UFC video: the **panel-only GIF** (already in the README), plus your own gym rolls with consent, or a private video for interviews only?
-   - New label fields the coach rates highest: **defender's hand inside the choke**, **defender's arm trapped**, **hurt before the back take** (would be a dated PREREG amendment, descriptive only).
-4. 🟡 New placeholder cards C12–C15 (other lock 65%, one arm 40%, two hooks 75%, re-attack 87%): give buckets if you disagree (`docs/MODEL_SPEC.md` §4f).
-5. 📖 When free: read [docs/CODE_TOUR.md](docs/CODE_TOUR.md) and find a second rater for ~30 attempts.
+## ▶ Now (updated 2026-10-27)
+1. 🔴 **Label the 12 fights on disk:** [NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md). In the labeler: Ctrl+Shift+R → Link (Cancel on the old-rows prompt) → **search `#rank` before every new video**.
+2. 🔴 **Watch the MVP 0.3 demos** in `data/mvp/` (`*_demo.mp4`) and tell Main what to change about the reticle.
+3. 🟡 Still open decisions: "RESULT: TAP" instead of 100%? Add the coach's 3 label fields (hand inside the choke, arm trapped, hurt before the back take)?
+4. 🟡 A full round with back control but no choke would help the detector most (false alarms).
 
 ---
 

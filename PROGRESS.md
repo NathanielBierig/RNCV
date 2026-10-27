@@ -1,8 +1,13 @@
-# RNCV progress (as of 2026-10-26)
+# RNCV progress (as of 2026-10-27)
 
 🟢 done · 🟡 in progress · 🔴 needs the owner · ⚪ not started
 
-## ▶ Next session starts here (2026-10-26)
+## ▶ Next session starts here (2026-10-27)
+- **Labels: 54 attempts / 31 fights**, QA clean. 12 more fights are on disk, ready to label: [phase3_labels/NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md).
+- **Detector: frame ROC-AUC 0.80** (the M1 target), up from 0.70, on 29 fights with ~42 min of no-attempt footage. Timing (correct start 9–17%) and false alarms (0.3–0.7/min) are still short of the app target ([report](reports/attempt_detector_v2.md)).
+- **Finish model v0.7c:** Brier 0.244 vs 0.260 base rate on 53 attempts. Arm under the chin ×5.0, flattened ×3.0, figure-four ×2.4; body triangle shows no effect yet (×0.9).
+- **MVP 0.3 draft:** a choke reticle on the fighters (ring = choke meter, leader line = finish %), rendered locally for the 4 demo clips (Pantoja–Asakura, Oliveira–Gamrot, Moreno–Figueiredo 2, Blachowicz–Pereira).
+- **Videos:** used clips are deleted once their features are saved (`data/attempt_clf/clips_crop/`). The detector no longer needs them.
 0. **Today's work session:** README is outward-facing, with honest results and a footage-free GIF. Detector v2 ROC-AUC 0.74 (from 0.70). Model v0.7c = v0.7 + coach priors (Brier 0.228, tied with v0.6). Pre-registered analysis script tested on simulated data. Paper outline is in `docs/paper/`. Two detector ideas (onset model, neck crops) were tried and rejected: **the detector is data-limited.** Owner decisions are in [HUMAN_TASKS.md](HUMAN_TASKS.md).
 1. **Labels:** 36 attempts / 20 fights (main-card successes + failure rounds), QA clean. Fastest next fights: [phase3_labels/FINDABLE_TOP18.md](phase3_labels/FINDABLE_TOP18.md).
 2. **MVP 0.1** (`tools/mvp/demo.py`, a replay overlay: finish % for the attacker, a health bar for the defender) was **rejected on the math**: the time ramp made a locked figure-four read ~2% and a knockout ~30%. **Redesign first:** a math/model expert session writes `docs/MODEL_SPEC.md` (expert priors + labels; the number = chance this attempt finishes given the current state; tap → ~100%). The owner is answering alignment questions in batches.
