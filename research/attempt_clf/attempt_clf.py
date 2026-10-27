@@ -97,6 +97,24 @@ def extract(clips):
                         clip=np.array(clip_id), t=np.concatenate(t_s))
 
 
+def spans(info):
+    """Video seconds worth extracting: the watched stretch (compilations: around each labeled attempt; a fully
+    watched no-RNC round: everything). A little wider than what extract() keeps."""
+    if not info["win"]:
+        return [(0.0, 1e9)]
+    if info["compilation"]:
+        sp = sorted((a - 25, b + 15) for a, b in info["win"])
+    else:
+        sp = [(min(a for a, _ in info["win"]) - WATCHED_BEFORE - 10, max(b for _, b in info["win"]) + WATCHED_AFTER + 5)]
+    out = []
+    for lo, hi in sp:                        # merge overlaps
+        if out and lo <= out[-1][1]:
+            out[-1] = (out[-1][0], max(out[-1][1], hi))
+        else:
+            out.append((max(0.0, lo), hi))
+    return out
+
+
 def _extract_new(clips, per):
     import open_clip
     import torch
@@ -114,20 +132,24 @@ def _extract_new(clips, per):
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
         step = max(1, int(round(fps / FPS_S)))
         i, batch, meta = 0, [], []
-        while True:
-            ok, f = cap.read()
-            if not ok:
-                break
-            if i % step == 0:
+        for lo, hi in spans(info):           # only the stretch the detector uses (walkouts, other rounds skipped)
+            if lo > 0:
+                cap.set(cv2.CAP_PROP_POS_MSEC, lo * 1000)
+            while True:
+                ok = cap.grab()
                 t = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0     # real timestamp: webm clips can drift ~10 s from i/fps
-                g = pair_crop(det, f) if det is not None else f
-                batch.append(prep(Image.fromarray(cv2.cvtColor(g, cv2.COLOR_BGR2RGB))))
-                meta.append(t)
-            i += 1
-            if len(batch) == 32:
-                with torch.no_grad():
-                    e = model.encode_image(torch.stack(batch)).float()
-                X.append((e / e.norm(dim=-1, keepdim=True)).numpy()); t_s += meta; batch, meta = [], []
+                if not ok or t > hi:
+                    break
+                if i % step == 0 and t >= lo:
+                    _, f = cap.retrieve()
+                    g = pair_crop(det, f) if det is not None else f
+                    batch.append(prep(Image.fromarray(cv2.cvtColor(g, cv2.COLOR_BGR2RGB))))
+                    meta.append(t)
+                i += 1
+                if len(batch) == 32:
+                    with torch.no_grad():
+                        e = model.encode_image(torch.stack(batch)).float()
+                    X.append((e / e.norm(dim=-1, keepdim=True)).numpy()); t_s += meta; batch, meta = [], []
         if batch:
             with torch.no_grad():
                 e = model.encode_image(torch.stack(batch)).float()

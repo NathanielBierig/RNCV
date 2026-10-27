@@ -1,6 +1,7 @@
 """Download the next N findable fights for labeling (local only, data/clips/to_label/, git-ignored).
 
-    python tools/fetch_clips.py [N]          # default 15
+    python tools/fetch_clips.py [N]               # default 15 finish-list fights (files q<rank>_...)
+    python tools/fetch_clips.py [N] --failures    # failure rounds: RNC attempts that didn't finish (f<rank>_...)
 
 Walks phase3_labels/labeling_queue_findable.csv in rank order and skips: fights already labeled or already on
 disk, women's bouts (PREREG A1), fights before 2018 (PREREG §2), attackers at the round cap (A4: 5 rounds).
@@ -49,13 +50,17 @@ def search(att, dfn):
 
 
 def main():
-    n_want = int(sys.argv[1]) if len(sys.argv) > 1 else 15
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    n_want = int(args[0]) if args else 15
+    fail = "--failures" in sys.argv            # failure rounds (attempts that didn't finish) instead of finishes
+    queue = "labeling_queue_failures.csv" if fail else "labeling_queue_findable.csv"
+    rank_col, prefix = ("queue_rank", "f") if fail else ("findable_rank", "q")
     labels = list(csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8")))
     done = {r["fight_id"] for r in labels}
     rounds = Counter()
     for (att, fid, rnd) in {(r["attacker"], r["fight_id"], r["round"]) for r in labels}:
         rounds[att] += 1
-    on_disk = {p.name.split("_")[0] for p in (ROOT / "data/clips").rglob("q*")}
+    on_disk = {p.name.split("_")[0] for p in (ROOT / "data/clips").rglob(f"{prefix}*")}
     log_exists = LOG.exists()
     logf = open(LOG, "a", encoding="utf-8", newline="")
     w = csv.writer(logf)
@@ -64,12 +69,14 @@ def main():
     import datetime
     today = datetime.date.today().isoformat()
     got = 0
-    for r in csv.DictReader(open(ROOT / "phase3_labels/labeling_queue_findable.csv", encoding="utf-8")):
+    for r in csv.DictReader(open(ROOT / "phase3_labels" / queue, encoding="utf-8")):
         if got >= n_want:
             break
-        rank, att, dfn = r["findable_rank"], r["attacker"], r["defender"]
+        rank, att, dfn = r[rank_col], r["attacker"], r["defender"]
         why = None
-        if r["fight_id"] in done or f"q{int(rank):02d}" in on_disk:
+        if r["fight_id"] in done or f"{prefix}{int(rank):02d}" in on_disk:
+            continue
+        if fail and r.get("status", "todo") != "todo":
             continue
         if "women" in r["weight_class"].lower():
             why = "skip: women's bout (A1)"
@@ -85,7 +92,7 @@ def main():
             print(f"#{rank} {att} vs {dfn}: no official video", flush=True)
             continue
         vid, ch, dur, title = hit
-        name = f"q{int(rank):02d}_{surname(att)}_{surname(dfn)}"
+        name = f"{prefix}{int(rank):02d}_{surname(att)}_{surname(dfn)}"
         ok = subprocess.run(["yt-dlp", "-q", "--no-playlist", "-f", "bv*[height<=720]+ba/b[height<=720]/b",
                              "--merge-output-format", "mp4", "-o", str(CLIPS / f"{name}.%(ext)s"),
                              f"https://www.youtube.com/watch?v={vid}"]).returncode == 0
