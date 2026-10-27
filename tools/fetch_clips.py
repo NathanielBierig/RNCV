@@ -21,7 +21,7 @@ CLIPS = ROOT / "data/clips"
 LOG = ROOT / "phase3_labels/downloads_log.csv"
 OFFICIAL = re.compile(r"^(UFC|UFC Español|ufcespanol|UFC Brasil|UFC Eurasia|UFC Russia|UFC Europe|UFC India|UFC Arabia|UFC on Paramount\+|UFC and UFC on Paramount\+)$")   # exact case: a fan channel "Ufc" got through
 BLOCK = {"VwHu1u7Jc6g"}            # "FINISH FIGHT | Allen vs Duncan" is an Allen compilation (owner, 2026-10-26)
-BAD = re.compile(r"highli|ufc ?[45]\b|\bea\b|game|simulation|cpu|compilation|every |all .*(finishes|submissions)|top \d|reaction|breakdown|preview|recap|journey|behind the scenes|predict", re.I)
+BAD = re.compile(r"best of|interview|countdown|press|highli|ufc ?[45]\b|\bea\b|game|simulation|cpu|compilation|every |all .*(finishes|submissions)|top \d|reaction|breakdown|preview|recap|journey|behind the scenes|predict", re.I)
 MIN_SECONDS = 240
 
 
