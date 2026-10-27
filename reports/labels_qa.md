@@ -1,7 +1,7 @@
 # labels.csv quality check
 
-Rows: **58** · fights: **34** · outcomes: tap 26, escape 14, position_change 11, unconscious 6, bell 1 · found_via: finish_list 49, candidate_round 9
-Label time per attempt (minutes): median **1.4**, total 111 (from `label_min` in notes).
+Rows: **70** · fights: **40** · outcomes: tap 32, escape 20, position_change 11, unconscious 6, bell 1 · found_via: finish_list 61, candidate_round 9
+Label time per attempt (minutes): median **1.4**, total 135 (from `label_min` in notes).
 Watched rounds with **0 RNC attempts** (real negatives, status `watched_no_rnc` in the queues): **1** (Paddy Pimblett vs Jordan Leavitt R1)
 
 🔴 fix before analysis · 🟡 check · ⚪ info
@@ -51,6 +51,21 @@ Watched rounds with **0 RNC attempts** (real negatives, status `watched_no_rnc` 
 | 56 (b8bf186f, R1, 211.6-212.8 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
 | 57 (f17813d0, R2, 183.8-200.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
 | 58 (d006dd25, R2, 85.8-105.3 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 59 (d869eaea, R1, 171.4-182.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 60 (d869eaea, R1, 184.2-191.6 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 61 (d869eaea, R1, 246.8-249.1 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 62 (d869eaea, R1, 255.1-276.2 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 63 (ab4a91a5, R1, 135.7-149.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 64 (bf647be4, R2, 261.4-271.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 65 (1535fb65, R3, - s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 65 (1535fb65, R3, - s) | ⚪ | round times blank (no clock sync and no finish anchor yet); durations from video times are still valid |
+| 66 (1535fb65, R3, - s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 66 (1535fb65, R3, - s) | ⚪ | round times blank (no clock sync and no finish anchor yet); durations from video times are still valid |
+| 67 (1535fb65, R3, 117.5-123.4 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 68 (3ab0d8b3, R2, 224.7-229.5 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 69 (3ab0d8b3, R2, 234.8-241.2 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 70 (a3d75cc3, R3, 287.0-300.0 s) | ⚪ | no `pilot` tag in notes (first 15 attempts should have it) |
+| 70 (a3d75cc3, R3, 287.0-300.0 s) | 🟡 | end 300.0 s is +11.0 s from the ufcstats finish (289 s); check the clock sync (C) |
 
 Row numbers count data rows from 1 (the header isn't counted). This script never edits labels.csv: fix rows in the labeler (U = undo last row) or ask Main.
 Compilation sources: put the word `compilation` in notes, so round-time checks are skipped and the analysis treats round times as missing.
