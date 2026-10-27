@@ -92,19 +92,24 @@ def events(p, y, clip, t, clips):
 
 def main():
     clips = sorted(ac.clips_and_windows().items())
-    Xf, y, fight, clip, t = load("")
-    Xc = load("_crop")[0]
-    Xb = load("_crop_b16")[0]
+    Xc, y, fight, clip, t = load("_crop")       # the crop cache is the one kept current (features per clip)
     variants = {
         "frame, crop (v1)": (Xc, {}),
-        "frame, full": (Xf, {}),
-        "frame, full+crop": (np.hstack([Xf, Xc]), {}),
-        "+context, crop": (context(Xc, clip), {}),
-        "+context, full+crop": (context(np.hstack([Xf, Xc]), clip), {}),
-        "+context, full+crop, PCA 64": (context(np.hstack([Xf, Xc]), clip), {"pca": 64}),
-        "+context, full+crop+b16, PCA 64": (context(np.hstack([Xf, Xc, Xb]), clip), {"pca": 64}),
-        "+context, full+crop, C 0.05": (context(np.hstack([Xf, Xc]), clip), {"C": 0.05}),
+        "+context, crop (v2)": (context(Xc, clip), {}),
+        "+context, crop, PCA 64": (context(Xc, clip), {"pca": 64}),
+        "+context, crop, C 0.05": (context(Xc, clip), {"C": 0.05}),
+        "+context, crop, C 2": (context(Xc, clip), {"C": 2.0}),
     }
+    others = {}
+    for tag in ("", "_crop_b16"):                # older whole-frame / bigger-backbone caches, only if still aligned
+        try:
+            Xo = load(tag)[0]
+            if len(Xo) == len(y):
+                others[tag] = Xo
+        except FileNotFoundError:
+            pass
+    if "" in others:
+        variants["+context, full+crop"] = (context(np.hstack([others[""], Xc]), clip), {})
     print(f"{len(np.unique(fight))} fights, {len(y)} frames, base rate {y.mean():.2f}\n")
     print(f"{'variant':34s} {'ROC':>5s} {'ROC sm':>6s} {'PR':>5s} {'PR sm':>6s} | {'good win':>8s} {'overlap':>7s} {'FA/min':>6s} {'th':>4s}")
     for k, (X, kw) in variants.items():

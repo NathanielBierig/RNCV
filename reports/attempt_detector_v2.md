@@ -1,4 +1,19 @@
-# Attempt detector v2: adding a few seconds of context (2026-10-26)
+# Attempt detector v2: adding a few seconds of context (2026-10-26, re-tested 2026-10-27)
+
+## Re-test on 29 fights, with 3× more no-attempt footage (2026-10-27)
+The owner's 11 new fights came as full-fight videos, so each now contributes about 2 minutes of footage before the attempts (watched stretch only; compilations only near labeled attempts). Data: 6,248 frames, 19% inside attempts, about 42 minutes of no-attempt footage.
+
+| Variant | Frame ROC-AUC | Smoothed | PR-AUC (base 0.19) | Correct windows | Any overlap | False alarms / min |
+|---|---|---|---|---|---|---|
+| v1 (one frame) | 0.78 | 0.80 | 0.38 | 17% | 76% | 0.57 |
+| **v2 (+ context)** | **0.80** | **0.80** | **0.43** | 9% | 74% | 0.71 |
+| v2, fewer false alarms (C 0.05) | 0.79 | 0.80 | 0.41 | 9% | 87% | 0.28 |
+
+- 🟢 **Frame accuracy reached the M1 target (ROC-AUC 0.80).** It went 0.70 → 0.74 (context) → 0.80 (more fights and real negatives). More data helped far more than better features did, as predicted.
+- 🔴 **Timing and false alarms are still short of the app target.** Correct windows are 9–17% (target ≥ 80%), and false alarms run 0.3–0.7 per minute (target ≤ 0.2). The false-alarm number is now measured on ~42 minutes, so it's more realistic than before, and worse.
+- The manual "attempt starts" key stays for the demo. Next lever: rounds with back control but no choke.
+
+
 
 Script: [research/attempt_clf/detector_v2.py](../research/attempt_clf/detector_v2.py). Raw output: [attempt_detector_v2_output.txt](attempt_detector_v2_output.txt). Same data and protocol as v1: 19 fights, 2,779 frames at 2 per second, about 23 minutes in total, and leave-one-fight-out (each fight is scored by a model that never saw it).
 

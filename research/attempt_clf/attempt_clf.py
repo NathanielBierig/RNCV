@@ -52,12 +52,14 @@ def clips_and_windows():
     rows = list(csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8")))
     clips = {}
     for r in rows:
-        c = clips.setdefault(r["video_url"], {"fight": r["fight_id"], "win": []})
+        c = clips.setdefault(r["video_url"], {"fight": r["fight_id"], "win": [], "compilation": False})
         c["win"].append((float(r["video_time_start"]), float(r["video_time_end"])))
+        c["compilation"] |= "compilation" in r["notes"]
     for name, fid in NEG_CLIPS.items():
         if (ROOT / "data/clips" / name).exists():
-            clips.setdefault(name, {"fight": fid, "win": []})
-    return {k: v for k, v in clips.items() if (ROOT / "data/clips" / k).exists()}
+            clips.setdefault(name, {"fight": fid, "win": [], "compilation": False})
+    per = CACHE.parent / f"clips{TAG}"         # a clip whose features are cached no longer needs its video
+    return {k: v for k, v in clips.items() if (ROOT / "data/clips" / k).exists() or (per / f"{k}.npz").exists()}
 
 
 def extract(clips):
@@ -72,7 +74,11 @@ def extract(clips):
     for ci, (name, info) in enumerate(sorted(clips.items())):
         d = np.load(per / f"{name}.npz")
         keep = np.ones(len(d["t"]), bool)
-        if info["win"]:      # full-fight videos: only the watched stretch (unwatched rounds may hide unlabeled attempts)
+        if info["compilation"]:   # other finishes in a compilation are unlabeled: only frames near labeled attempts
+            keep = np.zeros(len(d["t"]), bool)
+            for a, b in info["win"]:
+                keep |= (d["t"] >= a - 20) & (d["t"] <= b + 10)
+        elif info["win"]:    # full-fight videos: only the watched stretch (unwatched rounds may hide unlabeled attempts)
             lo, hi = min(a for a, _ in info["win"]) - WATCHED_BEFORE, max(b for _, b in info["win"]) + WATCHED_AFTER
             keep = (d["t"] >= lo) & (d["t"] <= hi)
         ts = d["t"][keep]

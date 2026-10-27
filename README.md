@@ -14,10 +14,10 @@ RNCV (**RNC + CV**, computer vision) asks a BJJ question with data: *which detai
 
 | Piece | Result | What it means |
 |---|---|---|
-| Labeled data | 36 attempts from 20 UFC fights, men's divisions | Too few for the pre-registered analysis yet (needs ~150) |
+| Labeled data | 54 attempts from 31 UFC fights, men's divisions | Too few for the pre-registered analysis yet (needs ~150) |
 | Finish model v0.6 / v0.7c | Brier 0.226 / 0.228 at 2 s (0.205 / 0.204 over every second) vs 0.270 for always guessing the average | Sensible in replay; the gain over a base rate isn't certain yet. **v0.7c is the current model**: it adds grip type, body triangle vs hooks and the coach review |
 | Choke meter | Pantoja vs Asakura: hits 0 at 18.0 s; he went out at 19.0 s | Timing comes from physiology (≈9 s from lock to out, Stellpflug 2020), not from fitting |
-| Attempt detector v2 | Frame ROC-AUC 0.74 (was 0.70), PR-AUC 0.55 vs 0.29 base rate; leave-one-fight-out, 19 fights | Recognizes the exchange, not the moment the choke starts (correct start on ~8–22% of attempts); the overlay uses a manual "attempt starts" key |
+| Attempt detector v2 | Frame ROC-AUC 0.80 (was 0.70), PR-AUC 0.43 vs 0.19 base rate; leave-one-fight-out, 29 fights, ~42 min of no-attempt footage | Spots the exchange, not yet the moment the choke starts (correct start on ~9–17% of attempts); the overlay uses a manual "attempt starts" key |
 | Pose skeletons | Both fighters correct in 4/48 tangled frames | Parked; the overlay draws only confident parts (box, heads) |
 
 Model details: [docs/MODEL_SPEC.md](docs/MODEL_SPEC.md) · Expert review: [research/coach_review/COACH_REVIEW.md](research/coach_review/COACH_REVIEW.md) · Evidence review: [research/priors_evidence/EVIDENCE.md](research/priors_evidence/EVIDENCE.md)
