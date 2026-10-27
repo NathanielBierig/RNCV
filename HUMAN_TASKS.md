@@ -1,10 +1,9 @@
 # Your tasks (most urgent first)
 
-## ▶ Now (updated 2026-10-27)
-1. 🔴 **Label the 12 fights on disk:** [NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md). In the labeler: Ctrl+Shift+R → Link (Cancel on the old-rows prompt) → **search `#rank` before every new video**.
-2. 🔴 **Watch the MVP 0.3 demos** in `data/mvp/` (`*_demo.mp4`) and tell Main what to change about the reticle.
-3. 🟡 Still open decisions: "RESULT: TAP" instead of 100%? Add the coach's 3 label fields (hand inside the choke, arm trapped, hurt before the back take)?
-4. 🟡 A full round with back control but no choke would help the detector most (false alarms).
+## ▶ Now (updated 2026-10-28)
+1. 🔴 **Label the 5 fights in [NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md)**, failure rounds first. Load **both** fight lists in the labeler.
+2. 🔴 **Find more fights:** official uploads are nearly used up. Paste YouTube links (failure rounds especially) into Main and it downloads them.
+3. 🟡 Open decisions: add the coach's label fields (hand inside the choke, arm trapped, hurt before the back take)? These would help the body-triangle puzzle.
 
 ---
 

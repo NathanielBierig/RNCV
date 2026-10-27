@@ -1,5 +1,8 @@
 # Attempt detector v2: adding a few seconds of context (2026-10-26, re-tested 2026-10-27)
 
+## Re-test on 40 fights (2026-10-28)
+11,333 frames, 14% inside attempts, ~65 min of no-attempt footage. Frame ROC-AUC **0.74–0.76** across variants (smoothed up to 0.77), PR-AUC 0.27–0.30 vs a 0.14 base rate. Any overlap with the attempt is 91%, but a correctly placed start only 9%, and there are 0.7–1.0 false alarms per minute. **The 0.80 on 29 fights was partly luck; ~0.75 is the honest level now.** Measured on far more no-choke grappling, false alarms are the main weakness. The demo shows the detector as is, and the overlay's numbers still start at the labeled attempt.
+
 ## Re-test on 29 fights, with 3× more no-attempt footage (2026-10-27)
 The owner's 11 new fights came as full-fight videos, so each now contributes about 2 minutes of footage before the attempts (watched stretch only; compilations only near labeled attempts). Data: 6,248 frames, 19% inside attempts, about 42 minutes of no-attempt footage.
 

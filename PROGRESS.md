@@ -2,18 +2,13 @@
 
 🟢 done · 🟡 in progress · 🔴 needs the owner · ⚪ not started
 
-## ▶ Next session starts here (2026-10-27)
-- **Labels: 54 attempts / 31 fights**, QA clean. 12 more fights are on disk, ready to label: [phase3_labels/NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md).
-- **Detector: frame ROC-AUC 0.80** (the M1 target), up from 0.70, on 29 fights with ~42 min of no-attempt footage. Timing (correct start 9–17%) and false alarms (0.3–0.7/min) are still short of the app target ([report](reports/attempt_detector_v2.md)).
-- **Finish model v0.7c:** Brier 0.244 vs 0.260 base rate on 53 attempts. Arm under the chin ×5.0, flattened ×3.0, figure-four ×2.4; body triangle shows no effect yet (×0.9).
-- **MVP 0.3 draft:** a choke reticle on the fighters (ring = choke meter, leader line = finish %), rendered locally for the 4 demo clips (Pantoja–Asakura, Oliveira–Gamrot, Moreno–Figueiredo 2, Blachowicz–Pereira).
-- **Videos:** used clips are deleted once their features are saved (`data/attempt_clf/clips_crop/`). The detector no longer needs them.
-0. **Today's work session:** README is outward-facing, with honest results and a footage-free GIF. Detector v2 ROC-AUC 0.74 (from 0.70). Model v0.7c = v0.7 + coach priors (Brier 0.228, tied with v0.6). Pre-registered analysis script tested on simulated data. Paper outline is in `docs/paper/`. Two detector ideas (onset model, neck crops) were tried and rejected: **the detector is data-limited.** Owner decisions are in [HUMAN_TASKS.md](HUMAN_TASKS.md).
-1. **Labels:** 36 attempts / 20 fights (main-card successes + failure rounds), QA clean. Fastest next fights: [phase3_labels/FINDABLE_TOP18.md](phase3_labels/FINDABLE_TOP18.md).
-2. **MVP 0.1** (`tools/mvp/demo.py`, a replay overlay: finish % for the attacker, a health bar for the defender) was **rejected on the math**: the time ramp made a locked figure-four read ~2% and a knockout ~30%. **Redesign first:** a math/model expert session writes `docs/MODEL_SPEC.md` (expert priors + labels; the number = chance this attempt finishes given the current state; tap → ~100%). The owner is answering alignment questions in batches.
-3. **Automatic detection:** pose is parked (4/48 frames correct, [research/pose_review/REVIEW.md](research/pose_review/REVIEW.md)); the no-pose attempt detector is at ROC-AUC 0.70 on 20 fights. Re-test at ~40 fights: `research/attempt_clf/attempt_clf.py --crop --refresh`.
-4. **Position classifier (VICOS):** 0.63 macro-F1 on original keypoints, 0.47 on YOLO, 0.50 on RTMO keypoints.
-5. PREREG: v1.0 + A1 (men only) + A2 (upper_body, change log) + A3/A4 (cap = 5 attacking rounds / 20 attempts per attacker).
+## ▶ Next session starts here (2026-10-28)
+- **Labels: 73 attempts / 42 fights**, QA clean. 64 come from finish-list fights and only 9 from failure rounds: **failure rounds are the labeling priority** (5 fights on disk: [NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md)). Official YouTube uploads are nearly used up; the owner can paste links.
+- **Detector:** frame ROC-AUC **~0.75** on 40 fights (0.80 on 29 was partly luck). Finds back attacks; start timing and false alarms (~0.7–1.0/min) are the weak spots.
+- **Finish model v0.8** (leaner v0.7c): Brier 0.245 vs 0.254 at 2 s (within noise); 0.224 vs 0.254 as the position changes. Six variants tested and logged ([MODEL_SPEC §4g](docs/MODEL_SPEC.md)).
+- **Findings (exploratory):** [reports/findings_pilot.md](reports/findings_pilot.md). Hidden hand 75% vs 48% finished, flattened 66% vs 49%, finishes took a median 9.6 s on the neck (9.0 s in the published MMA data). Body triangle shows no edge per attempt, likely because leg control buys re-attacks, which this model doesn't count.
+- **Factor recognition (M2):** not yet. Neck-crop pipeline running (15 fights so far); a decision at ~150 attempts.
+- **MVP 0.3 demo:** side tab (detector, finish %, HP + seconds of air, factor boxes), calm skeleton flashes, locked reticle. README GIF updated.
 
 ## Fresh-eyes review (2026-10-26, concept and user-facing)
 - 🟢 Done: README rewritten for outsiders (results table with honest numbers); how-tos moved to [docs/OPERATIONS.md](docs/OPERATIONS.md); counts reconciled; MODEL_SPEC has a "current model" box; defender gauge renamed **choke meter** on screen ("consciousness" sounded like a medical measurement).

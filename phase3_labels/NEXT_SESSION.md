@@ -1,18 +1,20 @@
-# Next session: fights on disk, ready to label (downloaded 2026-10-27)
+# Next session: fights on disk, ready to label (updated 2026-10-28)
 
-Videos: `data/clips/to_label/` (demo clips are in `data/clips/demos/`). Search the `#rank` in the labeler. Finish = time **elapsed** in the round. Label every RNC attempt in the finish round. All are official UFC uploads, but titles can lie, so skip any video that isn't the real fight and tell Main.
+Videos: `data/clips/to_label/`. In the labeler, load **both** fight lists (`labeling_queue_findable.csv` and `labeling_queue_failures.csv`), then search the name or `#rank`. Label **every** RNC attempt in the round to watch. Titles can lie: skip any video that isn't the real fight and tell Main.
 
-| Search | Fight | Event | Finish | File |
+## Failure rounds (top priority: attempts that did NOT finish)
+
+| Search | Fight | Event | Round to watch | File |
 |---|---|---|---|---|
-| `#19` | Khamzat Chimaev vs Robert Whittaker | UFC 308: Topuria vs. Holloway (2024) | R1 3:34 | `to_label/q19_chimaev_whittaker.mp4` |
-| `#23` | Rafael Dos Anjos vs Bryan Barberena | UFC Fight Night: Thompson vs. Holland (2022) | R2 3:20 | `to_label/q23_anjos_barberena.mp4` |
-| `#25` | Bryan Battle vs Gilbert Urbina | UFC Fight Night: Barboza vs. Chikadze (2021) | R2 2:15 | `to_label/q25_battle_urbina.mp4` |
-| `#31` | Joe Pyfer vs Abus Magomedov | UFC 320: Ankalaev vs. Pereira 2 (2025) | R2 1:46 | `to_label/q31_pyfer_magomedov.mp4` |
-| `#39` | Johnny Walker vs Ion Cutelaba | UFC 279: Diaz vs. Ferguson (2022) | R1 4:37 | `to_label/q39_walker_cutelaba.mp4` |
-| `#58` | Edgar Chairez vs CJ Vergara | UFC Fight Night: Moreno vs. Erceg (2025) | R1 2:30 | `to_label/q58_chairez_vergara.mp4` |
-| `#66` | Bryan Battle vs AJ Fletcher | UFC Fight Night: Fiziev vs. Gamrot (2023) | R2 4:32 | `to_label/q66_battle_fletcher.mp4` |
-| `#73` | Grant Dawson vs Mark Madsen | UFC Fight Night: Rodriguez vs. Lemos (2022) | R3 2:05 | `to_label/q73_dawson_madsen.mp4` |
-| `#110` | Deiveson Figueiredo vs Cody Garbrandt | UFC 300: Pereira vs. Hill (2024) | R2 4:02 | `to_label/q110_figueiredo_garbrandt.mp4` |
-| `#115` | Carlos Ulberg vs Da Woon Jung | UFC 293: Adesanya vs. Strickland (2023) | R3 4:49 | `to_label/q115_ulberg_jung.mp4` |
-| `#122` | Jailton Almeida vs Anton Turkalj | UFC 279: Diaz vs. Ferguson (2022) | R1 4:27 | `to_label/q122_almeida_turkalj.mp4` |
-| `#147` | Edgar Chairez vs Bruno Silva | UFC Fight Night: Muhammad vs. Bonfim (2026) | R1 4:13 | `to_label/q147_chairez_silva.mp4` |
+| `Dustin Poirier` | Dustin Poirier vs Benoit Saint Denis | UFC 299: O'Malley vs. Vera 2 (2024) | round 1 only; attempt type unknown, may not contain an RNC (log 0 attempts if none) | `f18_poirier_denis.mp4` |
+| `Marlon Vera` | Marlon Vera vs Davey Grant | UFC Fight Night: Jung vs. Ige (2021) | round 3 only; attempt type unknown, may not contain an RNC (log 0 attempts if none) | `f29_vera_grant.mp4` |
+
+## Finish-list fights
+
+| Search | Fight | Event | Finish (elapsed) | File |
+|---|---|---|---|---|
+| `#173` | Felipe Lima vs Muhammad Naimov | UFC Fight Night: Whittaker vs. Aliskerov (2024) | R3 1:15 | `q173_lima_naimov.mp4` |
+| `#215` | Shavkat Rakhmonov vs Michel Prazeres | UFC Fight Night: Gane vs. Volkov (2021) | R2 2:10 | `q215_rakhmonov_prazeres.mp4` |
+| `#55` | Tom Nolan vs Charlie Campbell | UFC Fight Night: Ulberg vs. Reyes (2025) | R1 4:08 | `q55_nolan_campbell.mp4` |
+
+Official UFC uploads of the findable fights are nearly used up (the downloader found 18 of 254). To go faster, paste YouTube links of fights you find into the Main session and it downloads them.
