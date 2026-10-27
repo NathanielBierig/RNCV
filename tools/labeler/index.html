@@ -398,7 +398,7 @@ ${list}${extra.length > 8 ? "\n  ..." : ""}
 Cancel = use the file as it is (RECOMMENDED: these are usually rows that were deleted or fixed on purpose).
 OK = add them back (only if you just labeled them while the file was not linked).`);
       rows = add ? data.concat(extra) : data;   // stale browser rows are dropped from storage on Cancel (persist below)
-      if (add) extra.forEach(r => touched.set(rowKey(r), r));
+      if (add) extra.forEach(r => { touched.set(rowKey(r), r); touchedAt.set(rowKey(r), Date.now()); });
       extraCols = [...new Set(extraCols.concat(header.filter(h => !COLUMNS.includes(h))))];
     }
     await writeLinked(); persist(); renderTable();
@@ -408,11 +408,18 @@ OK = add them back (only if you just labeled them while the file was not linked)
 // Stable key (round times can be blank or back-filled later; video times never change).
 function rowKey(r) { return [r.fight_id, r.round, r.video_url, r.video_time_start].join("|"); }
 const touched = new Map();       // rows saved or changed in this browser since linking
+const touchedAt = new Map();     // when each touched row was saved (ms)
+let lastWrite = 0;               // file timestamp right after this tab's last write
 const deleted = new Set();       // rows undone in this browser
 // Re-read the file before every write, so edits made to labels.csv outside the tool (fixes, deletions) are never overwritten.
 async function writeLinked() {
   if (!fileHandle) return;
-  const text = await (await fileHandle.getFile()).text();
+  const file = await fileHandle.getFile();
+  // Someone edited labels.csv outside this tab since our last write (e.g. Main fixed or removed rows): the file
+  // wins for every row this tab saved before that edit, so old copies are never written back.
+  if (lastWrite && file.lastModified > lastWrite + 500)
+    for (const [k] of touched) if ((touchedAt.get(k) || 0) < file.lastModified) { touched.delete(k); touchedAt.delete(k); }
+  const text = await file.text();
   if (text.trim()) {
     const {header, data} = parseCSV(text);
     const merged = data.filter(r => !deleted.has(rowKey(r))).map(r => touched.get(rowKey(r)) || r);
@@ -422,6 +429,7 @@ async function writeLinked() {
     persist(); renderTable();
   }
   const w = await fileHandle.createWritable(); await w.write(toCSV()); await w.close();
+  lastWrite = (await fileHandle.getFile()).lastModified;
 }
 $("bExport").onclick = () => {
   const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([toCSV()], {type: "text/csv"})); a.download = "labels_backup_" + new Date().toISOString().slice(0, 10) + ".csv"; a.click();
@@ -513,11 +521,11 @@ function saveAttempt(endVals) {
     for (const r of rows) if (r.video_url === videoName && r.fight_id === row.fight_id && String(r.round) === String(rnd) && r.attempt_start_s === "") {
       const rs = Number(r.video_time_start) + clockOffset, re = Number(r.video_time_end) + clockOffset;
       r.attempt_start_s = r1(rs); r.attempt_end_s = r1(re); r.fight_time_s = r1((rnd - 1) * 300 + rs);
-      r.notes = r.notes.replace("no_clock", "clock=finish_anchor"); touched.set(rowKey(r), r); n++;
+      r.notes = r.notes.replace("no_clock", "clock=finish_anchor"); touched.set(rowKey(r), r); touchedAt.set(rowKey(r), Date.now()); n++;
     }
     warn += ` Clock anchored to the known finish (${fmtClock(fin.finish_s)})${n ? `; ${n} earlier attempt(s) backfilled` : ""}.`;
   } else if (clockOffset == null) warn += ` <span class="bad">No clock yet: round times left blank (filled in if a later finish in this clip anchors the clock, or press <kbd>C</kbd>).</span>`;
-  rows.push(row); touched.set(rowKey(row), row); persist(); renderTable(); writeLinked().catch(err => alert("Write failed: " + err.message));
+  rows.push(row); touched.set(rowKey(row), row); touchedAt.set(rowKey(row), Date.now()); persist(); renderTable(); writeLinked().catch(err => alert("Write failed: " + err.message));
   cur = null; timerStart = null; drawTimeline(); showSeq();
   setStatus(`Saved ${row.outcome} (${row.attempt_start_s}–${row.attempt_end_s} s, round ${rnd}).${warn} Next attempt: <kbd>S</kbd>.`);
 }
