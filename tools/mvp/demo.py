@@ -1,6 +1,6 @@
 """RNCV MVP 0.1: replay demo overlay for one labeled clip.
 
-    python -I tools/mvp/demo.py data/clips/<clip>.mp4 [--out data/mvp/<clip>_demo.mp4]
+    python -I tools/mvp/demo.py data/clips/demos/<clip>.mp4 [--out data/mvp/<clip>_demo.mp4]
 
 What is real vs. stand-in (MVP 0.1):
 - Attempt windows and the RNC factors come from YOUR LABELS (phase3_labels/labels.csv), not from automatic
@@ -128,7 +128,7 @@ def main():
         beta, cov = sm.fit_cov(train, cards)
         x_at, fat_i, label = sm.x_at, 7, "v0.6"
     model = {"cards": len(cards), "n": len(train), "label": label}
-    airs = {id(r): [(tt, c) for tt, c, *_ in sm.consciousness_trace(r)] for r in mine}
+    airs = {id(r): [(tt, c) for tt, c, *_ in sm.consciousness_trace(r, ramp_in=sm.LANDMARK)] for r in mine}
     out = Path(a.out) if a.out else ROOT / "data/mvp" / f"{clip.stem}_demo.mp4"
     out.parent.mkdir(parents=True, exist_ok=True)
     cap = cv2.VideoCapture(str(clip))
@@ -205,7 +205,9 @@ def main():
                     air = max(0.0, air - 0.1)
             else:
                 shown *= 0.9; hist = [] if shown < .01 else hist
-                air = min(1.0, air + 0.02); grip = min(1.0, grip + 0.02)
+                if not (last_end and last_end["outcome"] in SUCCESS):   # after a finish the HP stays at 0
+                    air = min(1.0, air + 0.02)
+                grip = min(1.0, grip + 0.02)
         if layer is not None:                             # tracking + readouts drawn on the fighters
             fr = layer.draw(fr, i - 1, t, live, air=air, ended=banner is not None, fade=fade if live else 1.0)
         canvas[oy:oy + nh, ox:ox + nw] = cv2.resize(fr, (nw, nh))
@@ -219,6 +221,8 @@ def main():
             secs = 0.0 if air <= 0.01 else air / rate if rate > 0.01 else None
         if not live:
             air_hist = []
+            if last_end and last_end["outcome"] in SUCCESS:      # finished: no "breathing" after the stoppage
+                secs = 0.0
         hud.draw(img, t, att, dfn, shown, air, secs, st, live, gate(t) if gate else None, end)
         if po:
             if t_lo <= t <= t_hi:

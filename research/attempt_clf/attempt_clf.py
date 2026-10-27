@@ -48,6 +48,12 @@ WATCHED_BEFORE, WATCHED_AFTER = 120.0, 30.0   # seconds kept around the labeled 
 NEG_CLIPS = {"f22_pimblett_leavitt_r1.mp4": "8e02bdaac8ed50e5"}
 
 
+def clip_path(name):
+    """Videos live in data/clips/ or a subfolder (to_label/, demos/)."""
+    hits = list((ROOT / "data/clips").rglob(name))
+    return hits[0] if hits else ROOT / "data/clips" / name
+
+
 def clips_and_windows():
     rows = list(csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8")))
     clips = {}
@@ -56,10 +62,10 @@ def clips_and_windows():
         c["win"].append((float(r["video_time_start"]), float(r["video_time_end"])))
         c["compilation"] |= "compilation" in r["notes"]
     for name, fid in NEG_CLIPS.items():
-        if (ROOT / "data/clips" / name).exists():
+        if clip_path(name).exists():
             clips.setdefault(name, {"fight": fid, "win": [], "compilation": False})
     per = CACHE.parent / f"clips{TAG}"         # a clip whose features are cached no longer needs its video
-    return {k: v for k, v in clips.items() if (ROOT / "data/clips" / k).exists() or (per / f"{k}.npz").exists()}
+    return {k: v for k, v in clips.items() if clip_path(k).exists() or (per / f"{k}.npz").exists()}
 
 
 def extract(clips):
@@ -104,7 +110,7 @@ def _extract_new(clips, per):
         det = YoloPoseOnnx(ROOT / "models/rncv_pose_v1.onnx")
     for name, info in sorted(clips.items()):
         X, t_s = [], []
-        cap = cv2.VideoCapture(str(ROOT / "data/clips" / name))
+        cap = cv2.VideoCapture(str(clip_path(name)))
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
         step = max(1, int(round(fps / FPS_S)))
         i, batch, meta = 0, [], []

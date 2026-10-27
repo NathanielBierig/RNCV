@@ -250,16 +250,18 @@ def use_v04_gauge():
     SQUEEZE, CONSCIOUSNESS = SQUEEZE_V04, CONSCIOUSNESS_V04
 
 
-def consciousness_trace(row, dt=0.1, g=None, start=(0.0, 0.0)):
+def consciousness_trace(row, dt=0.1, g=None, start=(0.0, 0.0), ramp_in=0.0):
     """[(t, consciousness 0-100, blood deficit B, lingering fatigue D)].
     While squeezing at s(state): B grows at (1 - share) * s, D at share * s, so a continuous full squeeze reaches
     B + D = secs_to_out (consciousness 0) after secs_to_out seconds. When the squeeze is light, B drains fast and D
-    barely moves. `start` = (B, D) carried over from an earlier attempt in the same round."""
+    barely moves. `start` = (B, D) carried over from an earlier attempt in the same round.
+    ramp_in > 0 (the demo uses the 2-s landmark): the squeeze builds up linearly over the first ramp_in seconds,
+    because the state coded at the landmark is usually still being set up before it (owner, 2026-10-27)."""
     g = g or CONSCIOUSNESS
     B, D = start
     out, t, dur = [], 0.0, duration(row)
     while t <= dur + 1e-9:
-        s_ = squeeze(encode(state_at(row, t)))
+        s_ = squeeze(encode(state_at(row, t))) * (min(1.0, t / ramp_in) if ramp_in > 0 else 1.0)
         light = s_ < g["light_below"]
         B = max(0.0, B + dt * ((1 - g["lingering_share"]) * s_ - (B / g["blood_recovery_secs"] if light else 0.0)))
         D = max(0.0, D + dt * (g["lingering_share"] * s_ - (D / g["fatigue_recovery_secs"] if light else 0.0)))

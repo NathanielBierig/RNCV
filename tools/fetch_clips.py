@@ -1,4 +1,4 @@
-"""Download the next N findable fights for labeling (local only, data/clips/, git-ignored).
+"""Download the next N findable fights for labeling (local only, data/clips/to_label/, git-ignored).
 
     python tools/fetch_clips.py [N]          # default 15
 
@@ -17,7 +17,7 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CLIPS = ROOT / "data/clips"
+CLIPS = ROOT / "data/clips/to_label"          # new downloads wait here; demos/ holds the kept demo clips
 LOG = ROOT / "phase3_labels/downloads_log.csv"
 OFFICIAL = re.compile(r"^(UFC|UFC Español|ufcespanol|UFC Brasil|UFC Eurasia|UFC Russia|UFC Europe|UFC India|UFC Arabia|UFC on Paramount\+|UFC and UFC on Paramount\+)$")   # exact case: a fan channel "Ufc" got through
 BLOCK = {"VwHu1u7Jc6g"}            # "FINISH FIGHT | Allen vs Duncan" is an Allen compilation (owner, 2026-10-26)
@@ -55,7 +55,7 @@ def main():
     rounds = Counter()
     for (att, fid, rnd) in {(r["attacker"], r["fight_id"], r["round"]) for r in labels}:
         rounds[att] += 1
-    on_disk = {p.name.split("_")[0] for p in CLIPS.glob("q*")}
+    on_disk = {p.name.split("_")[0] for p in (ROOT / "data/clips").rglob("q*")}
     log_exists = LOG.exists()
     logf = open(LOG, "a", encoding="utf-8", newline="")
     w = csv.writer(logf)

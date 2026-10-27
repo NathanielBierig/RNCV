@@ -92,6 +92,9 @@ class Panel:
             res, held, peak, finished = end
             col = RED if finished else BLUE
             d.text((x, y), res, font=RESULT, fill=col)
+            if finished:
+                d.text((x + d.textlength(res, font=RESULT) + 18, y + 30), f"{att.split()[-1].upper()} WINS",
+                       font=NAME, fill=GOLD)
             d.text((x, y + 76), f"{held:.1f} s on the neck", font=NAME, fill=INK)
             d.text((x, y + 104), f"model read {round(100 * peak)}% at its peak", font=SMALL, fill=DIM)
         else:
@@ -107,7 +110,7 @@ class Panel:
         d.text((x, y), f"{dfn.split()[-1].upper()}  HP", font=NAME, fill=INK)
         d.text((x + w - d.textlength(f"{round(100 * hp)}", font=MID), y - 6), f"{round(100 * hp)}", font=MID, fill=hcol)
         self.bar(d, x, y + 32, w, 18, hp, hcol)
-        air = "breathing" if secs is None else ("out" if secs <= 0.2 else f"≈ {secs:.0f} s of air left" if secs < 20 else "> 20 s of air left")
+        air = "breathing" if secs is None else ("no air left" if secs <= 0.2 else f"~{secs:.0f} s of air left" if secs < 20 else "> 20 s of air left")
         d.text((x, y + 58), air + ("" if secs is None else "  (estimate)"), font=SMALL, fill=hcol if secs is not None else DIM)
         # factor boxes (bottom half)
         y = 372
