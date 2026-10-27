@@ -1,28 +1,28 @@
-68 attempts, 40 fights, leave-one-fight-out
+71 attempts, 42 fights, leave-one-fight-out
 
 model                                         Brier@2s  Brier all-sec  logloss@2s
-always the average                               0.255          0.255       0.704
-v0.7                                             0.250          0.231       0.691
-v0.7 + coach priors                              0.251          0.228       0.692
-v0.7 + coach priors + coach deep-lock 40%        0.251          0.227       0.692
-v0.7 + coach priors minus v0.7: +0.001  95% CI [-0.012, +0.015]
-v0.7 + coach priors + coach deep-lock 40% minus v0.7: +0.001  95% CI [-0.012, +0.015]
+always the average                               0.254          0.254       0.702
+v0.7                                             0.247          0.231       0.684
+v0.7 + coach priors                              0.245          0.224       0.679
+v0.7 + coach priors + coach deep-lock 40%        0.245          0.223       0.679
+v0.7 + coach priors minus v0.7: -0.003  95% CI [-0.011, +0.006]
+v0.7 + coach priors + coach deep-lock 40% minus v0.7: -0.003  95% CI [-0.011, +0.006]
 
 Weights with coach priors, all data: odds multiplier (80% range) [coach]
-  arm_under      x 4.73 ( 2.50- 8.97)  [x4.00]
-  grip_f4        x 2.72 ( 1.56- 4.76)  [x2.60]
-  grip_other     x 1.92 ( 1.02- 3.63)  [x1.90]
-  legs_bt        x 0.90 ( 0.52- 1.55)  [x1.60]
-  legs_hooks     x 0.77 ( 0.43- 1.39)  [x1.30]
-  two_on_one     x 0.52 ( 0.30- 0.89)  [x0.40]
-  chin_tucked    x 1.14 ( 0.67- 1.96)  [x0.85]
-  flattened      x 2.45 ( 1.40- 4.30)  [x2.50]
+  arm_under      x 4.60 ( 2.44- 8.67)  [x4.00]
+  grip_f4        x 2.96 ( 1.71- 5.14)  [x2.60]
+  grip_other     x 2.00 ( 1.06- 3.77)  [x1.90]
+  legs_bt        x 0.98 ( 0.60- 1.63)  [x1.60]
+  legs_hooks     x 1.00 ( 0.94- 1.06)  [x1.00]
+  two_on_one     x 0.56 ( 0.33- 0.96)  [x0.40]
+  chin_tucked    x 1.00 ( 0.94- 1.07)  [x1.00]
+  flattened      x 2.41 ( 1.40- 4.16)  [x2.50]
   def_fatigue    x 1.00 ( 0.15- 6.84)  [x1.00]
-  hand_tucked    x 2.01 ( 1.12- 3.63)  [x1.25]
-  fatigue        x 0.55 ( 0.24- 1.24)  [x0.60]
+  hand_tucked    x 2.03 ( 1.13- 3.63)  [x1.25]
+  fatigue        x 0.55 ( 0.24- 1.25)  [x0.60]
 
 Pantoja vs Asakura (fight left out), v0.7 + coach priors:
-    0.0 s   27%  (12-50%)
-    6.6 s   91%  (79-97%)
-   10.0 s   90%  (77-96%)
-   14.9 s   87%  (71-95%)
+    0.0 s   26%  (12-48%)
+    6.6 s   91%  (79-96%)
+   10.0 s   89%  (77-96%)
+   14.9 s   87%  (71-94%)
