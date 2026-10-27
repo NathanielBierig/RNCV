@@ -68,3 +68,10 @@ python -I tools\preview\corner_preview.py     # red/blue skeleton preview videos
 | MLP + swap augmentation | 0.58 | 0.58 |
 | GBM, role-invariant features | 0.62 | 0.62 |
 | Majority class | 0.14 accuracy | |
+
+## After a labeling batch ("rerun")
+1. `python -I phase3_labels/qa_labels.py` (fix every red row first).
+2. `python -I research/attempt_clf/attempt_clf.py --crop --refresh`: detector features for the new clips (only clips without a cache are extracted).
+3. `python -I tools/save_neck_crops.py`: head/neck crops of every labeled attempt (data/crops/, local only), the training set for the factor model.
+4. `python -I research/attempt_clf/detector_v2.py`, `python research/model/run_v07_coach.py` and `python research/model/charts.py`: new numbers and charts.
+5. Delete a labeled video only when both `data/attempt_clf/clips_crop/<clip>.npz` and `data/crops/<clip>/index.csv` exist. Keep the demo clips in `data/clips/demos/`.

@@ -15,3 +15,8 @@ Script: [research/attempt_clf/factor_pilot.py](../research/attempt_clf/factor_pi
 1. A small image model fine-tuned on frames cropped tightly around the heads and necks, once there are ~150 labeled attempts. That's laptop-CPU training on derived crops. UFC frames can't go to Kaggle.
 2. Asking the labeler for a few seconds of extra "factor" labels at more moments per attempt (the G panel already does this) gives more training frames for free.
 3. Until then, the overlay keeps the factors from labels and says so on screen.
+
+## Next try, built (2026-10-27): factor model on tight head/neck crops
+- `tools/save_neck_crops.py` saves 224×224 crops around the fighters' heads, 4 per second, inside every labeled attempt (`data/crops/`, local only). It runs before a labeled video is deleted, so the training set grows with every labeling batch.
+- `research/attempt_clf/factor_neck.py` turns them into CLIP features (mirrored crops count as extra training data) and runs the same leave-one-fight-out test as above.
+- Pipeline check on the 4 demo fights (561 crops, 10 attempts): runs end to end. Scores are meaningless at 4 fights ([output](../research/attempt_clf/factor_neck_output.txt)). The first real result comes after the 12 queued fights, and the M2 decision at ~150 attempts.

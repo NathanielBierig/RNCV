@@ -1,0 +1,7 @@
+561 crops, 10 attempts, 4 fights  (too few fights for a real result: pipeline check only)
+
+factor                                    crops  % pos   ROC | attempts  kappa
+arm under the chin (vs over the jaw)        468    62%  0.43 |        8  -0.25
+figure-four (vs any other grip)             534    61%  0.45 |        9  -0.05
+body triangle (vs hooks / less)             561    77%  0.38 |       10   0.00
+defender 2-on-1 (vs not)                    561    36%  0.48 |       10  -0.19
