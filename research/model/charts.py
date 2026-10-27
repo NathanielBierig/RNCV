@@ -64,7 +64,7 @@ def main():
     ax.set_yticklabels([e[0] for e in eff], fontsize=9, color=INK)
     style(ax)
     fig.suptitle(f"What moves the odds of a UFC rear-naked choke finishing\n"
-                 f"model v0.7c · {len(rows)} labeled attempts · dot = estimate, line = 80% range",
+                 f"model v0.8 · {len(rows)} labeled attempts · dot = estimate, line = 80% range",
                  fontsize=10, color=INK, x=0.02, ha="left")
     fig.tight_layout()
     fig.savefig(OUT / "effects.png", facecolor="white")

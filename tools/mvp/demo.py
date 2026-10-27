@@ -97,8 +97,8 @@ def main():
     ap.add_argument("clip")
     ap.add_argument("--out", default="")
     ap.add_argument("--no-track", action="store_true", help="skip the fighter tracking layer")
-    ap.add_argument("--model", choices=["v06", "v07c"], default="v07c",
-                    help="v07c = current model (v0.7 structure: grip type, body triangle; + coach priors); v06 = previous")
+    ap.add_argument("--model", choices=["v06", "v07c", "v08"], default="v08",
+                    help="v08 = current (lean v0.7 + coach priors); v07c = previous; v06 = older")
     ap.add_argument("--full", action="store_true", help="render the whole video (default: the attempts +- a few seconds)")
     ap.add_argument("--panel-only", action="store_true",
                     help="footage-free output: only the readout panel around the attempts (+ a GIF), shareable")
@@ -113,15 +113,15 @@ def main():
     sys.path.insert(0, str(ROOT / "research/model"))
     import state_model as sm                     # finish model v0.6 (docs/MODEL_SPEC.md)
     train = [r for r in sm.load() if r["fight_id"] != mine[0]["fight_id"]]
-    if a.model == "v07c":                        # v0.7 + coach priors (research/model/run_v07_coach.py)
+    if a.model != "v06":                        # v0.8 = lean v0.7 + coach priors (run_v07_coach.py); v07c = not lean
         import model_v07 as m7
         import run_v07_coach as rc
-        rc.setup(); sm.USE_FATIGUE = False
+        rc.setup(lean=a.model == "v08"); sm.USE_FATIGUE = False
         m7.D0.update(m7.round_d0(sm.load()))
         sm.SQUEEZE, sm.CONSCIOUSNESS = sm.SQUEEZE_V06, sm.CONSCIOUSNESS_V06
         cards = list(csv.DictReader(open(ROOT / "research/model/priors_v07.csv", encoding="utf-8")))
         beta, cov = rc.fit_cov(train, cards)
-        x_at, fat_i, label = m7.x_at, m7.FEATS.index("fatigue"), "v0.7c"
+        x_at, fat_i, label = m7.x_at, m7.FEATS.index("fatigue"), ("v0.8" if a.model == "v08" else "v0.7c")
     else:
         sm.USE_FATIGUE = True
         cards = list(csv.DictReader(open(ROOT / "research/model/priors_v06.csv", encoding="utf-8")))
@@ -141,7 +141,7 @@ def main():
     sys.path.insert(0, str(ROOT / "tools/mvp"))
     import hud as hudmod
     mult = {}                                    # factor -> odds multiplier of the current model (chip colour tiers)
-    if a.model == "v07c":
+    if a.model != "v06":
         mult = {f: math.exp(beta[2 + n]) for n, f in enumerate(m7.FEATS)}
     hud, peak, cur_id = hudmod.Panel(W - PANEL, W, H, mult, model["label"]), 0.0, None
     air_hist = []                                # (t, HP) during the attempt, for the seconds-of-air estimate

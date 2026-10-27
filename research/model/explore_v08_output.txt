@@ -1,0 +1,18 @@
+71 attempts, 42 fights, leave-one-fight-out
+
+variant                                 Brier@2s  Brier all-sec  logloss@2s
+always the average                         0.254          0.254       0.702
+A v0.7c (baseline)                         0.249          0.228       0.687
+B + re-attack term                         0.255          0.233       0.700
+C leaner (no hooks / chin)                 0.245          0.224       0.679
+D coach priors tighter (sd 0.5)            0.247          0.226       0.684
+E coach priors looser (sd 1.0)             0.251          0.230       0.692
+F + time left in round (2-s score)         0.256          0.228       0.704
+
+B + re-attack term                     minus baseline: +0.006  95% CI [-0.002, +0.014]
+C leaner (no hooks / chin)             minus baseline: -0.004  95% CI [-0.008, +0.000]
+D coach priors tighter (sd 0.5)        minus baseline: -0.002  95% CI [-0.006, +0.003]
+E coach priors looser (sd 1.0)         minus baseline: +0.002  95% CI [-0.002, +0.007]
+F + time left in round (2-s score)     minus baseline: +0.007  95% CI [+0.004, +0.011]
+
+baseline minus always-the-average: -0.006  95% CI [-0.049, +0.041]

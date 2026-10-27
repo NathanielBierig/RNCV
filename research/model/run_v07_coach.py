@@ -41,9 +41,17 @@ def fit_cov(rows, cards):
     return beta, np.linalg.inv((X * (w * p * (1 - p))[:, None]).T @ X + np.diag(P))
 
 
-def setup(coach=True):
-    """Install the coach-prior fit into model_v07 (also used by tools/mvp/demo.py --model v07c)."""
+LEAN_DROP = ("legs_hooks", "chin_tucked")   # v0.8: factors the labels can't support yet are shrunk to no effect
+
+
+def setup(coach=True, lean=True):
+    """Install the coach-prior fit into model_v07 (also used by tools/mvp/demo.py). lean=True is model v0.8
+    (explore_v08.py, 2026-10-28: leaner model, LOFO Brier 0.245 vs 0.249 for v0.7c on 71 attempts)."""
     global use_mu
+    if lean:
+        m.RIDGE_BY.update({f: 0.05 for f in LEAN_DROP})
+        for f in LEAN_DROP:
+            COACH.pop(f, None)
     for i, f in enumerate(m.FEATS):
         MU[2 + i] = math.log(COACH.get(f, 1.0))
     m.fit_cov = fit_cov
