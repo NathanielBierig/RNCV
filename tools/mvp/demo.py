@@ -92,62 +92,6 @@ def bar(d, x, y, w, h, frac, col, back=LINE):
         d.rounded_rectangle([x, y, x + max(6, int(w * frac)), y + h], 4, fill=col)
 
 
-def panel(img, att, dfn, fin, hist, st, att_t, banner, model, live, air=None, grip=1.0, band=None):
-    d = ImageDraw.Draw(img)
-    x0 = W - PANEL
-    d.rectangle([x0, 0, W, H], fill=BG); d.line([x0, 0, x0, H], fill=LINE, width=2)
-    x = x0 + 24
-    d.text((x, 18), "RNCV // RNC MONITOR", font=MONO_B, fill=DIM)
-    d.text((x, 38), f"rear-naked choke · finish model {model['label']} (replay)", font=MONO, fill=DIM)
-    # attacker: finish % grows
-    d.text((x, 78), "ATTACKER", font=MONO, fill=ATT); d.text((x, 96), att[:22], font=SANS_B, fill=INK)
-    d.text((x, 124), f"{round(100 * fin):d}%", font=BIG, fill=ATT if live else DIM)
-    d.text((x + 150, 136), "finish chance", font=MONO, fill=DIM)
-    if band and live:
-        d.text((x + 150, 154), f"80% band {round(100 * band[0])}–{round(100 * band[1])}%", font=MONO, fill=DIM)
-    bar(d, x, 192, PANEL - 48, 14, fin, ATT)
-    d.text((x, 210), "grip", font=MONO, fill=DIM); bar(d, x + 50, 214, 120, 6, grip, (200, 120, 60))
-    # defender: health drains
-    hp = 1 - fin if air is None else air
-    d.text((x, 228), "DEFENDER", font=MONO, fill=DEF); d.text((x, 246), dfn[:22], font=SANS_B, fill=INK)
-    d.text((x, 278), f"{dfn.split()[-1].upper()} HP (choke model)", font=MONO, fill=DIM); d.text((x + PANEL - 110, 278), f"{round(100 * hp):d}/100", font=MONO_B, fill=INK)
-    hcol = GOOD if hp > .6 else (255, 200, 87) if hp > .3 else BAD
-    bar(d, x, 300, PANEL - 48, 22, hp, hcol)
-    # sparkline of finish % over the attempt
-    sy, sh, sw = 350, 70, PANEL - 48
-    d.rectangle([x, sy, x + sw, sy + sh], outline=LINE)
-    for gy in (.25, .5, .75):
-        d.line([x, sy + sh * (1 - gy), x + sw, sy + sh * (1 - gy)], fill=(28, 33, 41))
-    if len(hist) > 1:
-        pts = [(x + sw * i / max(1, len(hist) - 1), sy + sh * (1 - v)) for i, v in enumerate(hist)]
-        d.line(pts, fill=ATT, width=2)
-    d.text((x, sy + sh + 4), f"attempt {att_t:5.1f}s", font=MONO, fill=DIM)
-    # state
-    y = 460
-    d.text((x, y), "STATE", font=MONO_B, fill=DIM); y += 24
-    rows = [("arm", st.get("choke_arm_position") or "—", st.get("choke_arm_position") == "under_chin"),
-            ("legs", st.get("control") or "—", strong_legs(st.get("control", ""))),
-            ("upper body", st.get("upper_body") or "—", st.get("upper_body") == "body_lock"),
-            ("grip", st.get("rnc_style") or "—", False),
-            ("defender 2-on-1", {"True": "yes", "False": "no"}.get(st.get("defender_two_on_one", ""), "—"), False),
-            ("chin tucked", {"True": "yes", "False": "no"}.get(st.get("chin_tucked", ""), "—"), st.get("chin_tucked") == "False"),
-            ("position", st.get("back_context") or "—", False)]
-    for k, v, hot in rows:
-        d.text((x, y), k, font=MONO, fill=DIM)
-        d.text((x + 170, y), v.replace("_", " "), font=MONO_B, fill=ATT if hot else INK); y += 22
-    # model footer
-    d.line([x, H - 92, W - 24, H - 92], fill=LINE)
-    d.text((x, H - 84), f"priors: you + research{' + coach' if model['label'] == 'v0.7c' else ''} + {model['n']} labels", font=MONO, fill=DIM)
-    d.text((x, H - 64), "other fights only (leave-one-fight-out)", font=MONO, fill=DIM)
-    d.text((x, H - 44), "replay: windows + factors from labels", font=MONO, fill=DIM)
-    if banner:
-        txt, col = banner
-        bw = d.textlength(txt, font=BIG)
-        cx = (W - PANEL) // 2
-        d.rounded_rectangle([cx - bw / 2 - 24, 40, cx + bw / 2 + 24, 120], 10, fill=(0, 0, 0))
-        d.text((cx - bw / 2, 48), txt, font=BIG, fill=col)
-
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("clip")
@@ -191,7 +135,7 @@ def main():
     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
     vw, vh = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     po = a.panel_only
-    vid_w = W - PANEL if po else W                 # the video demo is full-frame; numbers live in the on-video HUD
+    vid_w = W - PANEL                            # video on the left, the side tab (tools/mvp/hud.py) on the right
     s = min(vid_w / vw, H / vh); nw, nh = int(vw * s), int(vh * s)
     ox, oy = (vid_w - nw) // 2, (H - nh) // 2
     sys.path.insert(0, str(ROOT / "tools/mvp"))
@@ -199,7 +143,8 @@ def main():
     mult = {}                                    # factor -> odds multiplier of the current model (chip colour tiers)
     if a.model == "v07c":
         mult = {f: math.exp(beta[2 + n]) for n, f in enumerate(m7.FEATS)}
-    hud, peak, cur_id = hudmod.Hud(mult), 0.0, None
+    hud, peak, cur_id = hudmod.Panel(W - PANEL, W, H, mult, model["label"]), 0.0, None
+    air_hist = []                                # (t, HP) during the attempt, for the seconds-of-air estimate
     gate = None                                  # real detector, trained without this fight (tools/mvp/detector_live.py)
     if (ROOT / "data/attempt_clf/clips_crop" / f"{clip.name}.npz").exists():
         import detector_live
@@ -243,6 +188,7 @@ def main():
             shown += (target - shown) * 0.35                      # light display smoothing only
             tr = airs[id(cur)]
             air = tr[min(len(tr) - 1, int(el / 0.1))][1] / 100
+            air_hist = [(tt, aa) for tt, aa in air_hist if t - tt <= 1.0] + [(t, air)]
             grip = 1 - float(xv[fat_i])
             hist.append(shown); att_t = el; last_end = cur; peak = max(peak, shown)
             att, dfn, live = cur["attacker"], cur["defender"], True
@@ -264,14 +210,16 @@ def main():
             fr = layer.draw(fr, i - 1, t, live, air=air, ended=banner is not None, fade=fade if live else 1.0)
         canvas[oy:oy + nh, ox:ox + nw] = cv2.resize(fr, (nw, nh))
         img = Image.fromarray(cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB))
-        if po:
-            panel(img, att, dfn, shown, hist[-240:], st, att_t, banner, model, live, air, grip, band)
-        else:
-            end = None
-            if banner:
-                held = float(last_end["video_time_end"]) - float(last_end["video_time_start"])
-                end = (banner[0], held, peak, last_end["outcome"] in SUCCESS)
-            hud.draw(img, t, att, dfn, shown, air, st, live, fade if live else 1.0, end, gate(t) if gate else None)
+        end, secs = None, None
+        if banner:
+            held = float(last_end["video_time_end"]) - float(last_end["video_time_start"])
+            end = (banner[0], held, peak, last_end["outcome"] in SUCCESS)
+        elif live and len(air_hist) > 5:          # seconds of air left = HP / how fast it drained over the last second
+            rate = (air_hist[0][1] - air_hist[-1][1]) / max(0.2, air_hist[-1][0] - air_hist[0][0])
+            secs = 0.0 if air <= 0.01 else air / rate if rate > 0.01 else None
+        if not live:
+            air_hist = []
+        hud.draw(img, t, att, dfn, shown, air, secs, st, live, gate(t) if gate else None, end)
         if po:
             if t_lo <= t <= t_hi:
                 pim = img.crop((W - PANEL, 0, W, H - 100))
