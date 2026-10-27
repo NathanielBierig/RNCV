@@ -20,6 +20,16 @@ RNCV (**RNC + CV**, computer vision) asks a BJJ question with data: *which detai
 | Attempt detector v2 | Frame ROC-AUC 0.80 (was 0.70), PR-AUC 0.43 vs 0.19 base rate; leave-one-fight-out, 29 fights, ~42 min of no-attempt footage | Spots the exchange, not yet the moment the choke starts (correct start on ~9–17% of attempts); the overlay uses a manual "attempt starts" key |
 | Pose skeletons | Both fighters correct in 4/48 tangled frames | Parked; the overlay draws only confident parts (box, heads) |
 
+### The science so far (pilot data; the pre-registered test waits for ~150 attempts)
+
+<img src="docs/media/effects.png" width="620" alt="Odds multipliers per choke factor">
+
+The arm under the chin, a flattened defender and a locked grip push the finish odds up. The defender's two-on-one hand fight pulls them down. Wide lines mean the data can't pin an effect down yet. Body triangle vs hooks shows no clear effect so far, which isn't what coaches expect, and it's one to watch as labels grow.
+
+<img src="docs/media/calibration.png" width="380" alt="Calibration of the finish chance on held-out fights">
+
+On fights it never saw, the strongest positions (model says ~80%) did finish ~80% of the time. Below that, the model is still too pessimistic: its 20% bin finished ~45% of the time. The overall gain over guessing the average is small at this sample size.
+
 Model details: [docs/MODEL_SPEC.md](docs/MODEL_SPEC.md) · Expert review: [research/coach_review/COACH_REVIEW.md](research/coach_review/COACH_REVIEW.md) · Evidence review: [research/priors_evidence/EVIDENCE.md](research/priors_evidence/EVIDENCE.md)
 
 ## How the two readouts work
