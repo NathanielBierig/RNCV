@@ -75,12 +75,31 @@ class Hud:
     def reset(self):
         self.seen = {}
 
-    def draw(self, img, t, att, dfn, fin, hp, st, live, fade=1.0, end=None):
+    def detector(self, d, W, t, det):
+        """Top-right: the real detector (held out on this fight). On = BACK ATTACK DETECTED, else SCANNING."""
+        on, p = det
+        x1, y0, w = W - 24, 18, 330
+        x0 = x1 - w
+        if on:
+            pulse = 0.75 + 0.25 * abs(((t * 1.6) % 2) - 1)
+            col = mix(AMBER, RED, 0.6)
+            d.rounded_rectangle([x0, y0, x1, y0 + 58], 8, fill=(col + (int(235 * pulse),)))
+            d.text((x0 + 16, y0 + 8), "BACK ATTACK DETECTED", font=CHIP, fill=CARD)
+            d.text((x0 + 16, y0 + 36), f"detector {p:.2f}  ·  computer vision, no labels", font=TAG, fill=CARD)
+        else:
+            d.rounded_rectangle([x0, y0, x1, y0 + 58], 8, fill=CARD + (190,))
+            d.text((x0 + 16, y0 + 8), "SCANNING", font=CHIP, fill=DIM)
+            d.rounded_rectangle([x0 + 16, y0 + 40, x1 - 16, y0 + 48], 3, fill=(60, 64, 72, 255))
+            d.rounded_rectangle([x0 + 16, y0 + 40, x0 + 16 + int((w - 32) * min(1.0, p)), y0 + 48], 3, fill=AMBER + (220,))
+
+    def draw(self, img, t, att, dfn, fin, hp, st, live, fade=1.0, end=None, det=None):
         """img: PIL RGB frame. end = (result text, seconds held, peak finish, finished?) during the ending card."""
         W, H = img.size
         d = ImageDraw.Draw(img, "RGBA")
         a = int(255 * fade)
         d.text((24, 18), "RNCV  ·  RNC FINISH MODEL  ·  REPLAY", font=TAG, fill=DIM + (200,))
+        if det is not None and not end:
+            self.detector(d, W, t, det)
         if end:
             d.rectangle([0, 0, W, H], fill=(0, 0, 0, 110))                                  # dim the video
             res, held, peak, finished = end

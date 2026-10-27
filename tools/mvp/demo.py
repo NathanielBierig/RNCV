@@ -200,6 +200,10 @@ def main():
     if a.model == "v07c":
         mult = {f: math.exp(beta[2 + n]) for n, f in enumerate(m7.FEATS)}
     hud, peak, cur_id = hudmod.Hud(mult), 0.0, None
+    gate = None                                  # real detector, trained without this fight (tools/mvp/detector_live.py)
+    if (ROOT / "data/attempt_clf/clips_crop" / f"{clip.name}.npz").exists():
+        import detector_live
+        gate = detector_live.Gate(*detector_live.scores(clip.name, mine[0]["fight_id"]))
     t_lo = float(mine[0]["video_time_start"]) - 8.0      # full-fight videos: only the attempts (+ lead-in / result)
     t_hi = float(mine[-1]["video_time_end"]) + 5.0
     if po:                                       # no UFC pixels: panel only, attempts +- a few seconds
@@ -267,7 +271,7 @@ def main():
             if banner:
                 held = float(last_end["video_time_end"]) - float(last_end["video_time_start"])
                 end = (banner[0], held, peak, last_end["outcome"] in SUCCESS)
-            hud.draw(img, t, att, dfn, shown, air, st, live, fade if live else 1.0, end)
+            hud.draw(img, t, att, dfn, shown, air, st, live, fade if live else 1.0, end, gate(t) if gate else None)
         if po:
             if t_lo <= t <= t_hi:
                 pim = img.crop((W - PANEL, 0, W, H - 100))
