@@ -36,7 +36,7 @@ FACTORS = {   # name: (state key, positive values, negative values)
 
 
 def main():
-    clips = sorted(ac.clips_and_windows().items())
+    clips = d2.aligned_clips()
     X, _, fight, clip, t = d2.load("_crop")
     X = d2.context(X, clip)
     rows = [r for r in csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8"))

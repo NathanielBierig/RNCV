@@ -65,6 +65,13 @@ def oof(X, y, fight, C=0.5, pca=None):
     return p
 
 
+def aligned_clips(tag="_crop"):
+    """(name, windows) in the clip-index order stored with the features (labels can change after extraction)."""
+    names = np.load(ROOT / f"data/attempt_clf/feats{tag}.npz")["names"]
+    cw = dict(ac.clips_and_windows())
+    return [(n, cw.get(n, {"win": []})) for n in names]
+
+
 def events(p, y, clip, t, clips):
     ps = ac.smooth(np.nan_to_num(p), clip, int(round(2 * FPS)) | 1)
     neg_min = (y == 0).sum() / FPS / 60
@@ -91,7 +98,7 @@ def events(p, y, clip, t, clips):
 
 
 def main():
-    clips = sorted(ac.clips_and_windows().items())
+    clips = aligned_clips()
     Xc, y, fight, clip, t = load("_crop")       # the crop cache is the one kept current (features per clip)
     variants = {
         "frame, crop (v1)": (Xc, {}),

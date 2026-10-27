@@ -94,7 +94,7 @@ def extract(clips):
         print(f"{name}: {len(ts)} frames, {y[-1].sum()} inside attempts", flush=True)
     CACHE.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(CACHE, X=np.concatenate(X), y=np.concatenate(y), fight=np.array(fight),
-                        clip=np.array(clip_id), t=np.concatenate(t_s))
+                        clip=np.array(clip_id), t=np.concatenate(t_s), names=np.array(sorted(clips)))
 
 
 def spans(info):
