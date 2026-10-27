@@ -226,10 +226,10 @@ def main():
         hud.draw(img, t, att, dfn, shown, air, secs, st, live, gate(t) if gate else None, end)
         if po:
             if t_lo <= t <= t_hi:
-                pim = img.crop((W - PANEL, 0, W, H - 100))
+                pim = img.crop((W - PANEL, 0, W, H))
                 wr.write(cv2.cvtColor(np.asarray(img.crop((W - PANEL, 0, W, H))), cv2.COLOR_RGB2BGR))
                 if i % 3 == 0:
-                    gif.append(pim.resize((PANEL // 2 * 2 * 3 // 4, (H - 100) * 3 // 4)))
+                    gif.append(pim.resize((PANEL * 3 // 4, H * 3 // 4)))
             continue
         wr.write(cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR))
     cap.release(); wr.release()

@@ -3,7 +3,7 @@
 RNCV (**RNC + CV**, computer vision) asks a BJJ question with data: *which details of a rear-naked choke decide whether a UFC fighter taps?* It has three parts:
 
 1. **A pre-registered study** of hand-labeled UFC choke attempts: 36 so far, target ~150. The hypotheses were frozen before labeling ([PREREG](research/rnc_science/PREREG.md)).
-2. **A replay overlay** with two readouts. The attacker's **finish chance** is a forecast that the attempt ends in a tap or stoppage. The defender's **choke meter** shows how much choking they have already absorbed.
+2. **A replay overlay** with two readouts. The attacker's **finish chance** is a forecast that the attempt ends in a tap or stoppage. The defender's **HP** shows how much choking they have already absorbed (with an estimate of the seconds of air left).
 3. **An early automatic attempt detector** (experimental).
 
 **Status: early.** The finish model mixes expert priors (the owner's BJJ judgment plus a published-evidence review) with a small labeled set. So far it beats a base-rate guess only slightly. UFC footage is never published: the repo holds only derived data (timestamps, labels, keypoints).
@@ -14,10 +14,10 @@ RNCV (**RNC + CV**, computer vision) asks a BJJ question with data: *which detai
 
 | Piece | Result | What it means |
 |---|---|---|
-| Labeled data | 54 attempts from 31 UFC fights, men's divisions | Too few for the pre-registered analysis yet (needs ~150) |
-| Finish model v0.6 / v0.7c | Brier 0.226 / 0.228 at 2 s (0.205 / 0.204 over every second) vs 0.270 for always guessing the average | Sensible in replay; the gain over a base rate isn't certain yet. **v0.7c is the current model**: it adds grip type, body triangle vs hooks and the coach review |
-| Choke meter | Pantoja vs Asakura: hits 0 at 18.0 s; he went out at 19.0 s | Timing comes from physiology (≈9 s from lock to out, Stellpflug 2020), not from fitting |
-| Attempt detector v2 | Frame ROC-AUC 0.80 (was 0.70), PR-AUC 0.43 vs 0.19 base rate; leave-one-fight-out, 29 fights, ~42 min of no-attempt footage | Spots the exchange, not yet the moment the choke starts (correct start on ~9–17% of attempts); the overlay uses a manual "attempt starts" key |
+| Labeled data | 73 attempts from 42 UFC fights, men's divisions | Too few for the pre-registered analysis yet (needs ~150) |
+| Finish model v0.8 | Brier 0.245 at 2 s vs 0.254 for always guessing the average; 0.224 vs 0.254 as the position changes | Following the position adds real information; the 2-s snapshot alone is within noise so far |
+| Defender HP (choke dose) | Pantoja vs Asakura: hits 0 at 18 s, he went out at 19 s; labeled finishes took a median 9.6 s on the neck | Timing from physiology (≈9 s, Stellpflug 2020), not fitted |
+| Attempt detector v2 | Frame ROC-AUC ~0.75 (0.73–0.80 as fights were added), leave-one-fight-out, 39 fights, ~60 min of no-attempt footage | Spots back attacks; not yet the second the choke starts. The demo's "BACK ATTACK DETECTED" comes from it |
 | Pose skeletons | Both fighters correct in 4/48 tangled frames | Parked; the overlay draws only confident parts (box, heads) |
 
 ### The science so far (pilot data; the pre-registered test waits for ~150 attempts)
@@ -42,7 +42,7 @@ Readouts come from **labeled positions** for now, not from live computer vision.
 
 <img src="docs/media/pantoja_asakura_panel.gif" width="315" align="right" alt="Readout panel replaying Pantoja vs Asakura">
 
-**Example (footage-free replay of the readouts):** Pantoja vs Asakura, UFC flyweight title, round 2, scored by a model that never saw this fight. The finish chance sits near 30% while the arm is over the jaw. It jumps to ~92% when the figure-four locks under the chin, and holds ~88% through Asakura's late two-on-one, because the choking hand is hidden. The choke meter drains to 0 at about 18 s; he went out at 19 s. Made with `python tools/mvp/demo.py <clip> --panel-only`, which writes only the panel, never video pixels.
+**Example (footage-free replay of the side tab):** Pantoja vs Asakura, UFC flyweight title, round 2, scored by models that never saw this fight. The real detector flags the back attack. The finish chance sits near 26% while the arm is over the jaw, then jumps to ~89% when the figure-four locks under the chin. Asakura's HP drains with an estimate of the seconds of air left. The boxes show what decides it (gold = very helpful, purple = helpful, blue = small, red = against). Made with `python tools/mvp/demo.py <clip> --panel-only`, which writes only the tab, never video pixels.
 
 <br clear="right">
 

@@ -91,12 +91,11 @@ class Panel:
         if end:
             res, held, peak, finished = end
             col = RED if finished else BLUE
-            d.text((x, y), res, font=RESULT, fill=col)
+            d.text((x, y - 6), res, font=RESULT, fill=col)
             if finished:
-                d.text((x + d.textlength(res, font=RESULT) + 18, y + 30), f"{att.split()[-1].upper()} WINS",
-                       font=NAME, fill=GOLD)
-            d.text((x, y + 76), f"{held:.1f} s on the neck", font=NAME, fill=INK)
-            d.text((x, y + 104), f"model read {round(100 * peak)}% at its peak", font=SMALL, fill=DIM)
+                d.text((x, y + 66), f"{att.upper()} WINS", font=NAME, fill=GOLD)
+            d.text((x, y + 96), f"{held:.1f} s on the neck", font=SMALL, fill=INK)
+            d.text((x, y + 118), f"model read {round(100 * peak)}% at its peak", font=SMALL, fill=DIM)
         else:
             d.text((x, y), (att.upper() if live else "—"), font=NAME, fill=INK)
             fcol = mix(AMBER, RED, (fin - 0.5) / 0.5) if live else DIM
@@ -122,7 +121,7 @@ class Panel:
             self.seen.setdefault(text, t)
             age = t - self.seen[text]
             hot = age < POP
-            bh = 58
+            bh = min(58, (H - 50 - (412)) // max(1, len(chips)) - 12)          # shrink to fit above the footer
             dx = int(60 * max(0.0, 0.2 - age) / 0.2)                                        # slides in fast
             if age < BOOM:                                                                  # the "boom": a shock ring
                 g = int(4 + 22 * age / BOOM)
@@ -131,7 +130,7 @@ class Panel:
             d.rounded_rectangle([x + dx, y, x + w, y + bh], 9, fill=(col + (255,)) if hot else (BG + (255,)),
                                 outline=col, width=3)
             d.rectangle([x + dx, y, x + dx + 12, y + bh], fill=col)
-            d.text((x + dx + 28, y + 15), text, font=BOX, fill=BG if hot else INK)
+            d.text((x + dx + 28, y + (bh - 26) // 2), text, font=BOX, fill=BG if hot else INK)
             y += bh + 12
         for k in [k for k in self.seen if k not in {c for c, _ in chips}]:
             del self.seen[k]
