@@ -7,7 +7,8 @@ Walks phase3_labels/labeling_queue_findable.csv in rank order and skips: fights 
 disk, women's bouts (PREREG A1), fights before 2018 (PREREG §2), attackers at the round cap (A4: 5 rounds).
 For each, searches YouTube and takes the first result that is from an official UFC channel, mentions both
 surnames in the title, runs at least 4 minutes and has no video-game / compilation words in the title
-(lessons learned: an EA UFC render and an Allen compilation slipped through by hand). Downloads up to 720p.
+(lessons learned: an EA UFC render and an Allen compilation slipped through by hand). Licensed broadcasters
+(Eurosport) count too when their "highlights" run 8+ minutes (they show whole rounds). Downloads up to 720p.
 Every pick (or why there was none) goes to phase3_labels/downloads_log.csv (titles and links only, no video).
 """
 import csv
@@ -27,25 +28,42 @@ MIN_SECONDS = 240
 
 
 def surname(name):
-    return name.strip().split()[-1].lower()
+    """Last real name part, lowercased ("Raul Rosas Jr." -> "rosas")."""
+    parts = [w for w in name.replace(".", "").split() if w.lower() not in {"jr", "sr", "ii", "iii"}]
+    return (parts or name.split())[-1].lower()
+
+
+BROADCASTER = re.compile(r"^(Eurosport Italia|Eurosport|Eurosport Deutschland|Eurosport France)$")
+BROADCASTER_MIN = 480     # licensed broadcasters post long "HIGHLIGHTS" (8-20 min) that show whole rounds
+BAD_ALWAYS = re.compile(r"ufc ?[45]|ea|game|simulation|cpu|compilation|reaction|breakdown|preview|recap|predict|interview", re.I)
+
+
+def ok_hit(vid, ch, dur, title, att, dfn):
+    t = title.lower()
+    if vid in BLOCK or surname(att) not in t or surname(dfn) not in t:
+        return False
+    if OFFICIAL.match(ch.strip()):
+        return dur >= MIN_SECONDS and not BAD.search(title)
+    if BROADCASTER.match(ch.strip()):            # long broadcaster highlights are allowed; fan uploads never
+        return dur >= BROADCASTER_MIN and not BAD_ALWAYS.search(title)
+    return False
 
 
 def search(att, dfn):
-    q = f"ytsearch8:{att} vs {dfn} UFC full fight"
-    out = subprocess.run(["yt-dlp", "--flat-playlist", "--print", "%(id)s\t%(channel)s\t%(duration)s\t%(title)s", q],
-                         capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
-    for line in out.splitlines():
-        parts = line.split("\t")
-        if len(parts) < 4:
-            continue
-        vid, ch, dur, title = parts[0], parts[1], parts[2], "\t".join(parts[3:])
-        t = title.lower()
-        try:
-            dur = float(dur)
-        except ValueError:
-            continue
-        if vid not in BLOCK and OFFICIAL.match(ch.strip()) and surname(att) in t and surname(dfn) in t and dur >= MIN_SECONDS and not BAD.search(title):
-            return vid, ch, int(dur), title
+    for q in (f"{att} vs {dfn} UFC full fight", f"{surname(att)} vs {surname(dfn)} highlights eurosport"):
+        out = subprocess.run(["yt-dlp", "--flat-playlist", "--print", "%(id)s	%(channel)s	%(duration)s	%(title)s",
+                              f"ytsearch8:{q}"], capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
+        for line in out.splitlines():
+            parts = line.split("	")
+            if len(parts) < 4:
+                continue
+            vid, ch, dur, title = parts[0], parts[1], parts[2], "	".join(parts[3:])
+            try:
+                dur = float(dur)
+            except ValueError:
+                continue
+            if ok_hit(vid, ch, dur, title, att, dfn):
+                return vid, ch, int(dur), title
     return None
 
 
