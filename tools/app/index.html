@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RNCV Detector Test</title>
+<style>
+  :root { --bg:#0e1116; --card:#151a21; --line:#2c333d; --ink:#eceff4; --dim:#8b95a3; --amber:#ffaa28; --red:#ff463c;
+          --blue:#4cc2ff; --gold:#ffc428; --purple:#b266ff; --cblue:#4ca0ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Bahnschrift","Segoe UI",system-ui,sans-serif; }
+  header { display:flex; align-items:baseline; gap:16px; padding:14px 20px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  header b { letter-spacing:.06em; }
+  header span { color:var(--dim); font-size:13px; }
+  main { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:16px; padding:16px 20px; }
+  @media (max-width: 900px) { main { grid-template-columns:1fr; } }
+  #drop { border:2px dashed var(--line); border-radius:12px; aspect-ratio:16/9; display:grid; place-items:center; text-align:center;
+          color:var(--dim); cursor:pointer; padding:20px; }
+  #drop.over { border-color:var(--amber); color:var(--ink); }
+  video { width:100%; border-radius:10px; background:#000; display:none; }
+  #timeline { width:100%; height:96px; margin-top:10px; background:var(--card); border-radius:8px; cursor:pointer; display:block; }
+  #status { color:var(--dim); font-size:13px; margin-top:6px; min-height:18px; }
+  aside { background:var(--card); border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:14px; }
+  .det { border-radius:8px; padding:9px 12px; font-size:18px; border:2px solid var(--line); color:var(--dim); display:flex; align-items:center; gap:10px; }
+  .det.on { background:#f2603a; border-color:#f2603a; color:var(--bg); animation:pulse 1.2s ease-in-out infinite; }
+  .det .lvl { flex:1; height:6px; background:var(--line); border-radius:3px; overflow:hidden; }
+  .det .lvl i { display:block; height:100%; background:var(--amber); width:0; }
+  @keyframes pulse { 50% { filter:brightness(1.18); } }
+  .name { font-size:18px; }
+  .big { font-size:64px; line-height:1; font-variant-numeric:tabular-nums; }
+  .lbl { color:var(--dim); font-size:13px; }
+  .bar { height:12px; background:var(--line); border-radius:6px; overflow:hidden; }
+  .bar i { display:block; height:100%; width:0; border-radius:6px; transition:width .15s; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; }
+  #boxes { display:flex; flex-direction:column; gap:8px; min-height:120px; }
+  .box { border:3px solid var(--c); border-left-width:12px; border-radius:9px; padding:10px 14px; font-size:19px; }
+  .box.new { animation:boom .9s ease-out; background:var(--c); color:var(--bg); }
+  @keyframes boom { 0% { transform:translateX(30px) scale(1.04); box-shadow:0 0 0 0 var(--c); }
+                    40% { transform:none; box-shadow:0 0 0 14px transparent; } 100% { } }
+  .keys { color:var(--dim); font-size:12px; line-height:1.7; border-top:1px solid var(--line); padding-top:10px; }
+  kbd { background:#222a35; border-radius:4px; padding:1px 6px; color:var(--ink); font-family:inherit; }
+  label { font-size:13px; color:var(--dim); }
+  .warn { color:var(--dim); font-size:12px; }
+</style>
+</head>
+<body>
+<header><b>RNCV // TEST THE DETECTOR</b><span id="hdr">Everything runs on this laptop: the clip never leaves it.</span></header>
+<main>
+  <section>
+    <div id="drop">Drop a fight clip here (or click to choose one)<br><br>
+      <span class="warn">The real attempt detector analyses it (about 1 minute per 2 minutes of video), then you play it back with the readouts.</span></div>
+    <input id="file" type="file" accept="video/*" hidden>
+    <div id="demos" class="lbl" style="margin-top:8px"></div>
+    <video id="vid" controls></video>
+    <canvas id="timeline" width="1200" height="96" title="click to jump"></canvas>
+    <div id="status"></div>
+  </section>
+  <aside>
+    <div id="det" class="det">SCANNING <span class="lvl"><i></i></span></div>
+    <div>
+      <div class="name" id="att">ATTACKER</div>
+      <div class="row"><span class="big" id="fin">—</span><span class="lbl">FINISH CHANCE</span></div>
+      <div class="bar"><i id="finbar"></i></div>
+    </div>
+    <div>
+      <div class="row"><span class="name" id="dfn">DEFENDER HP</span><span class="big" style="font-size:30px" id="hp">100</span></div>
+      <div class="bar"><i id="hpbar" style="width:100%"></i></div>
+      <div class="lbl" id="air">breathing</div>
+    </div>
+    <div class="lbl">WHAT DECIDES IT <span id="live" style="float:right"></span></div>
+    <div id="boxes"></div>
+    <label><input type="checkbox" id="auto" checked> let the detector start and end attempts</label>
+    <div class="keys">
+      <kbd>S</kbd> attempt starts · <kbd>E</kbd> attempt ends · <kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> 2 s<br>
+      <kbd>1</kbd> arm (under chin → over jaw → ?) · <kbd>2</kbd> grip (figure-four → palm/gable/wrist → one arm → ?)<br>
+      <kbd>3</kbd> legs (body triangle → hooks → one hook/none → ?) · <kbd>4</kbd> defender 2-on-1 · <kbd>5</kbd> hand hidden<br>
+      <kbd>6</kbd> flattened · <kbd>7</kbd> chin tucked · <kbd>R</kbd> reset factors<br>
+      The detector is the real model. The factors are yours: the computer can't see them reliably yet.
+    </div>
+  </aside>
+</main>
+<script src="/rncv_model.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let M = null, det = null, hp = null, live = false, lastT = null, shown = 0, seen = {};
+const st = {};
+const CYCLE = {
+  "1": ["choke_arm_position", ["under_chin", "over_jaw", ""]],
+  "2": ["rnc_style", ["figure_four", "wrist_pull", "one_arm", ""]],
+  "3": ["control", ["body_triangle", "two_hooks", "none", ""]],
+  "4": ["defender_two_on_one", ["True", "False", ""]], "5": ["choking_hand_tucked", ["True", "False", ""]],
+  "6": ["opponent_flattened", ["True", "False", ""]], "7": ["chin_tucked", ["True", "False", ""]],
+};
+const TH_ON = 0.55, TH_OFF = 0.30, MIN_OFF = 2.0;      // same hysteresis as tools/mvp/detector_live.py
+
+fetch("/model.json").then(r => r.json()).then(m => { M = m; hp = new RNCV.HP(M); });
+fetch("/info").then(r => r.json()).then(i => {
+  $("hdr").textContent = `Everything runs on this laptop: the clip never leaves it. Detector trained on ${i.fights} labeled UFC fights; finish model v0.8.`;
+  if (i.demos.length) {
+    $("demos").innerHTML = "Or try a demo clip: ";
+    i.demos.forEach(n => { const a = document.createElement("a"); a.href = "#"; a.textContent = n.replace(/\.mp4|\.webm/g, "");
+      a.style.cssText = "color:var(--amber);margin-right:12px"; a.onclick = e => { e.preventDefault(); loadDemo(n); }; $("demos").appendChild(a); });
+  }
+});
+
+// ---------- load + analyse ----------
+const drop = $("drop");
+drop.onclick = () => $("file").click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); };
+drop.ondragleave = () => drop.classList.remove("over");
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); if (e.dataTransfer.files[0]) load(e.dataTransfer.files[0]); };
+$("file").onchange = e => e.target.files[0] && load(e.target.files[0]);
+
+async function loadDemo(name) {
+  const v = $("vid");
+  v.src = "/clip/" + encodeURIComponent(name); v.style.display = "block"; drop.style.display = "none"; $("demos").style.display = "none";
+  det = null; drawTimeline();
+  await analyseVia(fetch("/analyze_demo?name=" + encodeURIComponent(name), { method: "POST" }));
+}
+
+async function analyseVia(req) {
+  const poll = setInterval(async () => {
+    try { $("status").textContent = "Detector: " + (await (await fetch("/progress")).json()).progress; } catch (e) {}
+  }, 1000);
+  try {
+    const d = await (await req).json();
+    if (d.error) throw new Error(d.error);
+    det = gate(d);
+    $("status").textContent = `Detector: done. ${det.spans.length} back-attack window(s) found. Click the timeline to jump.`;
+  } catch (e) { $("status").textContent = "Detector failed: " + e.message; }
+  clearInterval(poll); drawTimeline();
+}
+
+async function load(file) {
+  const v = $("vid");
+  v.src = URL.createObjectURL(file); v.style.display = "block"; drop.style.display = "none"; $("demos").style.display = "none";
+  det = null; drawTimeline();
+  await analyseVia(fetch("/analyze?name=" + encodeURIComponent(file.name), { method: "POST", body: file }));
+}
+
+function gate(d) {                       // hysteresis -> on/off per sample, and spans
+  const on = [], spans = []; let state = false, below = null, start = null;
+  d.t.forEach((t, i) => {
+    const p = d.p[i];
+    if (!state && p >= TH_ON) { state = true; below = null; start = t; }
+    else if (state) {
+      if (p < TH_OFF) { below = below ?? t; if (t - below >= MIN_OFF) { state = false; spans.push([start, below]); } }
+      else below = null;
+    }
+    on.push(state);
+  });
+  if (state) spans.push([start, d.t[d.t.length - 1]]);
+  return { t: d.t, p: d.p, on, spans };
+}
+const detAt = t => {
+  if (!det) return null;
+  let i = det.t.findIndex(x => x > t); i = i < 0 ? det.t.length - 1 : Math.max(0, i - 1);
+  return { on: det.on[i], p: det.p[i] };
+};
+
+// ---------- timeline ----------
+function drawTimeline() {
+  const c = $("timeline"), g = c.getContext("2d"), W = c.width, H = c.height, v = $("vid");
+  g.clearRect(0, 0, W, H);
+  const dur = v.duration || (det ? det.t[det.t.length - 1] : 1);
+  const X = t => (t / dur) * W, Y = p => H - 8 - p * (H - 16);
+  g.fillStyle = "#8b95a3"; g.font = "12px Bahnschrift, sans-serif";
+  if (!det) { g.fillText(v.src ? "the detector is analysing the clip..." : "detector timeline", 10, 18); return; }
+  g.fillStyle = "rgba(242,96,58,.22)";
+  det.spans.forEach(([a, b]) => g.fillRect(X(a), 0, Math.max(2, X(b) - X(a)), H));
+  g.strokeStyle = "#2c333d"; g.setLineDash([4, 4]);
+  [TH_ON, TH_OFF].forEach(th => { g.beginPath(); g.moveTo(0, Y(th)); g.lineTo(W, Y(th)); g.stroke(); });
+  g.setLineDash([]); g.strokeStyle = "#ffaa28"; g.lineWidth = 2; g.beginPath();
+  det.t.forEach((t, i) => (i ? g.lineTo(X(t), Y(det.p[i])) : g.moveTo(X(t), Y(det.p[i]))));
+  g.stroke();
+  g.fillStyle = "#eceff4"; g.fillRect(X(v.currentTime || 0) - 1, 0, 2, H);
+  g.fillStyle = "#8b95a3"; g.fillText("detector score (shaded = back attack detected)", 10, 14);
+}
+$("timeline").onclick = e => {
+  const v = $("vid"); if (!v.duration) return;
+  const r = e.target.getBoundingClientRect(); v.currentTime = ((e.clientX - r.left) / r.width) * v.duration;
+};
+
+// ---------- attempt + readouts ----------
+function startAttempt() { if (!live && hp) { live = true; hp.reset(); seen = {}; } }
+function endAttempt() { live = false; }
+document.addEventListener("keydown", e => {
+  const v = $("vid");
+  if (e.target.tagName === "INPUT") return;
+  const k = e.key.toLowerCase();
+  if (k === "s") startAttempt();
+  else if (k === "e") endAttempt();
+  else if (k === "r") Object.keys(st).forEach(x => delete st[x]);
+  else if (k === " ") { e.preventDefault(); v.paused ? v.play() : v.pause(); }
+  else if (e.key === "ArrowLeft") v.currentTime -= 2;
+  else if (e.key === "ArrowRight") v.currentTime += 2;
+  else if (CYCLE[k]) { const [f, vals] = CYCLE[k]; st[f] = vals[(vals.indexOf(st[f] ?? "") + 1) % vals.length]; }
+});
+
+function boxes() {
+  const m = M.mult, out = [];
+  const add = (txt, mult) => out.push([txt, RNCV.tier(mult)]);
+  if (st.choke_arm_position === "under_chin") add("ARM UNDER THE CHIN", m.arm_under);
+  if (st.choke_arm_position === "over_jaw") add("OVER THE JAW", 1 / m.arm_under);
+  if (st.rnc_style === "figure_four") add("FIGURE-FOUR LOCK", m.grip_f4);
+  if (st.rnc_style === "wrist_pull") add("PALM / GABLE / WRIST LOCK", m.grip_other);
+  if (st.rnc_style === "one_arm") add("ONE ARM", 1);
+  if (st.control === "body_triangle") add("BODY TRIANGLE", m.legs_bt);
+  if (st.control === "two_hooks") add("BOTH HOOKS IN", m.legs_hooks);
+  if (st.control === "none") add("ONE HOOK / NONE", 1);
+  if (st.opponent_flattened === "True") add("FLATTENED OUT", m.flattened);
+  if (st.choking_hand_tucked === "True") add("CHOKING HAND HIDDEN", m.hand_tucked);
+  if (st.defender_two_on_one === "True") add("2-ON-1 HAND FIGHT", m.two_on_one);
+  if (st.chin_tucked === "True") add("CHIN TUCKED", m.chin_tucked);
+  return out;
+}
+const COL = { gold: "var(--gold)", purple: "var(--purple)", blue: "var(--cblue)", red: "var(--red)" };
+const mix = (a, b, f) => a.map((x, i) => Math.round(x + (b[i] - x) * Math.max(0, Math.min(1, f))));
+
+function tick() {
+  requestAnimationFrame(tick);
+  const v = $("vid"); if (!M || !hp) return;
+  const t = v.currentTime || 0;
+  const d = detAt(t);
+  // detector strip
+  const de = $("det");
+  if (d && d.on) { de.className = "det on"; de.firstChild.textContent = "BACK ATTACK DETECTED "; }
+  else { de.className = "det"; de.firstChild.textContent = "SCANNING "; }
+  de.querySelector("i").style.width = (d ? 100 * Math.min(1, d.p) : 0) + "%";
+  if ($("auto").checked && d) { if (d.on) startAttempt(); else if (live) endAttempt(); }
+  // advance HP with playback time while an attempt is live
+  if (lastT !== null) {
+    const dt = t - lastT;
+    if (live && dt > 0 && dt < 0.5) hp.step(st, dt, t);
+    if (dt < 0 || dt > 2) hp.reset();
+  }
+  lastT = t;
+  const p = live ? RNCV.finish(M, st, hp.fatigue) : 0;
+  shown += (p - shown) * 0.2;
+  const fc = mix([255, 170, 40], [255, 70, 60], (shown - 0.5) / 0.5);
+  $("fin").textContent = live ? Math.round(100 * shown) + "%" : "—";
+  $("fin").style.color = live ? `rgb(${fc})` : "var(--dim)";
+  $("finbar").style.width = (live ? 100 * shown : 0) + "%"; $("finbar").style.background = `rgb(${fc})`;
+  const h = hp.hp, hc = mix([255, 70, 60], [76, 194, 255], (h - 0.2) / 0.6);
+  $("hp").textContent = Math.round(100 * h); $("hp").style.color = `rgb(${hc})`;
+  $("hpbar").style.width = 100 * h + "%"; $("hpbar").style.background = `rgb(${hc})`;
+  const s = live ? hp.secsLeft() : null;
+  $("air").textContent = s === null ? "breathing" : s <= 0.2 ? "no air left (estimate)" : s < 20 ? `~${Math.round(s)} s of air left (estimate)` : "> 20 s of air left (estimate)";
+  $("live").textContent = live ? "ATTEMPT LIVE" : "no attempt";
+  // factor boxes with a pop when new
+  const bx = boxes(), wrap = $("boxes"), key = bx.map(b => b[0]).join("|");
+  if (wrap.dataset.key !== key) {
+    wrap.dataset.key = key; wrap.innerHTML = "";
+    bx.forEach(([txt, tierName]) => {
+      const el = document.createElement("div");
+      el.className = "box" + (seen[txt] ? "" : " new"); el.style.setProperty("--c", COL[tierName]); el.textContent = txt;
+      seen[txt] = true; setTimeout(() => el.classList.remove("new"), 1100); wrap.appendChild(el);
+    });
+  }
+  drawTimeline();
+}
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

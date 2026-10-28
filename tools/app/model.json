@@ -1,0 +1,118 @@
+{
+ "model": "v0.8",
+ "n_attempts": 71,
+ "n_fights": 42,
+ "feats": [
+  "arm_under",
+  "grip_f4",
+  "grip_other",
+  "legs_bt",
+  "legs_hooks",
+  "two_on_one",
+  "chin_tucked",
+  "flattened",
+  "def_fatigue",
+  "hand_tucked",
+  "fatigue"
+ ],
+ "beta": [
+  -1.8926397134068662,
+  -0.16661227832506487,
+  1.5251902100115373,
+  1.0856971491322118,
+  0.6924551614332273,
+  -0.015141275702640462,
+  -0.0033192193806365674,
+  -0.5794262692449357,
+  0.002284532372935826,
+  0.8816258810141623,
+  0.0,
+  0.7058779852028867,
+  -0.5902964070617082
+ ],
+ "mult": {
+  "arm_under": 4.596017694749092,
+  "grip_f4": 2.9615037089770126,
+  "grip_other": 1.9986164405265876,
+  "legs_bt": 0.9849727770519908,
+  "legs_hooks": 0.9966862831383058,
+  "two_on_one": 0.5602196896456635,
+  "chin_tucked": 1.0022871439053487,
+  "flattened": 2.4148227307981465,
+  "def_fatigue": 1.0,
+  "hand_tucked": 2.025624372642182,
+  "fatigue": 0.5541630025612151
+ },
+ "unknown_grip": [
+  0.5,
+  0.2
+ ],
+ "unknown_legs": [
+  0.25,
+  0.25
+ ],
+ "other_locks": [
+  "gable",
+  "palm_to_palm",
+  "wrist_pull"
+ ],
+ "open_grips": [
+  "one_arm",
+  "short_choke"
+ ],
+ "deep_keep": 0.25,
+ "fatigue_scale": 12.0,
+ "squeeze": {
+  "version": "v0.6",
+  "w_jaw": 0.05,
+  "w_one_arm": 0.45,
+  "chin_relief": 0.3,
+  "two_relief_open": 0.35,
+  "two_relief_locked": 0.1,
+  "hand_bonus": 0.15
+ },
+ "hp": {
+  "secs_to_out": 9.0,
+  "lingering_share": 0.2,
+  "blood_recovery_secs": 3.0,
+  "fatigue_recovery_secs": 60.0,
+  "light_below": 0.3
+ },
+ "landmark": 2.0,
+ "refs": [
+  {
+   "state": {},
+   "finish": 0.522456329528514,
+   "squeeze": 0.30317939453125003
+  },
+  {
+   "state": {
+    "choke_arm_position": "under_chin",
+    "rnc_style": "figure_four",
+    "control": "body_triangle"
+   },
+   "finish": 0.7886704617678896,
+   "squeeze": 0.8680625
+  },
+  {
+   "state": {
+    "choke_arm_position": "over_jaw",
+    "defender_two_on_one": "True",
+    "chin_tucked": "True"
+   },
+   "finish": 0.26907808190056176,
+   "squeeze": 0.02445625
+  },
+  {
+   "state": {
+    "choke_arm_position": "under_chin",
+    "rnc_style": "figure_four",
+    "choking_hand_tucked": "True",
+    "defender_two_on_one": "True",
+    "opponent_flattened": "True"
+   },
+   "finish": 0.8963603088653921,
+   "squeeze": 0.8797499999999999
+  }
+ ]
+}
