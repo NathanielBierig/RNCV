@@ -22,21 +22,21 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 UPLOADS = ROOT / "data/app_uploads"
-DEMOS = ROOT / "data/clips/demos"
+DEMOS = ROOT / "data/clips/test_pool"     # clips never used for training (e.g. pre-2018 fights, outside the study)
 sys.argv.append("--crop")
 sys.path.insert(0, str(ROOT / "research/attempt_clf"))
 sys.path.insert(0, str(ROOT / "src"))
-MAX_MIN = 20                   # analyse at most this many minutes of a clip (CPU)
+WINDOW_S = 120.0               # analyse 2 minutes from the chosen start (the page sends the start time)
 FPS_S = 2.0
 STATE = {"progress": "", "clf": None, "clip": None}
 
 
-def train_detector(exclude_fight=None):
-    """Detector v2 on every labeled fight, or on all but one (a demo clip is scored by a model that never saw it)."""
+def train_detector(exclude=frozenset()):
+    """Detector v2 on every labeled fight except any that also sit in the test pool (trained once at startup)."""
     import detector_v2 as d2
     from sklearn.linear_model import LogisticRegression
     X, y, fight, clip, _ = d2.load("_crop")
-    keep = fight != exclude_fight
+    keep = ~np.isin(fight, list(exclude))
     clf = LogisticRegression(C=0.5, max_iter=3000, class_weight="balanced").fit(d2.context(X, clip)[keep], y[keep])
     return clf, d2, len(np.unique(fight[keep]))
 
@@ -57,7 +57,7 @@ def load_clip_model():
     return model, prep, YoloPoseOnnx(ROOT / "models/rncv_pose_v1.onnx")
 
 
-def analyse(path, clf_pack=None):
+def analyse(path, start=0.0):
     import attempt_clf as ac
     import torch
     from PIL import Image
@@ -65,16 +65,20 @@ def analyse(path, clf_pack=None):
         STATE["progress"] = "loading image model"
         STATE["clip"] = load_clip_model()
     model, prep, det = STATE["clip"]
-    clf, d2, _ = clf_pack or STATE["clf"]
+    clf, d2, _ = STATE["clf"]
     cap = cv2.VideoCapture(str(path))
     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-    total = min(cap.get(cv2.CAP_PROP_FRAME_COUNT) / fps, MAX_MIN * 60)
+    end = start + WINDOW_S
+    if start > 0:
+        cap.set(cv2.CAP_PROP_POS_MSEC, start * 1000)
     step, i, batch, ts, feats, t0 = max(1, int(round(fps / FPS_S))), 0, [], [], [], time.time()
     while True:
         ok = cap.grab()
         t = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
-        if not ok or t > MAX_MIN * 60:
+        if not ok or t > end:
             break
+        if t < start:
+            continue
         if i % step == 0:
             _, f = cap.retrieve()
             batch.append(prep(Image.fromarray(cv2.cvtColor(ac.pair_crop(det, f), cv2.COLOR_BGR2RGB))))
@@ -83,7 +87,7 @@ def analyse(path, clf_pack=None):
                 with torch.no_grad():
                     e = model.encode_image(torch.stack(batch)).float()
                 feats.append((e / e.norm(dim=-1, keepdim=True)).numpy()); batch = []
-                done = t / max(1.0, total)
+                done = (t - start) / WINDOW_S
                 eta = (time.time() - t0) / max(0.01, done) * (1 - done)
                 STATE["progress"] = f"analysing {100 * done:.0f}% (about {eta / 60:.1f} min left)"
         i += 1
@@ -149,9 +153,9 @@ class Handler(BaseHTTPRequestHandler):
         u = urlparse(self.path)
         if u.path == "/analyze_demo":                      # a demo clip already on the laptop: no upload
             f = DEMOS / Path(parse_qs(u.query).get("name", [""])[0]).name
-            STATE["progress"] = "analysing 0% (detector retrained without this fight)"
+            STATE["progress"] = "analysing 0%"
             try:
-                return self.send(200, analyse(f, train_detector(fight_of(f.name))))
+                return self.send(200, analyse(f, float(parse_qs(u.query).get("start", ["0"])[0])))
             except Exception as e:
                 STATE["progress"] = f"error: {e}"
                 return self.send(500, {"error": str(e)})
@@ -170,7 +174,7 @@ class Handler(BaseHTTPRequestHandler):
                 fh.write(chunk); left -= len(chunk)
         STATE["progress"] = "analysing 0%"
         try:
-            self.send(200, analyse(dst))
+            self.send(200, analyse(dst, float(parse_qs(u.query).get("start", ["0"])[0])))
         except Exception as e:                             # report, don't crash the server
             STATE["progress"] = f"error: {e}"
             self.send(500, {"error": str(e)})
@@ -178,7 +182,8 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     print("training the detector on the labeled fights...", flush=True)
-    STATE["clf"] = train_detector()
+    pool = {p.name for p in DEMOS.glob("*")} if DEMOS.exists() else set()
+    STATE["clf"] = train_detector({fight_of(n) for n in pool} - {None})     # once: test-pool fights never train it
     print(f"ready: open http://localhost:8765  (detector trained on {STATE['clf'][2]} fights; Ctrl+C to stop)", flush=True)
     ThreadingHTTPServer(("127.0.0.1", 8765), Handler).serve_forever()
 

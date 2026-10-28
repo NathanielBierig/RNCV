@@ -7,6 +7,7 @@ python -I tools/app/serve.py
 ```
 Then open http://localhost:8765. It uses the image-features environment (open_clip, torch, onnxruntime, scikit-learn, OpenCV), the fine-tuned pose model in `models/` for the fighter crop, and the cached detector features in `data/attempt_clf/`.
 
-- **Detector:** detector v2 (`research/attempt_clf/detector_v2.py`), trained on every labeled fight. The demo clips (`data/clips/demos/`) are scored by a detector retrained without that fight, the same rule as in the reports. Hysteresis: on above 0.55, off after 2 s below 0.30.
+- **Detector:** detector v2 (`research/attempt_clf/detector_v2.py`), trained once at startup on every labeled fight. It analyses **2 minutes** from where you are in the video (clips of 2 minutes or less are analysed whole), so a long video never costs more than that. Hysteresis: on above 0.55, off after 2 s below 0.30.
+- **Test pool** (`data/clips/test_pool/`): 1–2 minute clips of fights **never used for training**, e.g. pre-2018 fights outside the study window (Diaz vs McGregor 1, UFC 196). They show up as one-click demos. Detector peak there: 0.78 as Diaz takes the back, 13 s before the tap.
 - **Your keys drive the finish model:** `1` arm, `2` grip, `3` legs, `4` 2-on-1, `5` hand hidden, `6` flattened, `7` chin tucked (each cycles through its values, then "unknown"), `S`/`E` attempt start/end, `R` reset. The finish model and HP are model v0.8, exported by `export_model.py` to `model.json`. `node tools/app/check_model.js` checks the browser port against Python.
 - **Honest limits:** the computer can't see the factors yet (reports/factor_pilot.md), so they come from you. The detector finds back attacks (frame ROC-AUC ~0.75) but not the exact second the choke starts.

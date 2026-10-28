@@ -48,10 +48,11 @@
 <main>
   <section>
     <div id="drop">Drop a fight clip here (or click to choose one)<br><br>
-      <span class="warn">The real attempt detector analyses it (about 1 minute per 2 minutes of video), then you play it back with the readouts.</span></div>
+      <span class="warn">Scrub to the action and the real attempt detector analyses the next 2 minutes (about 1 minute of work), then you play it back with the readouts.</span></div>
     <input id="file" type="file" accept="video/*" hidden>
     <div id="demos" class="lbl" style="margin-top:8px"></div>
     <video id="vid" controls></video>
+    <button id="go" style="display:none;margin-top:10px;padding:10px 16px;border-radius:8px;border:0;background:var(--amber);color:var(--bg);font:inherit;font-size:16px;cursor:pointer">Analyse 2 min from here</button>
     <canvas id="timeline" width="1200" height="96" title="click to jump"></canvas>
     <div id="status"></div>
   </section>
@@ -111,32 +112,45 @@ drop.ondragleave = () => drop.classList.remove("over");
 drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); if (e.dataTransfer.files[0]) load(e.dataTransfer.files[0]); };
 $("file").onchange = e => e.target.files[0] && load(e.target.files[0]);
 
-async function loadDemo(name) {
+let source = null;                        // {demo: name} or {file: File}
+const WINDOW = 120;
+function show(src, url) {
   const v = $("vid");
-  v.src = "/clip/" + encodeURIComponent(name); v.style.display = "block"; drop.style.display = "none"; $("demos").style.display = "none";
+  source = src; v.src = url; v.style.display = "block"; drop.style.display = "none"; $("demos").style.display = "none";
   det = null; drawTimeline();
-  await analyseVia(fetch("/analyze_demo?name=" + encodeURIComponent(name), { method: "POST" }));
+  v.onloadedmetadata = () => {
+    if (v.duration <= WINDOW + 5) analyse(0);                  // short clip: analyse it all
+    else { $("go").style.display = "inline-block"; $("status").textContent = "Scrub to the back take, then press the button."; }
+  };
+}
+function loadDemo(name) { show({ demo: name }, "/clip/" + encodeURIComponent(name)); }
+$("go").onclick = () => analyse(Math.max(0, $("vid").currentTime - 5));
+function analyse(start) {
+  $("go").style.display = "none";
+  const q = "start=" + start.toFixed(2);
+  const req = source.demo
+    ? fetch(`/analyze_demo?name=${encodeURIComponent(source.demo)}&${q}`, { method: "POST" })
+    : fetch(`/analyze?name=${encodeURIComponent(source.file.name)}&${q}`, { method: "POST", body: source.file });
+  analyseVia(req, start);
 }
 
-async function analyseVia(req) {
+async function analyseVia(req, start) {
   const poll = setInterval(async () => {
     try { $("status").textContent = "Detector: " + (await (await fetch("/progress")).json()).progress; } catch (e) {}
   }, 1000);
   try {
     const d = await (await req).json();
     if (d.error) throw new Error(d.error);
-    det = gate(d);
-    $("status").textContent = `Detector: done. ${det.spans.length} back-attack window(s) found. Click the timeline to jump.`;
+    det = gate(d); det.start = start; det.end = d.t.length ? d.t[d.t.length - 1] : start + WINDOW;
+    $("vid").currentTime = start;
+    $("status").textContent = `Detector: done (${fmt(det.start)}–${fmt(det.end)}). ${det.spans.length} back-attack window(s). Click the timeline to jump; press the button again to analyse another 2 minutes.`;
   } catch (e) { $("status").textContent = "Detector failed: " + e.message; }
   clearInterval(poll); drawTimeline();
+  if ($("vid").duration > WINDOW + 5) $("go").style.display = "inline-block";
 }
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
-async function load(file) {
-  const v = $("vid");
-  v.src = URL.createObjectURL(file); v.style.display = "block"; drop.style.display = "none"; $("demos").style.display = "none";
-  det = null; drawTimeline();
-  await analyseVia(fetch("/analyze?name=" + encodeURIComponent(file.name), { method: "POST", body: file }));
-}
+function load(file) { show({ file }, URL.createObjectURL(file)); }
 
 function gate(d) {                       // hysteresis -> on/off per sample, and spans
   const on = [], spans = []; let state = false, below = null, start = null;
@@ -153,7 +167,7 @@ function gate(d) {                       // hysteresis -> on/off per sample, and
   return { t: d.t, p: d.p, on, spans };
 }
 const detAt = t => {
-  if (!det) return null;
+  if (!det || t < det.start || t > det.end + 1) return null;
   let i = det.t.findIndex(x => x > t); i = i < 0 ? det.t.length - 1 : Math.max(0, i - 1);
   return { on: det.on[i], p: det.p[i] };
 };
@@ -162,8 +176,8 @@ const detAt = t => {
 function drawTimeline() {
   const c = $("timeline"), g = c.getContext("2d"), W = c.width, H = c.height, v = $("vid");
   g.clearRect(0, 0, W, H);
-  const dur = v.duration || (det ? det.t[det.t.length - 1] : 1);
-  const X = t => (t / dur) * W, Y = p => H - 8 - p * (H - 16);
+  const t0 = det ? det.start : 0, t1 = det ? det.end : (v.duration || 1);
+  const X = t => ((t - t0) / Math.max(1, t1 - t0)) * W, Y = p => H - 8 - p * (H - 16);
   g.fillStyle = "#8b95a3"; g.font = "12px Bahnschrift, sans-serif";
   if (!det) { g.fillText(v.src ? "the detector is analysing the clip..." : "detector timeline", 10, 18); return; }
   g.fillStyle = "rgba(242,96,58,.22)";
@@ -173,12 +187,12 @@ function drawTimeline() {
   g.setLineDash([]); g.strokeStyle = "#ffaa28"; g.lineWidth = 2; g.beginPath();
   det.t.forEach((t, i) => (i ? g.lineTo(X(t), Y(det.p[i])) : g.moveTo(X(t), Y(det.p[i]))));
   g.stroke();
-  g.fillStyle = "#eceff4"; g.fillRect(X(v.currentTime || 0) - 1, 0, 2, H);
-  g.fillStyle = "#8b95a3"; g.fillText("detector score (shaded = back attack detected)", 10, 14);
+  g.fillStyle = "#eceff4"; g.fillRect(Math.max(0, Math.min(W - 2, X(v.currentTime || 0) - 1)), 0, 2, H);
+  g.fillStyle = "#8b95a3"; g.fillText(`detector score ${fmt(t0)}–${fmt(t1)} (shaded = back attack detected)`, 10, 14);
 }
 $("timeline").onclick = e => {
-  const v = $("vid"); if (!v.duration) return;
-  const r = e.target.getBoundingClientRect(); v.currentTime = ((e.clientX - r.left) / r.width) * v.duration;
+  const v = $("vid"); if (!v.duration || !det) return;
+  const r = e.target.getBoundingClientRect(); v.currentTime = det.start + ((e.clientX - r.left) / r.width) * (det.end - det.start);
 };
 
 // ---------- attempt + readouts ----------
