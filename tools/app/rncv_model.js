@@ -67,6 +67,15 @@
       this.hist = this.hist.filter(([tt]) => t - tt <= 1).concat([[t, hp]]);
       return hp;
     }
+    rest(dt, t) {                                  // between attempts: blood returns (~3 s), fatigue lingers (~60 s)
+      const g = this.M.hp;
+      this.B = Math.max(0, this.B - dt * this.B / g.blood_recovery_secs);
+      this.D = Math.max(0, this.D - dt * this.D / g.fatigue_recovery_secs);
+      this.G *= Math.exp(-dt / g.fatigue_recovery_secs);
+      this.el = 0; this.hist = [];
+      return this.hp;
+    }
+    newAttempt() { this.el = 0; this.hist = []; }  // a re-attack starts from the drained state, not from 100
     get hp() { return Math.max(0, 1 - (this.B + this.D) / this.M.hp.secs_to_out); }
     get fatigue() { return 1 - Math.exp(-this.G / this.M.fatigue_scale); }
     secsLeft() {                                   // HP / drain rate over the last second (estimate)

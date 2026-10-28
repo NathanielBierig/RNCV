@@ -128,7 +128,25 @@ def main():
         beta, cov = sm.fit_cov(train, cards)
         x_at, fat_i, label = sm.x_at, 7, "v0.6"
     model = {"cards": len(cards), "n": len(train), "label": label}
-    airs = {id(r): [(tt, c) for tt, c, *_ in sm.consciousness_trace(r, ramp_in=sm.LANDMARK)] for r in mine}
+    # HP carries over between attempts in a round: blood returns (~3 s), fatigue lingers (~60 s), as in model_v07.round_d0
+    G_HP = sm.CONSCIOUSNESS
+    airs, after = {}, {}
+    B = D = 0.0; prev = None
+    for r in mine:
+        if prev is not None and prev["round"] == r["round"]:
+            gap = max(0.0, float(r["video_time_start"]) - float(prev["video_time_end"]))
+            B *= math.exp(-gap / G_HP["blood_recovery_secs"]); D *= math.exp(-gap / G_HP["fatigue_recovery_secs"])
+        else:
+            B = D = 0.0
+        tr = sm.consciousness_trace(r, ramp_in=sm.LANDMARK, start=(B, D))
+        airs[id(r)] = [(tt, c) for tt, c, *_ in tr]
+        _, _, B, D = tr[-1]; after[id(r)] = (B, D); prev = r
+
+    def recovering(t):                       # HP between attempts, recovering from where the last attempt left it
+        b0, d0 = after[id(last_end)]
+        dt = max(0.0, t - float(last_end["video_time_end"]))
+        return max(0.0, 1 - (b0 * math.exp(-dt / G_HP["blood_recovery_secs"]) +
+                             d0 * math.exp(-dt / G_HP["fatigue_recovery_secs"])) / G_HP["secs_to_out"])
     out = Path(a.out) if a.out else ROOT / "data/mvp" / f"{clip.stem}_demo.mp4"
     out.parent.mkdir(parents=True, exist_ok=True)
     cap = cv2.VideoCapture(str(clip))
@@ -201,12 +219,13 @@ def main():
                 o = last_end["outcome"]
                 banner = (OUTCOME_TXT.get(o, o.upper()), BAD if o in SUCCESS else DEF)
                 shown += ((1.0 if o in SUCCESS else 0.0) - shown) * 0.5
-                if o in SUCCESS:
-                    air = max(0.0, air - 0.1)
+                air = max(0.0, air - 0.1) if o in SUCCESS else recovering(t)
             else:
                 shown *= 0.9; hist = [] if shown < .01 else hist
-                if not (last_end and last_end["outcome"] in SUCCESS):   # after a finish the HP stays at 0
-                    air = min(1.0, air + 0.02)
+                if last_end and last_end["outcome"] not in SUCCESS:     # after a finish the HP stays at 0
+                    air = recovering(t)
+                elif not last_end:
+                    air = 1.0
                 grip = min(1.0, grip + 0.02)
         if layer is not None:                             # tracking + readouts drawn on the fighters
             fr = layer.draw(fr, i - 1, t, live, air=air, ended=banner is not None, fade=fade if live else 1.0)

@@ -196,7 +196,7 @@ $("timeline").onclick = e => {
 };
 
 // ---------- attempt + readouts ----------
-function startAttempt() { if (!live && hp) { live = true; hp.reset(); seen = {}; } }
+function startAttempt() { if (!live && hp) { live = true; hp.newAttempt(); seen = {}; } }
 function endAttempt() { live = false; }
 document.addEventListener("keydown", e => {
   const v = $("vid");
@@ -245,7 +245,7 @@ function tick() {
   // advance HP with playback time while an attempt is live
   if (lastT !== null) {
     const dt = t - lastT;
-    if (live && dt > 0 && dt < 0.5) hp.step(st, dt, t);
+    if (dt > 0 && dt < 0.5) live ? hp.step(st, dt, t) : hp.rest(dt, t);   // HP drains in attempts, recovers between
     if (dt < 0 || dt > 2) hp.reset();
   }
   lastT = t;

@@ -58,6 +58,17 @@ def load_clip_model():
 
 
 def analyse(path, start=0.0):
+    cache = UPLOADS / "cache" / f"{path.name}_{start:.0f}.json"         # re-opening a clip is instant
+    if cache.exists() and cache.stat().st_mtime > path.stat().st_mtime:
+        STATE["progress"] = "done"
+        return json.loads(cache.read_text())
+    out = _analyse(path, start)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(json.dumps(out))
+    return out
+
+
+def _analyse(path, start=0.0):
     import attempt_clf as ac
     import torch
     from PIL import Image
