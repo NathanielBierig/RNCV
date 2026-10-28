@@ -94,7 +94,7 @@ def _analyse(path, start=0.0):
             _, f = cap.retrieve()
             batch.append(prep(Image.fromarray(cv2.cvtColor(ac.pair_crop(det, f), cv2.COLOR_BGR2RGB))))
             ts.append(t)
-            if len(batch) == 32:
+            if len(batch) == 8:                      # small batches: progress updates every few seconds
                 with torch.no_grad():
                     e = model.encode_image(torch.stack(batch)).float()
                 feats.append((e / e.norm(dim=-1, keepdim=True)).numpy()); batch = []
@@ -196,6 +196,17 @@ def main():
     pool = {p.name for p in DEMOS.glob("*")} if DEMOS.exists() else set()
     STATE["clf"] = train_detector({fight_of(n) for n in pool} - {None})     # once: test-pool fights never train it
     print(f"ready: open http://localhost:8765  (detector trained on {STATE['clf'][2]} fights; Ctrl+C to stop)", flush=True)
+    import threading
+
+    def warm():                                   # pre-analyse the test pool so demos open instantly
+        for f in sorted(DEMOS.glob("*.mp4")) if DEMOS.exists() else []:
+            try:
+                if not (UPLOADS / "cache" / f"{f.name}_0.json").exists():
+                    analyse(f, 0.0)
+            except Exception as e:
+                print("pre-analysis failed:", f.name, e, flush=True)
+        STATE["progress"] = ""
+    threading.Thread(target=warm, daemon=True).start()
     ThreadingHTTPServer(("127.0.0.1", 8765), Handler).serve_forever()
 
 

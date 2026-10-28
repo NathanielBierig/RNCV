@@ -69,6 +69,8 @@
       <div class="lbl" id="air">breathing</div>
     </div>
     <div class="lbl">WHAT DECIDES IT <span id="live" style="float:right"></span></div>
+    <div id="hint" style="display:none;background:var(--amber);color:var(--bg);border-radius:8px;padding:10px 12px;font-size:16px">
+      Attempt live: describe the choke with keys <b>1–7</b> (arm, grip, legs, 2-on-1, hand, flattened, chin). The computer can't see these yet.</div>
     <div id="boxes"></div>
     <label><input type="checkbox" id="auto" checked> let the detector start and end attempts</label>
     <div class="keys">
@@ -83,7 +85,7 @@
 <script src="/rncv_model.js"></script>
 <script>
 const $ = id => document.getElementById(id);
-let M = null, det = null, hp = null, live = false, lastT = null, shown = 0, seen = {};
+let M = null, det = null, hp = null, live = false, lastT = null, shown = 0, seen = {}, quietSince = null;
 const st = {};
 const CYCLE = {
   "1": ["choke_arm_position", ["under_chin", "over_jaw", ""]],
@@ -197,7 +199,7 @@ $("timeline").onclick = e => {
 
 // ---------- attempt + readouts ----------
 function startAttempt() { if (!live && hp) { live = true; hp.newAttempt(); seen = {}; } }
-function endAttempt() { live = false; }
+function endAttempt() { live = false; quietSince = null; }
 document.addEventListener("keydown", e => {
   const v = $("vid");
   if (e.target.tagName === "INPUT") return;
@@ -241,7 +243,12 @@ function tick() {
   if (d && d.on) { de.className = "det on"; de.firstChild.textContent = "BACK ATTACK DETECTED "; }
   else { de.className = "det"; de.firstChild.textContent = "SCANNING "; }
   de.querySelector("i").style.width = (d ? 100 * Math.min(1, d.p) : 0) + "%";
-  if ($("auto").checked && d) { if (d.on) startAttempt(); else if (live) endAttempt(); }
+  // the detector starts an attempt; it ends on E, or after the detector has been quiet for 8 s (chokes outlast its dips)
+  if ($("auto").checked && d) {
+    if (d.on) { startAttempt(); quietSince = null; }
+    else if (live) { quietSince = quietSince ?? t; if (t - quietSince > 8) endAttempt(); }
+  }
+  $("hint").style.display = live && !Object.values(st).some(Boolean) ? "block" : "none";
   // advance HP with playback time while an attempt is live
   if (lastT !== null) {
     const dt = t - lastT;
