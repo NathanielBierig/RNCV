@@ -78,6 +78,8 @@ curl -L --fail -o data/raw/vicos/annotations.json https://data.vicos.si/datasets
 ```
 > Three environments are used in practice: pose + training (`requirements.txt`, rtmlib, onnxruntime), tools (OpenCV, pandas, Pillow, Kaggle CLI), and image features (open_clip, torch CPU).
 
+**Play with the model:** open [docs/explorer/index.html](docs/explorer/index.html) in a browser: set the arm, grip, legs and hand fight, press play, and watch the finish chance and HP (no footage, runs entirely in the page).
+
 **Test the detector yourself:** `python -I tools/app/serve.py` starts a local app (drop a clip, the detector analyses it, you play it back with the readouts). See [tools/app/README.md](tools/app/README.md).
 
 How-tos (labeling, Kaggle, training, pose runs): [docs/OPERATIONS.md](docs/OPERATIONS.md). Status: [PROGRESS.md](PROGRESS.md) · [Roadmap](docs/ROADMAP.md).

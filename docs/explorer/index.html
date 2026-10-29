@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RNC Finish Explorer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a fight-night "scope": controls on the left, live readouts + timeline on the right, method notes below.
+     Committed single dark theme (a broadcast graphics look), every color set explicitly. */
+  :root {
+    color-scheme: dark;
+    --bg: #0d1015; --panel: #141920; --raise: #1b222c; --line: #29313c; --ink: #e9edf2; --dim: #8b95a3;
+    --amber: #ffaa28; --red: #ff4b3e; --blue: #4cc2ff;
+    --gold: #ffc428; --purple: #b07cff; --cblue: #4ca0ff;
+    --display: "Barlow Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--body);
+         padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+         padding-block: 20px 40px; }
+  .wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 22px; }
+  header { display: grid; gap: 6px; }
+  .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
+  h1 { font: 700 clamp(34px, 6vw, 56px)/1 var(--display); letter-spacing: .01em; margin: 0; text-wrap: balance; }
+  .lede { color: var(--dim); max-width: 68ch; margin: 0; }
+  .lede b { color: var(--ink); font-weight: 600; }
+  .stage { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 18px; align-items: start; }
+  @media (max-width: 860px) { .stage { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+  .controls { display: grid; gap: 16px; }
+  .group { display: grid; gap: 8px; }
+  .label { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .seg button, .pill, .presets button, .transport button {
+    font: 500 14px/1 var(--body); color: var(--ink); background: var(--raise); border: 1px solid var(--line);
+    border-radius: 8px; padding: 9px 11px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--amber); color: #15110a; border-color: var(--amber); }
+  .seg button:hover, .pill:hover, .presets button:hover, .transport button:hover { border-color: var(--dim); }
+  button:focus-visible, .pill:focus-within { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; user-select: none; }
+  .pill input { accent-color: var(--amber); margin: 0; }
+  .presets { display: grid; gap: 6px; }
+  .presets button { text-align: left; display: grid; gap: 2px; }
+  .presets button small { color: var(--dim); font-size: 12px; }
+  .presets button[aria-pressed="true"] { border-color: var(--amber); box-shadow: inset 3px 0 0 var(--amber); }
+  .transport { display: flex; gap: 8px; flex-wrap: wrap; }
+  .transport .go { background: var(--amber); color: #15110a; border-color: var(--amber); font-weight: 600; min-width: 96px; }
+  .readout { display: grid; gap: 16px; }
+  .nums { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) { .nums { grid-template-columns: 1fr; } }
+  .num { display: grid; gap: 6px; }
+  .big { font: 700 clamp(48px, 9vw, 76px)/.9 var(--display); font-variant-numeric: tabular-nums; }
+  .bar { height: 10px; border-radius: 5px; background: var(--raise); overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; border-radius: 5px; transition: width .12s linear; }
+  .sub { font: 400 13px/1.3 var(--mono); color: var(--dim); min-height: 1.3em; }
+  .clock { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .clock .t { font: 600 22px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+  .status { font: 500 13px/1 var(--mono); padding: 6px 10px; border-radius: 6px; background: var(--raise); color: var(--dim); }
+  .status.out { background: var(--red); color: #160807; }
+  .status.live { background: rgba(255,170,40,.16); color: var(--amber); }
+  .chart { width: 100%; height: auto; display: block; }
+  .chart text { font: 11px var(--mono); fill: var(--dim); }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font: 12px var(--mono); color: var(--dim); }
+  .legend span::before { content: ""; display: inline-block; width: 14px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; background: var(--c); }
+  .boxes { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+  .box { border: 2px solid var(--c); border-left-width: 9px; border-radius: 8px; padding: 9px 12px;
+         font: 600 17px/1.15 var(--display); letter-spacing: .03em; text-transform: uppercase; }
+  .box small { display: block; font: 400 11px/1.3 var(--mono); letter-spacing: 0; text-transform: none; color: var(--dim); margin-top: 3px; }
+  .box.new { animation: land .7s ease-out; }
+  @keyframes land { 0% { transform: translateX(18px); box-shadow: 0 0 0 0 var(--c); background: var(--c); color: #111; }
+                    45% { transform: none; box-shadow: 0 0 0 10px transparent; } }
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .notes h2 { font: 600 22px/1.1 var(--display); letter-spacing: .02em; margin: 0 0 8px; }
+  .notes p { margin: 0 0 10px; color: var(--dim); max-width: 65ch; }
+  .notes p b { color: var(--ink); font-weight: 500; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font: 13px var(--mono); font-variant-numeric: tabular-nums; }
+  td, th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--dim); font-weight: 500; }
+  td.x { text-align: right; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--c); margin-right: 8px; vertical-align: -1px; }
+  footer { color: var(--dim); font-size: 13px; max-width: 80ch; }
+  @media (prefers-reduced-motion: reduce) { .box.new { animation: none; } .bar i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">RNCV · UFC rear-naked chokes · model v0.8</div>
+    <h1>RNC Finish Explorer</h1>
+    <p class="lede">Set the position of a rear-naked choke and press play. Two numbers react: the attacker's <b>finish chance</b>, learned from 71 hand-labeled UFC attempts, and the defender's <b>HP</b>, a blood-flow model that empties after about 9 seconds of a full squeeze. No fight footage here: you are the eyes.</p>
+  </header>
+
+  <div class="stage">
+    <section class="card controls" aria-label="Choke position">
+      <div class="group">
+        <div class="label">Start from</div>
+        <div class="presets" id="presets"></div>
+      </div>
+      <div class="group"><div class="label">Choking arm</div><div class="seg" id="seg-arm"></div></div>
+      <div class="group"><div class="label">Grip</div><div class="seg" id="seg-grip"></div></div>
+      <div class="group"><div class="label">Legs</div><div class="seg" id="seg-legs"></div></div>
+      <div class="group">
+        <div class="label">Details</div>
+        <div class="pills" id="pills"></div>
+      </div>
+      <div class="transport">
+        <button class="go" id="play" type="button">Play</button>
+        <button id="restart" type="button">Restart</button>
+        <button id="speed" type="button" aria-label="Playback speed">Speed 1×</button>
+      </div>
+    </section>
+
+    <section class="card readout" aria-live="polite">
+      <div class="clock">
+        <span class="t" id="clock">0.0 s</span>
+        <span class="status" id="status">Press play</span>
+      </div>
+      <div class="nums">
+        <div class="num">
+          <div class="label">Attacker finish chance</div>
+          <div class="big" id="fin">--</div>
+          <div class="bar"><i id="finbar"></i></div>
+          <div class="sub" id="finsub">the chance this attempt ends in a finish, given the position now</div>
+        </div>
+        <div class="num">
+          <div class="label">Defender HP</div>
+          <div class="big" id="hp">100</div>
+          <div class="bar"><i id="hpbar" style="width:100%"></i></div>
+          <div class="sub" id="air">breathing</div>
+        </div>
+      </div>
+      <svg class="chart" id="chart" viewBox="0 0 720 230" role="img" aria-label="Finish chance and HP over time"></svg>
+      <div class="legend"><span style="--c: var(--amber)">finish chance</span><span style="--c: var(--blue)">defender HP</span><span style="--c: var(--dim)">position changes</span></div>
+      <div class="group">
+        <div class="label">What decides it (colored by how much the model says it matters)</div>
+        <div class="boxes" id="boxes"></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card notes">
+    <div>
+      <h2>How the finish chance works</h2>
+      <p>Each visible detail multiplies the odds of a finish. The model starts from expert estimates and a published-evidence review, then 71 hand-labeled UFC attempts from 42 fights pull the numbers toward what actually happened.</p>
+      <p>Tested on fights it never saw, it is <b>only slightly better than guessing the average</b> from a single snapshot (Brier 0.245 vs 0.254), and clearly better when it follows the position as it changes (0.224 vs 0.254).</p>
+    </div>
+    <div>
+      <h2>How HP works</h2>
+      <p>HP is a blood-flow dose, not a forecast. Each position squeezes with a strength from 0 to 1: a locked figure-four under the chin about 0.9, one arm about 0.45, over the jaw 0.05. A full squeeze empties HP in <b>9 seconds</b>, the average from lock to unconsciousness in 81 MMA choke-outs (Stellpflug et al., 2020). In the labeled UFC finishes, the choke was on the neck for a median 9.6 s.</p>
+    </div>
+    <div>
+      <h2>Odds multipliers in the model</h2>
+      <div class="tablewrap"><table id="mults"><thead><tr><th>Detail</th><th class="x">× odds</th></tr></thead><tbody></tbody></table></div>
+      <p style="margin-top:10px">Small sample, wide uncertainty: these are pilot estimates, not settled facts.</p>
+    </div>
+  </section>
+
+  <footer>Part of RNCV, a pre-registered study of what makes UFC rear-naked chokes finish. Body triangle and both hooks show no per-attempt effect so far; the leading explanation is that leg control buys time and re-attacks on the back rather than finishing any single attempt. Model constants exported from the project's code; the browser math is checked against the original Python.</footer>
+</div>
+
+<script>
+const M = {"model":"v0.8","n_attempts":71,"n_fights":42,"feats":["arm_under","grip_f4","grip_other","legs_bt","legs_hooks","two_on_one","chin_tucked","flattened","def_fatigue","hand_tucked","fatigue"],"beta":[-1.89264,-0.16661,1.52519,1.0857,0.69246,-0.01514,-0.00332,-0.57943,0.00228,0.88163,0.0,0.70588,-0.5903],"mult":{"arm_under":4.596,"grip_f4":2.962,"grip_other":1.999,"legs_bt":0.985,"legs_hooks":0.997,"two_on_one":0.56,"chin_tucked":1.002,"flattened":2.415,"def_fatigue":1.0,"hand_tucked":2.026,"fatigue":0.554},"unknown_grip":[0.5,0.2],"unknown_legs":[0.25,0.25],"other_locks":["gable","palm_to_palm","wrist_pull"],"open_grips":["one_arm","short_choke"],"deep_keep":0.25,"fatigue_scale":12.0,"squeeze":{"version":"v0.6","w_jaw":0.05,"w_one_arm":0.45,"chin_relief":0.3,"two_relief_open":0.35,"two_relief_locked":0.1,"hand_bonus":0.15},"hp":{"secs_to_out":9.0,"lingering_share":0.2,"blood_recovery_secs":3.0,"fatigue_recovery_secs":60.0,"light_below":0.3},"landmark":2.0};
+
+// ---- model (ported from research/model: model_v07.encode, state_model.squeeze / consciousness_trace) ----
+const b3 = v => (v === "True" ? 1 : v === "False" ? 0 : 0.5);
+function finish(st, fat) {
+  const arm = { under_chin: 1, over_jaw: 0 }[st.arm] ?? 0.5, g = st.grip || "";
+  const [f4, other] = g === "figure_four" ? [1, 0] : M.other_locks.includes(g) ? [0, 1] : M.open_grips.includes(g) ? [0, 0] : M.unknown_grip;
+  const c = st.legs || "";
+  const [bt, hooks] = c === "body_triangle" ? [1, 0] : c === "two_hooks" ? [0, 1] : (c === "one_hook" || c === "none") ? [0, 0] : M.unknown_legs;
+  const hand = b3(st.hand);
+  const two = b3(st.two) * (1 - (1 - M.deep_keep) * arm * (f4 + other) * hand);
+  const x = [arm, f4, other, bt, hooks, two, b3(st.chin), b3(st.flat), 0, hand, fat];
+  let z = M.beta[0];
+  x.forEach((v, i) => { z += M.beta[2 + i] * v; });
+  return 1 / (1 + Math.exp(-z));
+}
+function squeeze(st) {
+  const p = M.squeeze;
+  const arm = { under_chin: 1, over_jaw: 0 }[st.arm] ?? 0.5, g = st.grip || "";
+  const grip = ["figure_four", "palm_to_palm", "gable", "wrist_pull"].includes(g) ? 1 : M.open_grips.includes(g) ? 0 : 0.5;
+  const hand = b3(st.hand);
+  const two = b3(st.two);
+  const base = arm * (p.w_one_arm + (1 - p.w_one_arm) * grip) + (1 - arm) * p.w_jaw;
+  const relief = p.two_relief_open + (p.two_relief_locked - p.two_relief_open) * arm * grip;
+  const s = base * (1 - relief * two) * (1 - p.chin_relief * b3(st.chin)) * (1 + p.hand_bonus * hand);
+  return Math.max(0, Math.min(1, s));
+}
+
+// ---- UI definitions ----
+const ARM = [["under_chin", "Under the chin"], ["over_jaw", "Over the jaw"], ["", "Unknown"]];
+const GRIP = [["figure_four", "Figure-four"], ["wrist_pull", "Palm / gable / wrist"], ["one_arm", "One arm"], ["", "Unknown"]];
+const LEGS = [["body_triangle", "Body triangle"], ["two_hooks", "Both hooks"], ["none", "One hook / none"], ["", "Unknown"]];
+const PILLS = [["two", "Defender 2-on-1"], ["hand", "Choking hand hidden"], ["flat", "Defender flattened"], ["chin", "Chin tucked"]];
+const PRESETS = [
+  { id: "pantoja", name: "Pantoja vs Asakura", note: "UFC title fight, 2024: arm over the jaw, then a figure-four under the chin at 6.6 s; out at 19 s",
+    events: [[0, { arm: "over_jaw", grip: "", legs: "body_triangle", two: "True", hand: "False", flat: "False", chin: "True" }, "start"],
+             [6.6, { arm: "under_chin", grip: "figure_four", hand: "True", two: "False" }, "figure-four under the chin"],
+             [14.9, { two: "True" }, "late 2-on-1"]] },
+  { id: "textbook", name: "Textbook finish", note: "figure-four under the chin, body triangle, hand hidden, flattened",
+    events: [[0, { arm: "under_chin", grip: "figure_four", legs: "body_triangle", two: "False", hand: "True", flat: "True", chin: "False" }, "start"]] },
+  { id: "fighting", name: "Defender fighting it", note: "over the jaw, one arm, chin tucked, two hands on the choke",
+    events: [[0, { arm: "over_jaw", grip: "one_arm", legs: "two_hooks", two: "True", hand: "False", flat: "False", chin: "True" }, "start"]] },
+  { id: "custom", name: "Build your own", note: "everything unknown: set it below", events: [[0, { arm: "", grip: "", legs: "", two: "", hand: "", flat: "", chin: "" }, "start"]] },
+];
+const DUR = 25, DT = 0.05;
+const TIER = m => (m >= 3 ? "var(--gold)" : m >= 1.5 ? "var(--purple)" : m >= 0.8 ? "var(--cblue)" : "var(--red)");
+let st = {}, preset = PRESETS[0], t = 0, playing = false, speed = 1, B = 0, D = 0, G = 0, out = null, hist = [], marks = [], nextEv = 0, seen = new Set(), last = null;
+const $ = id => document.getElementById(id);
+
+function seg(id, key, opts) {
+  const el = $(id);
+  opts.forEach(([v, label]) => {
+    const btn = document.createElement("button"); btn.type = "button"; btn.textContent = label; btn.dataset.v = v;
+    btn.onclick = () => { setState({ [key]: v }, "you: " + label.toLowerCase()); };
+    el.appendChild(btn);
+  });
+}
+seg("seg-arm", "arm", ARM); seg("seg-grip", "grip", GRIP); seg("seg-legs", "legs", LEGS);
+PILLS.forEach(([key, label]) => {
+  const l = document.createElement("label"); l.className = "pill";
+  l.innerHTML = `<input type="checkbox" id="pill-${key}"> ${label}`;
+  l.querySelector("input").onchange = e => setState({ [key]: e.target.checked ? "True" : "False" }, "you: " + label.toLowerCase());
+  $("pills").appendChild(l);
+});
+PRESETS.forEach(p => {
+  const btn = document.createElement("button"); btn.type = "button"; btn.dataset.id = p.id;
+  btn.innerHTML = `${p.name}<small>${p.note}</small>`; btn.onclick = () => load(p);
+  $("presets").appendChild(btn);
+});
+
+function syncControls() {
+  [["seg-arm", "arm"], ["seg-grip", "grip"], ["seg-legs", "legs"]].forEach(([id, k]) =>
+    $(id).querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === (st[k] || "")))));
+  PILLS.forEach(([k]) => { $("pill-" + k).checked = st[k] === "True"; });
+  $("presets").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === preset.id)));
+}
+function setState(change, why) {
+  Object.assign(st, change);
+  if (t > 0) marks.push([t, why]);
+  syncControls(); renderBoxes(); renderNow();
+}
+function load(p) {
+  preset = p; t = 0; B = D = G = 0; out = null; hist = []; marks = []; nextEv = 0; seen = new Set(); st = {};
+  applyEvents(); syncControls(); renderBoxes(); renderNow(); drawChart();
+}
+function applyEvents() {
+  while (nextEv < preset.events.length && preset.events[nextEv][0] <= t + 1e-9) {
+    const [et, change, why] = preset.events[nextEv++];
+    Object.assign(st, change);
+    if (et > 0) marks.push([et, why]);
+    syncControls(); renderBoxes();
+  }
+}
+
+function stepSim(dt) {
+  if (out !== null || t >= DUR) return;
+  applyEvents();
+  const g = M.hp, s = squeeze(st) * Math.min(1, t / M.landmark);
+  const light = s < g.light_below;
+  B = Math.max(0, B + dt * ((1 - g.lingering_share) * s - (light ? B / g.blood_recovery_secs : 0)));
+  D = Math.max(0, D + dt * (g.lingering_share * s - (light ? D / g.fatigue_recovery_secs : 0)));
+  G += dt * s; t += dt;
+  const hp = Math.max(0, 1 - (B + D) / g.secs_to_out);
+  const fat = 1 - Math.exp(-G / M.fatigue_scale);
+  hist.push([t, finish(st, fat), hp]);
+  if (hp <= 0 && out === null) out = t;
+}
+function hpNow() { return Math.max(0, 1 - (B + D) / M.hp.secs_to_out); }
+function airLeft() {
+  if (hpNow() <= 0.005) return 0;
+  const h = hist.filter(r => r[0] >= t - 1);
+  if (h.length < 5) return null;
+  const rate = (h[0][2] - h[h.length - 1][2]) / Math.max(0.2, h[h.length - 1][0] - h[0][0]);
+  return rate > 0.01 ? hpNow() / rate : null;
+}
+
+function mix(a, b, f) { f = Math.max(0, Math.min(1, f)); return a.map((x, i) => Math.round(x + (b[i] - x) * f)); }
+function renderNow() {
+  const fat = 1 - Math.exp(-G / M.fatigue_scale);
+  const fin = out !== null ? 1 : finish(st, fat);
+  const fc = mix([255, 170, 40], [255, 75, 62], (fin - 0.5) / 0.5);
+  $("fin").textContent = out !== null ? "OUT" : Math.round(100 * fin) + "%";
+  $("fin").style.color = `rgb(${fc})`;
+  $("finbar").style.width = 100 * fin + "%"; $("finbar").style.background = `rgb(${fc})`;
+  const h = hpNow(), hc = mix([255, 75, 62], [76, 194, 255], (h - 0.2) / 0.6);
+  $("hp").textContent = Math.round(100 * h); $("hp").style.color = `rgb(${hc})`;
+  $("hpbar").style.width = 100 * h + "%"; $("hpbar").style.background = `rgb(${hc})`;
+  const a = airLeft();
+  $("air").textContent = out !== null ? `unconscious at ${out.toFixed(1)} s (model)` : a === null ? "breathing" : a < 20 ? `~${Math.max(1, Math.round(a))} s of air left (estimate)` : "> 20 s of air left (estimate)";
+  $("clock").textContent = t.toFixed(1) + " s";
+  const s = $("status");
+  if (out !== null) { s.textContent = "Choke finished"; s.className = "status out"; }
+  else if (t >= DUR) { s.textContent = "Survived 25 s"; s.className = "status"; }
+  else if (playing) { s.textContent = "Choke on"; s.className = "status live"; }
+  else { s.textContent = t > 0 ? "Paused" : "Press play"; s.className = "status"; }
+  $("play").textContent = playing ? "Pause" : (out !== null || t >= DUR) ? "Replay" : "Play";
+}
+
+function renderBoxes() {
+  const m = M.mult, out_ = [];
+  const add = (txt, mult, note) => out_.push([txt, TIER(mult), note]);
+  if (st.arm === "under_chin") add("Arm under the chin", m.arm_under, `×${m.arm_under.toFixed(1)} odds vs over the jaw`);
+  if (st.arm === "over_jaw") add("Over the jaw", 1 / m.arm_under, "the jawbone shields the arteries");
+  if (st.grip === "figure_four") add("Figure-four lock", m.grip_f4, `×${m.grip_f4.toFixed(1)} vs one arm`);
+  if (st.grip === "wrist_pull") add("Palm / gable / wrist lock", m.grip_other, `×${m.grip_other.toFixed(1)} vs one arm`);
+  if (st.grip === "one_arm") add("One arm", 1, "the baseline grip");
+  if (st.legs === "body_triangle") add("Body triangle", m.legs_bt, "no per-attempt edge yet: helps keep the back");
+  if (st.legs === "two_hooks") add("Both hooks", m.legs_hooks, "no per-attempt edge yet");
+  if (st.legs === "none") add("One hook / none", 1, "the baseline");
+  if (st.flat === "True") add("Defender flattened", m.flattened, `×${m.flattened.toFixed(1)} odds`);
+  if (st.hand === "True") add("Choking hand hidden", m.hand_tucked, `×${m.hand_tucked.toFixed(1)}; also blunts the 2-on-1`);
+  if (st.two === "True") add("Defender 2-on-1", m.two_on_one, `×${m.two_on_one.toFixed(2)} odds`);
+  if (st.chin === "True") add("Chin tucked", m.chin_tucked, "slows the squeeze");
+  const el = $("boxes"); el.innerHTML = "";
+  if (!out_.length) { el.innerHTML = '<div class="sub">Nothing set yet: pick an arm position, grip and legs.</div>'; return; }
+  out_.forEach(([txt, col, note]) => {
+    const d = document.createElement("div"); d.className = "box" + (seen.has(txt) ? "" : " new"); d.style.setProperty("--c", col);
+    d.innerHTML = `${txt}<small>${note}</small>`; seen.add(txt); el.appendChild(d);
+  });
+}
+
+function drawChart() {
+  const W = 720, H = 230, L = 40, R = 10, T = 12, Bm = 26, pw = W - L - R, ph = H - T - Bm;
+  const X = s => L + (s / DUR) * pw, Y = v => T + (1 - v) * ph;
+  let svg = "";
+  [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+    svg += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#29313c" stroke-width="1"/>`;
+    svg += `<text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${Math.round(v * 100)}</text>`;
+  });
+  for (let s = 0; s <= DUR; s += 5) svg += `<text x="${X(s)}" y="${H - 8}" text-anchor="middle">${s}s</text>`;
+  svg += `<line x1="${X(9)}" x2="${X(9)}" y1="${T}" y2="${T + ph}" stroke="#3a4350" stroke-dasharray="3 4"/>`;
+  svg += `<text x="${X(9) + 4}" y="${T + 12}">9 s full squeeze</text>`;
+  marks.forEach(([mt, why]) => {
+    svg += `<line x1="${X(mt)}" x2="${X(mt)}" y1="${T}" y2="${T + ph}" stroke="#8b95a3" stroke-opacity=".5"/>`;
+    svg += `<text x="${Math.min(X(mt) + 4, W - R - 4)}" y="${T + ph - 6}" text-anchor="${X(mt) > W - 160 ? "end" : "start"}">${why}</text>`;
+  });
+  if (hist.length > 1) {
+    const path = k => hist.filter((_, i) => i % 2 === 0 || i === hist.length - 1).map((r, i) => `${i ? "L" : "M"}${X(r[0]).toFixed(1)},${Y(r[k]).toFixed(1)}`).join("");
+    svg += `<path d="${path(2)}" fill="none" stroke="#4cc2ff" stroke-width="2.5"/>`;
+    svg += `<path d="${path(1)}" fill="none" stroke="#ffaa28" stroke-width="2.5"/>`;
+    const lastR = hist[hist.length - 1];
+    svg += `<circle cx="${X(lastR[0])}" cy="${Y(lastR[1])}" r="4" fill="#ffaa28"/><circle cx="${X(lastR[0])}" cy="${Y(lastR[2])}" r="4" fill="#4cc2ff"/>`;
+  }
+  if (out !== null) svg += `<line x1="${X(out)}" x2="${X(out)}" y1="${T}" y2="${T + ph}" stroke="#ff4b3e" stroke-width="2"/><text x="${X(out) - 4}" y="${T + 26}" text-anchor="end" style="fill:#ff4b3e">out</text>`;
+  $("chart").innerHTML = svg;
+}
+
+function loop(ts) {
+  if (playing) {
+    const elapsed = last === null ? 0 : Math.min(0.1, (ts - last) / 1000) * speed;
+    let acc = elapsed;
+    while (acc > 1e-9) { const d = Math.min(DT, acc); stepSim(d); acc -= d; }
+    if (out !== null || t >= DUR) playing = false;
+    renderNow(); drawChart();
+  }
+  last = ts;
+  requestAnimationFrame(loop);
+}
+$("play").onclick = () => {
+  if (out !== null || t >= DUR) load(preset);
+  playing = !playing; renderNow();
+};
+$("restart").onclick = () => { playing = false; load(preset); };
+$("speed").onclick = () => { speed = speed === 1 ? 2 : speed === 2 ? 4 : 1; $("speed").textContent = `Speed ${speed}×`; };
+
+const rows = [["Arm under the chin (vs over the jaw)", M.mult.arm_under], ["Figure-four (vs one arm)", M.mult.grip_f4],
+  ["Defender flattened", M.mult.flattened], ["Choking hand hidden", M.mult.hand_tucked], ["Palm / gable / wrist (vs one arm)", M.mult.grip_other],
+  ["Body triangle", M.mult.legs_bt], ["Both hooks", M.mult.legs_hooks], ["Defender 2-on-1", M.mult.two_on_one], ["Attacker fully tired", M.mult.fatigue]];
+$("mults").querySelector("tbody").innerHTML = rows.map(([n, v]) => `<tr><td><span class="sw" style="--c:${TIER(v)}"></span>${n}</td><td class="x">×${v.toFixed(2)}</td></tr>`).join("");
+
+load(PRESETS[0]);
+// open in a working state: run the Pantoja example to the end so the chart shows the full story
+while (out === null && t < DUR) stepSim(DT);
+renderNow(); drawChart();
+requestAnimationFrame(loop);
+</script>
+
+</html>
