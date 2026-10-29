@@ -1,0 +1,17 @@
+40 fights, 11333 frames, base rate 0.14; detected cuts: 357 (~1 per 16 s)
+
+shot type (zero-shot, best match): share of frames / share inside attempts
+  wide        8.6%   inside attempts  13.3%
+  close      75.8%   inside attempts  15.1%
+  back        1.8%   inside attempts   8.7%
+  standing    6.6%   inside attempts   0.0%
+  overhead    4.2%   inside attempts  21.6%
+  replay      0.5%   inside attempts   5.8%
+  crowd       2.5%   inside attempts   3.5%
+
+variant                                  ROC ROC sm    PR | good win overlap FA/min
+v2 baseline (context across cuts)      0.750  0.754 0.279 |     0.08    0.95   0.43
+v2 + cut-aware context                 0.748  0.755 0.282 |     0.08    0.92   0.57
+v2 + shot-type features                0.753  0.757 0.281 |     0.08    0.95   0.44
+v2 + cut-aware + shot-type             0.751  0.758 0.285 |     0.07    0.97   0.43
+shot-type features only (7 numbers)    0.692  0.705 0.211 |     0.05    0.81   0.49
