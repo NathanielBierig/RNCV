@@ -35,9 +35,10 @@ def surname(name):
 
 BROADCASTER = re.compile(r"^(Eurosport Italia|Eurosport|Eurosport Deutschland|Eurosport France)$")
 ALLOW_FAN = "--fan" in sys.argv
+BAD_CHANNELS = {"VAASMMA", "Everything UFC", "Inside Fighting", "Combat Sports on Fanatics View", "The AllStar"}   # game renders / interviews
 FAN_MIN = 360             # fan uploads: at least 6 minutes, both surnames, no game/highlight/reaction words
 BROADCASTER_MIN = 480     # licensed broadcasters post long "HIGHLIGHTS" (8-20 min) that show whole rounds
-BAD_ALWAYS = re.compile(r"ufc ?[45]|ea|game|simulation|cpu|compilation|reaction|breakdown|preview|recap|predict|interview", re.I)
+BAD_ALWAYS = re.compile(r"discuss|motivated|exclusive|matchup|training camp|companion|play by play|fight szn|ufc ?[45]\b|\bea\b|game|simulation|cpu|compilation|reaction|breakdown|preview|recap|predict|interview", re.I)
 
 
 def ok_hit(vid, ch, dur, title, att, dfn):
@@ -48,7 +49,7 @@ def ok_hit(vid, ch, dur, title, att, dfn):
         return dur >= MIN_SECONDS and not BAD.search(title)
     if BROADCASTER.match(ch.strip()):            # long broadcaster highlights are allowed
         return dur >= BROADCASTER_MIN and not BAD_ALWAYS.search(title)
-    if ALLOW_FAN:                                # --fan: fan uploads too (quality varies; the owner skips bad ones)
+    if ALLOW_FAN and ch.strip() not in BAD_CHANNELS:   # --fan: fan uploads too (quality varies; the owner skips bad ones)
         return dur >= FAN_MIN and not BAD.search(title) and not BAD_ALWAYS.search(title)
     return False
 
