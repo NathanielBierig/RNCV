@@ -186,7 +186,7 @@ A second, smaller factor: many quick finishes come right after a knockdown, on a
 
 **The grip order matches coaching.** Figure-four > palm/gable/wrist lock > one arm, in both views. No published study has measured this before.
 
-**How much the data can say (power).** Simulations of the pre-registered test show that at 150 attempts, a large effect like H1 (odds ×4) is detected almost always, while a moderate one (×2) is detected only ~42% of the time. Some real effects will honestly come out "inconclusive", and the paper will say so rather than hunt for significance.
+**How much the data can say (power).** Simulating the pre-registered test with the real group shares ([POWER_NOTE.md](../../research/rnc_science/POWER_NOTE.md)): at 150 attempts, H1 is decided ~90–98% of the time, and H3 ~90% if its effect is as large as coaches expect (×0.3), but only ~38% at the pilot's ×0.56. H2 per attempt is unlikely ever to be supported if its effect is ~×1, which is why the retention question moves to the back-exposure analysis. Some real effects will honestly come out "inconclusive", and the paper will say so rather than hunt for significance.
 
 ## 7. Applied tools (summary)
 

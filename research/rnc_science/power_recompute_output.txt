@@ -1,0 +1,16 @@
+group shares: arm under the chin 78%, strong legs 70%, two-on-one 32%; 60 simulated studies per cell
+
+A coach view (x4, x2, x0.3)
+      n  H1 supported  H2 supported  H3 supported
+    100           72%           30%           70%
+    150           90%           38%           90%
+    200           98%           53%           93%
+    300           98%           70%          100%
+
+B pilot view (x4.6, x1.0, x0.56)
+      n  H1 supported  H2 supported  H3 supported
+    100           90%            2%           25%
+    150           98%            0%           38%
+    200          100%            0%           43%
+    300          100%            5%           63%
+
