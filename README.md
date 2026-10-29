@@ -8,6 +8,12 @@ RNCV (**RNC + CV**, computer vision) asks a BJJ question with data: *which detai
 
 **Status: early.** The finish model mixes expert priors (the owner's BJJ judgment plus a published-evidence review) with a small labeled set. So far it beats a base-rate guess only slightly. UFC footage is never published: the repo holds only derived data (timestamps, labels, keypoints).
 
+### What the computer sees (footage-free replay)
+
+<img src="docs/media/oliveira_gamrot_nopixels.gif" width="640" alt="Footage-free replay: pose keypoints, neck reticle and the side tab for Oliveira vs Gamrot">
+
+Oliveira vs Gamrot, drawn only from derived data: the pose model's confident joints (with motion trails), the fighters' box, the reticle locked on the neck, and the side tab. The real detector flags the back attack (trained without this fight), the finish chance climbs as the figure-four goes in, and Gamrot's HP drains to the tap. No broadcast pixels: made with `python tools/mvp/demo.py <clip> --no-pixels`.
+
 ---
 
 ## Results so far (honest numbers)

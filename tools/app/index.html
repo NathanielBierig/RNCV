@@ -94,7 +94,7 @@ const CYCLE = {
   "4": ["defender_two_on_one", ["True", "False", ""]], "5": ["choking_hand_tucked", ["True", "False", ""]],
   "6": ["opponent_flattened", ["True", "False", ""]], "7": ["chin_tucked", ["True", "False", ""]],
 };
-const TH_ON = 0.55, TH_OFF = 0.30, MIN_OFF = 2.0;      // same hysteresis as tools/mvp/detector_live.py
+const TH_ON = 0.40, TH_OFF = 0.25, MIN_OFF = 2.0;      // same as tools/mvp/detector_live.py: catches 95% of attempts
 
 fetch("/model.json").then(r => r.json()).then(m => { M = m; hp = new RNCV.HP(M); });
 fetch("/info").then(r => r.json()).then(i => {

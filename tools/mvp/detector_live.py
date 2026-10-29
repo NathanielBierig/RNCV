@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-TH_ON, TH_OFF, MIN_OFF = 0.55, 0.30, 2.0      # hysteresis: on above 0.55, off after 2 s below 0.30
+TH_ON, TH_OFF, MIN_OFF = 0.40, 0.25, 2.0      # hysteresis; owner prefers false alarms to misses: catches 95% of attempts (was 84% at 0.55), ~0.5 false alarms/min
 
 
 def scores(clip_name, fight_id):

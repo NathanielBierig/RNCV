@@ -100,6 +100,8 @@ def main():
     ap.add_argument("--model", choices=["v06", "v07c", "v08"], default="v08",
                     help="v08 = current (lean v0.7 + coach priors); v07c = previous; v06 = older")
     ap.add_argument("--full", action="store_true", help="render the whole video (default: the attempts +- a few seconds)")
+    ap.add_argument("--no-pixels", action="store_true",
+                    help="footage-free: draw only what the computer sees (keypoints, boxes, reticle) on a dark scope; publishable")
     ap.add_argument("--panel-only", action="store_true",
                     help="footage-free output: only the readout panel around the attempts (+ a GIF), shareable")
     a = ap.parse_args()
@@ -147,7 +149,7 @@ def main():
         dt = max(0.0, t - float(last_end["video_time_end"]))
         return max(0.0, 1 - (b0 * math.exp(-dt / G_HP["blood_recovery_secs"]) +
                              d0 * math.exp(-dt / G_HP["fatigue_recovery_secs"])) / G_HP["secs_to_out"])
-    out = Path(a.out) if a.out else ROOT / "data/mvp" / f"{clip.stem}_demo.mp4"
+    out = Path(a.out) if a.out else ROOT / "data/mvp" / f"{clip.stem}_{'nopixels' if a.no_pixels else 'demo'}.mp4"
     out.parent.mkdir(parents=True, exist_ok=True)
     cap = cv2.VideoCapture(str(clip))
     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
@@ -181,6 +183,7 @@ def main():
         import tracking
         layer = tracking.Layer(*tracking.compute(clip))
     hist, shown, last_end, i, fade = [], 0.0, None, 0, 1.0
+    scope = bg = None                           # --no-pixels: fading trails of the confident joints on a dark grid
     air, grip, band = 1.0, 1.0, None
     while True:
         ok, fr = cap.read()
@@ -227,6 +230,31 @@ def main():
                 elif not last_end:
                     air = 1.0
                 grip = min(1.0, grip + 0.02)
+        if a.no_pixels:                                   # replace the broadcast frame with derived data only
+            if bg is None:
+                bg = np.zeros_like(fr); bg[:] = BG[::-1]
+                for gx in range(0, bg.shape[1], 60):
+                    bg[:, gx] = (32, 28, 24)
+                for gy in range(0, bg.shape[0], 60):
+                    bg[gy, :] = (32, 28, 24)
+                scope = np.zeros(fr.shape, np.float32)
+            scope *= 0.88
+            if layer is not None and (i - 1) % layer.stride == 0:      # draw each pose sample once; trails fade between
+                kp = layer.kpts[min(len(layer.kpts) - 1, (i - 1) // layer.stride)]
+                for n, p in enumerate(kp):
+                    col = (61, 138, 255) if n == 0 else (255, 194, 76)
+                    ok_ = p[:, 2] > 0.55
+                    for ja, jb in tracking.SKEL:
+                        if ok_[ja] and ok_[jb]:
+                            cv2.line(scope, tuple(p[ja, :2].astype(int)), tuple(p[jb, :2].astype(int)),
+                                     tuple(0.55 * c for c in col), 4, cv2.LINE_AA)
+                    for q in range(17):
+                        if ok_[q]:
+                            cv2.circle(scope, tuple(p[q, :2].astype(int)), 9 if q < 5 else 6,
+                                       (240, 240, 240) if q < 5 else col, -1, cv2.LINE_AA)
+            fr = np.clip(bg.astype(np.float32) + scope, 0, 255).astype(np.uint8)
+            cv2.putText(fr, "DERIVED DATA ONLY - no broadcast pixels", (16, fr.shape[0] - 16),
+                        cv2.FONT_HERSHEY_DUPLEX, 0.6 * fr.shape[0] / 720, (139, 149, 163), 1, cv2.LINE_AA)
         if layer is not None:                             # tracking + readouts drawn on the fighters
             fr = layer.draw(fr, i - 1, t, live, air=air, ended=banner is not None, fade=fade if live else 1.0)
         canvas[oy:oy + nh, ox:ox + nw] = cv2.resize(fr, (nw, nh))

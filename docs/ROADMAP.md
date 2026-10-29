@@ -19,7 +19,7 @@ Goal: proof that it works, basic findings and a working model, presented honestl
 
 | # | Piece | What it shows | Status |
 |---|---|---|---|
-| 1 | **Footage-free demo video** | Proof it works. The tracking layer (boxes, neck reticle, skeleton flashes) drawn on black from derived keypoints, plus the side tab, so no UFC pixels | ⚪ |
+| 1 | **Footage-free demo video** | Proof it works. The tracking layer (boxes, neck reticle, skeleton flashes) drawn on black from derived keypoints, plus the side tab, so no UFC pixels | 🟢 `--no-pixels`, README GIF |
 | 2 | **Interactive model explorer** (public page, no video) | Model function. Pick the arm, grip, legs and hand fight, watch the finish chance and HP over a simulated choke. Runs from `model.json` in the browser | ⚪ |
 | 3 | **Pilot findings** | README charts + [pilot report](paper/PILOT_REPORT.md) + back exposures | 🟢 drafted |
 | 4 | **Local app** (`tools/app`) | The real detector on a clip you drop in (works on full broadcasts, not highlight reels) | 🟢 |
