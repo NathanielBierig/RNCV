@@ -1,6 +1,7 @@
 """Factor model on tight head/neck crops (the next try after reports/factor_pilot.md).
 
     python -I research/attempt_clf/factor_neck.py
+    python -I research/attempt_clf/factor_neck.py --dino    # DINOv2 small instead of CLIP (stronger on fine detail, still CPU)
 
 Input: data/crops/<clip>/ (tools/save_neck_crops.py: 224x224 crops around the fighters' heads, 4 per second,
 inside each labeled attempt; local only). Each crop -> CLIP ViT-B-32 image features (cached per clip, plus the
@@ -22,18 +23,26 @@ import state_model as sm  # noqa: E402
 from factor_pilot import FACTORS  # noqa: E402
 
 CROPS = ROOT / "data/crops"
+DINO = "--dino" in sys.argv
 
 
 def features(clip_dir):
-    cache = clip_dir / "feats.npz"
+    cache = clip_dir / ("feats_dino.npz" if DINO else "feats.npz")
     if cache.exists():
         d = np.load(cache)
         return d["X"], d["Xm"]
     import open_clip
     import torch
     from PIL import Image, ImageOps
-    model, _, prep = open_clip.create_model_and_transforms("ViT-B-32", pretrained="laion2b_s34b_b79k")
-    model.eval()
+    if DINO:
+        import timm
+        net = timm.create_model("vit_small_patch14_dinov2.lvd142m", pretrained=True, num_classes=0, img_size=224).eval()
+        prep = timm.data.create_transform(**{**timm.data.resolve_model_data_config(net), "input_size": (3, 224, 224)})
+        encode = net
+    else:
+        model, _, prep = open_clip.create_model_and_transforms("ViT-B-32", pretrained="laion2b_s34b_b79k")
+        model.eval()
+        encode = model.encode_image
     files = [r["file"] for r in csv.DictReader(open(clip_dir / "index.csv", encoding="utf-8"))]
     out = []
     for flip in (False, True):
@@ -42,9 +51,9 @@ def features(clip_dir):
             ims = [Image.open(clip_dir / f).convert("RGB") for f in files[k:k + 32]]
             ims = [ImageOps.mirror(i) for i in ims] if flip else ims
             with torch.no_grad():
-                e = model.encode_image(torch.stack([prep(i) for i in ims])).float()
+                e = encode(torch.stack([prep(i) for i in ims])).float()
             embs.append((e / e.norm(dim=-1, keepdim=True)).numpy())
-        out.append(np.concatenate(embs) if embs else np.zeros((0, 512), np.float32))
+        out.append(np.concatenate(embs) if embs else np.zeros((0, 384 if DINO else 512), np.float32))
     np.savez_compressed(cache, X=out[0], Xm=out[1])
     return out[0], out[1]
 

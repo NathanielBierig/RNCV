@@ -20,3 +20,15 @@ Script: [research/attempt_clf/factor_pilot.py](../research/attempt_clf/factor_pi
 - `tools/save_neck_crops.py` saves 224×224 crops around the fighters' heads, 4 per second, inside every labeled attempt (`data/crops/`, local only). It runs before a labeled video is deleted, so the training set grows with every labeling batch.
 - `research/attempt_clf/factor_neck.py` turns them into CLIP features (mirrored crops count as extra training data) and runs the same leave-one-fight-out test as above.
 - Pipeline check on the 4 demo fights (561 crops, 10 attempts): runs end to end. Scores are meaningless at 4 fights ([output](../research/attempt_clf/factor_neck_output.txt)). The first real result comes after the 12 queued fights, and the M2 decision at ~150 attempts.
+
+## Stronger image model on the neck crops (2026-11-01)
+DINOv2 small, `factor_neck.py --dino`, 1,412 crops, 31 attempts, 16 fights, leave-one-fight-out:
+
+| Factor | CLIP ROC-AUC (15 fights) | DINOv2 ROC-AUC | DINOv2 κ |
+|---|---|---|---|
+| Arm under the chin | 0.23 | 0.43 | −0.17 |
+| Figure-four | 0.32 | 0.35 | −0.24 |
+| Body triangle | 0.46 | 0.52 | 0.07 |
+| Defender 2-on-1 | 0.50 | 0.57 | 0.06 |
+
+**Verdict: 🔴 still chance.** A stronger model didn't fix it. Crops cover only 31 of 75 attempts, so too little data remains the leading explanation, ahead of the model. Scores below 0.5 can also reflect leave-one-fight-out effects on so few fights.
