@@ -92,7 +92,7 @@
   <header>
     <div class="eyebrow">RNCV · UFC rear-naked chokes · model v0.8</div>
     <h1>RNC Finish Explorer</h1>
-    <p class="lede">Set the position of a rear-naked choke and press play. Two numbers react: the attacker's <b>finish chance</b>, learned from 71 hand-labeled UFC attempts, and the defender's <b>HP</b>, a blood-flow model that empties after about 9 seconds of a full squeeze. No fight footage here: you are the eyes.</p>
+    <p class="lede">Set the position of a rear-naked choke and press play. Two numbers react: the attacker's <b>finish chance</b>, from a model that mixes expert estimates with 73 hand-labeled UFC attempts, and the defender's <b>HP</b>, a blood-flow model that empties after about 9 seconds of a full squeeze. No fight footage here: you are the eyes.</p>
   </header>
 
   <div class="stage">
@@ -146,8 +146,8 @@
   <section class="card notes">
     <div>
       <h2>How the finish chance works</h2>
-      <p>Each visible detail multiplies the odds of a finish. The model starts from expert estimates and a published-evidence review, then 71 hand-labeled UFC attempts from 42 fights pull the numbers toward what actually happened.</p>
-      <p>Tested on fights it never saw, it is <b>only slightly better than guessing the average</b> from a single snapshot (Brier 0.245 vs 0.254), and clearly better when it follows the position as it changes (0.224 vs 0.254).</p>
+      <p>Each visible detail multiplies the odds of a finish. The model starts from expert estimates and a published-evidence review, then 73 hand-labeled UFC attempts from 43 fights pull the numbers toward what actually happened.</p>
+      <p>Tested on fights it never saw, it is <b>only slightly better than guessing the average</b> from a single snapshot (Brier 0.244 vs 0.256), and clearly better when it follows the position as it changes (0.223 vs 0.256). Its numbers also run too extreme: when it says about 20%, roughly 40% of those attempts finished.</p>
     </div>
     <div>
       <h2>How HP works</h2>
@@ -156,15 +156,15 @@
     <div>
       <h2>Odds multipliers in the model</h2>
       <div class="tablewrap"><table id="mults"><thead><tr><th>Detail</th><th class="x">× odds</th></tr></thead><tbody></tbody></table></div>
-      <p style="margin-top:10px">Small sample, wide uncertainty: these are pilot estimates, not settled facts.</p>
+      <p style="margin-top:10px">These include the expert estimates. From the labels alone, the directions mostly agree, but no effect is proven yet: the sample is small.</p>
     </div>
   </section>
 
-  <footer>Part of RNCV, a pre-registered study of what makes UFC rear-naked chokes finish. Body triangle and both hooks show no per-attempt effect so far; the leading explanation is that leg control buys time and re-attacks on the back rather than finishing any single attempt. Model constants exported from the project's code; the browser math is checked against the original Python.</footer>
+  <footer>Part of RNCV, a pre-registered study of what makes UFC rear-naked chokes finish. Body triangle and both hooks show no per-attempt effect so far. One idea is that leg control buys time and re-attacks on the back rather than finishing any single attempt; a first test didn't confirm it. Model constants exported from the project's code; the browser math is checked against the original Python.</footer>
 </div>
 
 <script>
-const M = {"model":"v0.8","n_attempts":71,"n_fights":42,"feats":["arm_under","grip_f4","grip_other","legs_bt","legs_hooks","two_on_one","chin_tucked","flattened","def_fatigue","hand_tucked","fatigue"],"beta":[-1.89264,-0.16661,1.52519,1.0857,0.69246,-0.01514,-0.00332,-0.57943,0.00228,0.88163,0.0,0.70588,-0.5903],"mult":{"arm_under":4.596,"grip_f4":2.962,"grip_other":1.999,"legs_bt":0.985,"legs_hooks":0.997,"two_on_one":0.56,"chin_tucked":1.002,"flattened":2.415,"def_fatigue":1.0,"hand_tucked":2.026,"fatigue":0.554},"unknown_grip":[0.5,0.2],"unknown_legs":[0.25,0.25],"other_locks":["gable","palm_to_palm","wrist_pull"],"open_grips":["one_arm","short_choke"],"deep_keep":0.25,"fatigue_scale":12.0,"squeeze":{"version":"v0.6","w_jaw":0.05,"w_one_arm":0.45,"chin_relief":0.3,"two_relief_open":0.35,"two_relief_locked":0.1,"hand_bonus":0.15},"hp":{"secs_to_out":9.0,"lingering_share":0.2,"blood_recovery_secs":3.0,"fatigue_recovery_secs":60.0,"light_below":0.3},"landmark":2.0};
+const M = {"model":"v0.8","n_attempts":73,"n_fights":43,"feats":["arm_under","grip_f4","grip_other","legs_bt","legs_hooks","two_on_one","chin_tucked","flattened","def_fatigue","hand_tucked","fatigue"],"beta":[-1.9858,-0.19604,1.53024,1.15527,0.73048,0.03092,-0.00291,-0.54918,0.00174,0.84009,0.0,0.72842,-0.57087],"mult":{"arm_under":4.619,"grip_f4":3.175,"grip_other":2.076,"legs_bt":1.031,"legs_hooks":0.997,"two_on_one":0.577,"chin_tucked":1.002,"flattened":2.317,"def_fatigue":1.0,"hand_tucked":2.072,"fatigue":0.565},"unknown_grip":[0.5,0.2],"unknown_legs":[0.25,0.25],"other_locks":["gable","palm_to_palm","wrist_pull"],"open_grips":["one_arm","short_choke"],"deep_keep":0.25,"fatigue_scale":12.0,"squeeze":{"version":"v0.6","w_jaw":0.05,"w_one_arm":0.45,"chin_relief":0.3,"two_relief_open":0.35,"two_relief_locked":0.1,"hand_bonus":0.15},"hp":{"secs_to_out":9.0,"lingering_share":0.2,"blood_recovery_secs":3.0,"fatigue_recovery_secs":60.0,"light_below":0.3},"landmark":2.0};
 
 // ---- model (ported from research/model: model_v07.encode, state_model.squeeze / consciousness_trace) ----
 const b3 = v => (v === "True" ? 1 : v === "False" ? 0 : 0.5);

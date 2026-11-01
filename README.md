@@ -29,7 +29,7 @@ Oliveira vs Gamrot, drawn only from derived data: the pose model's confident joi
 | Piece | Result | What it means |
 |---|---|---|
 | Labeled data | 75 attempts from 43 UFC fights, men's divisions | Too few for the pre-registered analysis yet (needs ~150) |
-| Finish model v0.8 (expert priors + labels) | Brier 0.245 at 2 s vs 0.254 for always guessing the average; 0.224 vs 0.254 as the position changes | Following the position adds real information; the 2-s snapshot alone is within noise so far |
+| Finish model v0.8 (expert priors + labels) | Brier 0.244 at 2 s vs 0.256 for always guessing the average; 0.223 vs 0.256 as the position changes | Following the position adds real information; the 2-s snapshot alone is within noise so far |
 | Defender HP (choke dose) | Pantoja vs Asakura: hits 0 at 18 s, he went out at 19 s; labeled finishes took a median 9.6 s on the neck | Timing from physiology (≈9 s, Stellpflug 2020), not fitted |
 | Attempt detector v2 | Frame ROC-AUC ~0.75, leave-one-fight-out, 40 fights, ~65 min of no-attempt footage; catches 95% of attempts at ~0.5 false alarms per minute | Spots back attacks; not yet the second the choke starts. The demo's "BACK ATTACK DETECTED" comes from it |
 | Pose skeletons | Both fighters correct in 4/48 tangled frames | Parked; the overlay draws only confident parts (box, heads) |

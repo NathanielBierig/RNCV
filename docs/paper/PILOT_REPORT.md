@@ -39,8 +39,8 @@ Attempts were coded at a fixed landmark (2 s after the start) with a purpose-bui
 - Median time on the neck to a finish: 9.6 s.
 
 **Applied.** The model gives a live finish probability.
-- From the 2-s snapshot it is barely better than a base-rate guess: Brier score 0.245 vs 0.254.
-- Following the position as it changes, it is clearly better: 0.224 vs 0.254.
+- From the 2-s snapshot it is barely better than a base-rate guess: Brier score 0.244 vs 0.256.
+- Following the position as it changes, it is clearly better: 0.223 vs 0.256.
 - An automatic attempt detector reaches a frame-level ROC-AUC of about 0.75 on held-out fights.
 
 **Conclusion.** The pilot points the way coaching expects for the arm, the grip and the hidden hand, without proving any of them yet. It challenges the role of leg control per attempt. The confirmatory test waits for 150 attempts.
@@ -208,8 +208,8 @@ So the idea is **not confirmed**. The test is also weak by design: a finish-list
 
 **Live finish probability.**
 - The same model, run second by second, powers a replay overlay. It shows the attacker's finish chance, plus the defender's "HP": a blood-flow dose that drains with squeeze strength and empties after ~9 s of a full squeeze.
-- Tested on fights it never saw (leave-one-fight-out), the 2-second snapshot barely beats a base-rate guess (Brier 0.245 vs 0.254, within noise). Following the position as it changes, it does clearly better (0.224 vs 0.254).
-- When it says ~80%, those attempts finished ~80% of the time (Figure 2). In its lower range it is too pessimistic.
+- Tested on fights it never saw (leave-one-fight-out), the 2-second snapshot barely beats a base-rate guess (Brier 0.244 vs 0.256, within noise). Following the position as it changes, it does clearly better (0.223 vs 0.256).
+- When it says ~80%, those attempts finished ~80% of the time (Figure 2). Lower down it runs too extreme: calibration slope 0.55, where 1.0 is perfect. A correction fixes the bins but doesn't improve overall accuracy, so the numbers are kept and disclosed.
 
 ![Figure 2. Calibration on held-out fights.](../media/calibration.png)
 
