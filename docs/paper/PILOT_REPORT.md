@@ -94,6 +94,7 @@ With dozens of possible details and a small sample, *something* will always look
 - A5: an exploratory field for damage going into the choke, added after a first look at strike stats, so it stays exploratory.
 - A6: long-control rounds added for computer training; every analysis also reports results without them.
 - A7: H4, the grip ladder, tested only on attempts labeled after 2026-11-01.
+- A8: reliability in two checks, a self re-code and a smaller second-rater set. This is weaker than the original plan of 30 second-rater attempts.
 
 ## 3. Data
 
@@ -137,7 +138,11 @@ Coding at a fixed early moment, blind to the outcome, prevents the natural bias 
 
 **Quality control** is automated: overlapping attempts, impossible times, mismatches with official finish times, out-of-scope fights and cap violations. The pilot passes with zero errors.
 
-**Reliability** (🔴 pending): a second rater will code at least 30 attempts. Any detail with agreement below κ = 0.4 (Cohen's kappa: agreement beyond chance, from 0 to 1) will be reported as "not reliably codable from broadcast".
+**Reliability** (🔴 pending), in two checks:
+- **Same coder:** I re-code 20–30 attempts weeks later, without seeing my first labels. This shows whether the calls are consistent, not whether another person would agree.
+- **Second rater:** a second person codes about 15 of the same attempts, blind to the outcome.
+
+Any detail with agreement below κ = 0.4 (Cohen's kappa: agreement beyond chance, from 0 to 1) will be reported as "not reliably codable from broadcast".
 
 ## 5. Results (exploratory)
 

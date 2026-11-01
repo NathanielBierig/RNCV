@@ -4,7 +4,7 @@
 1. 🔴 **Label failure rounds first** ([NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md)): Vera R3, Barcelos R4, Holland R2, then finish fights. Press C on the on-screen clock.
 2. 🟡 **Choose a license** for the public copy (suggested: MIT for code, CC BY-NC for labels).
 3. 🟡 Decide when to go public, and whether display numbers stay as they are or use the calibrated version.
-4. ⚪ Second rater: later (kit ready in `tools/second_rater/`).
+4. ⚪ Reliability, in a few weeks: re-code 20–30 attempts yourself without seeing your old labels, then have one person code about 15 of the same ones (kit ready in `tools/second_rater/`).
 
 ---
 

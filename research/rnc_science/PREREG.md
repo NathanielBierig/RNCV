@@ -101,3 +101,8 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 - **Data:** only attempts saved after 2026-11-01. The 75 earlier attempts are excluded from the test, because the pilot grip rates were seen before H4 was written. H4 runs in its own model, since the primary model is already at its 4 df limit.
 - **Why:** owner decision; coaching ranks grips and no study has measured it.
 - **Target:** 75 new attempts. Simulated power: about 75% at ×2.1 per step, 32% at ×1.5. H1–H3 are unchanged.
+
+### A8 (2026-11-01): reliability in two checks
+- **Change:** §7 asked for a second rater on at least 30 attempts. It becomes: the main coder re-codes 20–30 attempts weeks later, blind to the first labels, and a second person codes about 15 of the same attempts. The κ < 0.4 rule applies to the second-rater check.
+- **Why:** owner decision; a second rater is hard to find on a $0 solo project.
+- **Cost, stated in the write-up:** this is a weaker check than planned. Self-agreement shows consistency only, and κ on about 15 attempts is imprecise.
