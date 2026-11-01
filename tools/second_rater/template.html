@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RNC Second Rater</title>
+<style>
+  :root { --bg:#0e1116; --card:#151a21; --line:#2c333d; --ink:#eceff4; --dim:#8b95a3; --amber:#ffaa28; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 "Segoe UI",system-ui,sans-serif; padding:18px max(16px,3vw) 60px; }
+  main { max-width:860px; margin:0 auto; display:grid; gap:14px; }
+  h1 { margin:0; font-size:26px; }
+  p { color:var(--dim); margin:6px 0; max-width:70ch; }
+  p b { color:var(--ink); font-weight:600; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; display:grid; gap:10px; }
+  .card.done { border-color:#3c6b4a; }
+  .head { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:baseline; }
+  .fight { font-weight:600; font-size:17px; }
+  a { color:var(--amber); }
+  .pause { color:var(--dim); font-size:14px; }
+  .pause b { color:var(--ink); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:8px; }
+  label { display:grid; gap:3px; font-size:13px; color:var(--dim); }
+  select { background:#1d242e; color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:7px; font:inherit; }
+  textarea { background:#1d242e; color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:7px; font:inherit; width:100%; }
+  .bar { position:sticky; bottom:10px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 14px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  button { background:var(--amber); color:#14100a; border:0; border-radius:7px; padding:10px 14px; font:600 15px inherit; cursor:pointer; }
+</style>
+<main>
+  <h1>RNC second rater</h1>
+  <p>Thanks for helping. This checks whether two people see the same details in UFC rear-naked chokes.</p>
+  <p><b>For each attempt:</b> open the link (it starts about 4 seconds early), watch until the video timer reaches the <b>pause time</b>, pause, and answer what you see at that moment. Don't watch ahead to the end of the choke. If you can't see something, choose "can't tell". The attacker is named on each card. Picture guide: ask for the code book.</p>
+  <p>Definitions: <b>under the chin</b> = forearm on the neck, not on the jaw. <b>Hand hidden</b> = the choking hand is tucked behind the head or shoulder, out of reach. <b>Two-on-one</b> = both of the defender's hands are on the choking arm. <b>Flattened</b> = the defender is flat on his stomach.</p>
+  <p>Your answers save in this browser. When you're done, press <b>Save answers</b> and send the file back.</p>
+  <div id="list" style="display:grid;gap:14px"></div>
+  <div class="bar"><span id="count"></span><button id="save" type="button">Save answers (CSV)</button></div>
+</main>
+<script>
+const ITEMS = /*ITEMS*/[];
+const FIELDS = /*FIELDS*/{};
+const KEY = "rnc-second-rater-v1";
+let A = {};
+try { A = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+const list = document.getElementById("list");
+ITEMS.forEach((it, i) => {
+  const c = document.createElement("div"); c.className = "card"; c.id = "c" + i;
+  const sel = Object.entries(FIELDS).map(([f, d]) => `<label>${d.label}<select data-f="${f}"><option value="">-</option>${Object.entries(d.opts).map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></label>`).join("");
+  c.innerHTML = `<div class="head"><span class="fight">${i + 1}. ${it.fight}</span><a href="${it.url}" target="_blank" rel="noopener">open video at ${mmss(it.start - 4)}</a></div>
+    <div class="pause">Attacker: <b>${it.attacker}</b>. Choke starts about ${mmss(it.start)}. <b>Pause at ${mmss(it.pause)}</b>.</div>
+    <div class="grid">${sel}</div>`;
+  const a = A[it.key] || {};
+  c.querySelectorAll("select").forEach(s => {
+    s.value = a[s.dataset.f] || "";
+    s.onchange = () => { A[it.key] = A[it.key] || {}; A[it.key][s.dataset.f] = s.value; persist(); update(); };
+  });
+  list.appendChild(c);
+});
+function persist() { try { localStorage.setItem(KEY, JSON.stringify(A)); } catch (e) {} }
+function update() {
+  let done = 0;
+  ITEMS.forEach((it, i) => {
+    const a = A[it.key] || {}, full = Object.keys(FIELDS).every(f => a[f]);
+    document.getElementById("c" + i).classList.toggle("done", full); done += full;
+  });
+  document.getElementById("count").textContent = `${done} of ${ITEMS.length} done`;
+}
+document.getElementById("save").onclick = () => {
+  const cols = ["key", ...Object.keys(FIELDS)];
+  const esc = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const rows = [cols.join(",")].concat(ITEMS.map(it => cols.map(c => esc(c === "key" ? it.key : (A[it.key] || {})[c])).join(",")));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["﻿" + rows.join("\n")], { type: "text/csv" }));
+  a.download = "rater_answers.csv"; a.click();
+};
+update();
+</script>
+</html>

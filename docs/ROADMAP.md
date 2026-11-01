@@ -23,8 +23,8 @@ Goal: proof that it works, basic findings and a working model, presented honestl
 | 2 | **Interactive model explorer** (public page, no video) | Model function. Pick the arm, grip, legs and hand fight, watch the finish chance and HP over a simulated choke. Runs from `model.json` in the browser | 🟢 `docs/explorer/` (also a claude.ai page) |
 | 3 | **Pilot findings** | README charts + [pilot report](paper/PILOT_REPORT.md) + back exposures | 🟢 drafted |
 | 4 | **Local app** (`tools/app`) | The real detector on a clip you drop in (works on full broadcasts, not highlight reels) | 🟢 |
-| 5 | **Outward README** | 30-second story, honest limits, one-command app | 🟡 |
-| 6 | **Public hygiene** | Move CLAUDE.md / HUMAN_TASKS / internal docs out, license, `tools/release_check.py` clean | ⚪ |
+| 5 | **Outward README** | 30-second story, honest limits, one-command app | 🟢 |
+| 6 | **Public hygiene** | `tools/make_public.py` exports a clean copy (224 files, 0 issues, fresh history); license still to choose | 🟡 |
 
 ## Public release (owner, 2026-10-26: "when the project is more promising, soon")
 The GitHub repo becomes outward-facing:
