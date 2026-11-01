@@ -90,3 +90,8 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 - **Change:** new exploratory field `defender_hurt_before` (FACTORS.md), plus exploratory use of public round-by-round strike stats. Neither enters the primary model.
 - **Why:** owner decision. Damage before the choke is a plausible driver of finishes that the code book did not cover.
 - **Timing:** made with 75 attempts labeled, **after outcomes were tabulated and after a first look at strike stats** (`reports/damage.md`). So anything found here stays exploratory; testing it would need a further amendment made before looking at new data. Attempts already labeled stay blank. No hypothesis, coding, model or decision rule changes.
+
+### A6 (2026-11-01): long-control rounds added for computer-vision training
+- **Change:** extra rounds with 3:00+ of control and a submission attempt (`phase3_labels/labeling_queue_long.csv`), chosen for long sequences, not at random. Their attempts carry `found_via = candidate_round`; every analysis also reports results without the fights in that file.
+- **Why:** owner decision; the main focus is now the computer reading positions on its own, which needs long varied sequences.
+- **Timing:** made with 75 attempts labeled. No hypothesis, coding, model or decision rule changes.

@@ -2,6 +2,7 @@
 
     python tools/fetch_clips.py [N]               # default 15 finish-list fights (files q<rank>_...)
     python tools/fetch_clips.py [N] --failures    # failure rounds: RNC attempts that didn't finish (f<rank>_...)
+    python tools/fetch_clips.py [N] --long        # long-control rounds for training the automatic readers (L<rank>_...)
 
 Walks phase3_labels/labeling_queue_findable.csv in rank order and skips: fights already labeled or already on
 disk, women's bouts (PREREG A1), fights before 2018 (PREREG §2), attackers at the round cap (A4: 5 rounds).
@@ -79,8 +80,10 @@ def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     n_want = int(args[0]) if args else 15
     fail = "--failures" in sys.argv            # failure rounds (attempts that didn't finish) instead of finishes
-    queue = "labeling_queue_failures.csv" if fail else "labeling_queue_findable.csv"
-    rank_col, prefix = ("queue_rank", "f") if fail else ("findable_rank", "q")
+    long_ = "--long" in sys.argv
+    fail = fail or long_
+    queue = "labeling_queue_long.csv" if long_ else "labeling_queue_failures.csv" if fail else "labeling_queue_findable.csv"
+    rank_col, prefix = ("queue_rank", "L" if long_ else "f") if fail else ("findable_rank", "q")
     labels = list(csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8")))
     done = {r["fight_id"] for r in labels}
     rounds = Counter()
