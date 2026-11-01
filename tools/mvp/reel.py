@@ -3,11 +3,16 @@
     python tools/mvp/demo.py data/clips/demos/oliveira_gamrot.mp4.webm --no-pixels
     python tools/mvp/reel.py
 
+    python tools/mvp/demo.py data/clips/demos/oliveira_gamrot.mp4.webm --out data/mvp/oliveira_gamrot.mp4_demo.mp4
+    python tools/mvp/reel.py --footage      # data/mvp/rncv_reel_footage.mp4: real broadcast pixels, stays local (git-ignored)
+
 Title card -> the derived-data replay at 1.5x with captions -> pilot rates with their 95% intervals -> end card.
 The rates are read from reports/findings_pilot.md, so rerunning after new labels keeps the numbers current.
 """
 import re
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import cv2
@@ -15,10 +20,10 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[2]
-SRC = ROOT / "data/mvp/oliveira_gamrot.mp4_nopixels.mp4"
-OUT = ROOT / "docs/media/rncv_reel.mp4"
-FFMPEG = ("C:/Users/netan/AppData/Local/Microsoft/WinGet/Packages/yt-dlp.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/"
-          "ffmpeg-N-126374-g089a48eb36-win64-gpl/bin/ffmpeg.exe")
+FOOTAGE = "--footage" in sys.argv
+SRC = ROOT / f"data/mvp/oliveira_gamrot.mp4_{'demo' if FOOTAGE else 'nopixels'}.mp4"
+OUT = ROOT / ("data/mvp/rncv_reel_footage.mp4" if FOOTAGE else "docs/media/rncv_reel.mp4")
+FFMPEG = shutil.which("ffmpeg")
 W, H, FPS = 1280, 720, 30
 SPEED = 1.5
 T_IN, T_OUT = 6.0, 34.5                     # stretch of the replay, in its own seconds
@@ -100,7 +105,7 @@ def faded(frame, i, n):
 def main():
     title = card([("Commentators say a choke is “in deep”.", H / 2 - 44, 50, INK),
                   ("This project measures it.", H / 2 + 28, 50, ORANGE),
-                  ("Rear-naked chokes in the UFC  ·  shown here as derived data, no broadcast footage", H - 90, 22, DIM)])
+                  ("Rear-naked chokes in the UFC" + ("" if FOOTAGE else "  ·  shown here as derived data, no broadcast footage"), H - 90, 22, DIM)])
     end = card([("RNCV", H / 2 - 64, 76, ORANGE),
                 ("A pre-registered study and a replay finish-chance overlay", H / 2 + 8, 32, INK),
                 ("Pilot: proof of concept, built from hand labels and computer vision", H / 2 + 56, 24, DIM)])

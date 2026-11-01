@@ -115,6 +115,21 @@ class Layer:
                 out.append(p.copy())
         return out
 
+    def clean_poses(self, j):
+        """Two steadied figures for the footage-free view: each keeps its slot, jumps are smoothed, and an
+        implausible sample holds the last good pose, so tangled frames don't flicker."""
+        self.slots = getattr(self, "slots", [None, None])
+        good = [p for p in self.kpts[j] if (p[5:17, 2] > KP_THR).sum() >= 10 and plausible(p)]
+        good = sorted(good, key=lambda p: -p[5:17, 2].sum())[:2]
+        for p in good:
+            c = p[5:17, :2].mean(0)
+            free = [k for k in (0, 1) if self.slots[k] is None]
+            used = [k for k in (0, 1) if self.slots[k] is not None]
+            k = free[0] if free and (not used or np.linalg.norm(self.slots[used[0]][5:17, :2].mean(0) - c) > torso(p)) else \
+                min(used, key=lambda k: np.linalg.norm(self.slots[k][5:17, :2].mean(0) - c))
+            self.slots[k] = p.copy() if self.slots[k] is None else 0.65 * self.slots[k] + 0.35 * p
+        return [p for p in self.slots if p is not None]
+
     def draw_poses(self, img, poses, alpha):
         over = img.copy()
         for n, p in enumerate(poses):

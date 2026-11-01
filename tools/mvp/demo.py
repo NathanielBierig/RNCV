@@ -25,6 +25,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[2]
 SUCCESS = {"tap", "ref_stop", "unconscious"}
 W, H, PANEL = 1600, 900, 420
+TRAIL_KEEP = 0.93                          # --no-pixels: share of each frame kept, so poses stack into a body
 LEAD = 0.5                # s the overlay fades in before the labeled start (fade only; times are real timestamps now)
 BG, INK, DIM, LINE = (14, 17, 22), (231, 235, 240), (139, 149, 163), (44, 51, 61)
 ATT, DEF, GOOD, BAD = (255, 138, 61), (76, 194, 255), (95, 211, 141), (255, 92, 92)
@@ -238,20 +239,26 @@ def main():
                 for gy in range(0, bg.shape[0], 60):
                     bg[gy, :] = (32, 28, 24)
                 scope = np.zeros(fr.shape, np.float32)
-            scope *= 0.88
-            if layer is not None and (i - 1) % layer.stride == 0:      # draw each pose sample once; trails fade between
-                kp = layer.kpts[min(len(layer.kpts) - 1, (i - 1) // layer.stride)]
-                for n, p in enumerate(kp):
+            scope *= TRAIL_KEEP
+            if layer is not None and (i - 1) % layer.stride == 0:      # dense layered bodies: every pose sample stacks up, then fades
+                j = min(len(layer.kpts) - 1, (i - 1) // layer.stride)
+                slots = layer.clean_poses(j)
+                add = np.zeros(fr.shape, np.uint8)
+                for p in layer.kpts[j]:
+                    c = p[5:17, :2].mean(0)
+                    n = min(range(len(slots)), key=lambda k: np.linalg.norm(slots[k][5:17, :2].mean(0) - c)) if slots else 0
                     col = (61, 138, 255) if n == 0 else (255, 194, 76)
-                    ok_ = p[:, 2] > 0.55
+                    ok_ = p[:, 2] > 0.3
+                    xy = p[:, :2].astype(int)
+                    if ok_[[5, 6, 11, 12]].all():
+                        cv2.fillConvexPoly(add, xy[[5, 6, 12, 11]], tuple(int(0.35 * v) for v in col), cv2.LINE_AA)
                     for ja, jb in tracking.SKEL:
                         if ok_[ja] and ok_[jb]:
-                            cv2.line(scope, tuple(p[ja, :2].astype(int)), tuple(p[jb, :2].astype(int)),
-                                     tuple(0.55 * c for c in col), 4, cv2.LINE_AA)
+                            cv2.line(add, tuple(xy[ja]), tuple(xy[jb]), tuple(int(0.5 * v) for v in col), 12, cv2.LINE_AA)
                     for q in range(17):
                         if ok_[q]:
-                            cv2.circle(scope, tuple(p[q, :2].astype(int)), 9 if q < 5 else 6,
-                                       (240, 240, 240) if q < 5 else col, -1, cv2.LINE_AA)
+                            cv2.circle(add, tuple(xy[q]), 12 if q < 5 else 7, (240, 240, 240) if q < 5 else col, -1, cv2.LINE_AA)
+                scope += add.astype(np.float32) * 0.45
             fr = np.clip(bg.astype(np.float32) + scope, 0, 255).astype(np.uint8)
             cv2.putText(fr, "DERIVED DATA ONLY - no broadcast pixels", (16, fr.shape[0] - 16),
                         cv2.FONT_HERSHEY_DUPLEX, 0.6 * fr.shape[0] / 720, (139, 149, 163), 1, cv2.LINE_AA)
