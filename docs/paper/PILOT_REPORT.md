@@ -267,7 +267,7 @@ Details are in [auto_odds.md](../../reports/auto_odds.md). Start times came from
 
 ## 9. Next steps
 
-1. **Teach the computer one detail at a time,** starting with legs, the only one above chance so far. Long-control rounds add varied training frames, and labeled videos now stay on the laptop so stronger image models can use them.
+1. **Teach the computer one detail at a time,** starting with the two-on-one, the only one showing a hint so far. Long-control rounds add varied training frames, and labeled videos now stay on the laptop so stronger image models can use them.
 2. **Model whole back exposures,** on failure rounds and fully watched fights, to test the retention explanation for leg control fairly.
 3. **Follow the damage lead** with the blind `defender_hurt_before` label and a dated amendment before testing it.
 4. Reach 150 attempts, add a second rater, and run the pre-registered test exactly as written.

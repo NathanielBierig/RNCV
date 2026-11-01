@@ -32,3 +32,15 @@ DINOv2 small, `factor_neck.py --dino`, 1,412 crops, 31 attempts, 16 fights, leav
 | Defender 2-on-1 | 0.50 | 0.57 | 0.06 |
 
 **Verdict: 🔴 still chance.** A stronger model didn't fix it. Crops cover only 31 of 75 attempts, so too little data remains the leading explanation, ahead of the model. Scores below 0.5 can also reflect leave-one-fight-out effects on so few fights.
+
+## Retest at 20 fights (2026-11-01)
+Four clips restored, 1,780 crops, 38 attempts, 20 fights, leave-one-fight-out:
+
+| Factor | CLIP ROC-AUC / κ | DINOv2 ROC-AUC / κ |
+|---|---|---|
+| Arm under the chin | 0.49 / −0.10 | 0.51 / 0.00 |
+| Figure-four | 0.32 / −0.24 | 0.45 / −0.07 |
+| Body triangle | 0.43 / −0.09 | 0.44 / −0.05 |
+| Defender 2-on-1 | 0.57 / −0.09 | 0.62 / 0.24 |
+
+**Verdict: 🔴 still below the bar (κ ≥ 0.4).** Defender 2-on-1 with DINOv2 is the only hint, on 38 attempts, and it moved up from 0.06 with four more fights, so it could still be noise. Body triangle fell back to chance, so "legs first" no longer has support.

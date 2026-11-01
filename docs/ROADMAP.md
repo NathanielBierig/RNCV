@@ -29,8 +29,8 @@ Where each step stands, on fights left out of training:
 Plan, in order (estimates):
 1. 🟢 **Keep labeled videos on the laptop** (owner, 2026-11-01; `cleanup_clips.py` now only lists). Only 5 of 41 feature clips still have video, and every better model needs the pixels. Old clips can be re-downloaded from `phase3_labels/downloads_log.csv`.
 2. **Log more moments.** Each G-panel change gives extra training frames for the same labeling work.
-3. **Start with the easiest detail:** legs (body triangle), the only one above chance so far, before the arm.
-4. **Stronger image model on the laptop CPU** (no GPU; Kaggle stays closed to footage). DINOv2 tried on 16 fights of crops: still chance (κ ≤ 0.07). Retry at about 30 fights.
+3. **Start with the detail that shows a hint:** the two-on-one (κ 0.24 with DINOv2 at 20 fights, below the 0.4 bar). Legs fell back to chance.
+4. **Stronger image model on the laptop CPU** (no GPU; Kaggle stays closed to footage). DINOv2 at 20 fights of crops: best κ 0.24, others near 0. Retry at about 30 fights.
 5. **Show stats-based odds until vision earns its place,** labeled as stats, not sight.
 
 ## Pilot release: portfolio-ready (owner, 2026-10-29)
