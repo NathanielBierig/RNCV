@@ -1,5 +1,5 @@
-# What makes a UFC rear-naked choke finish?
-### A pre-registered study of 75 hand-labeled attempts (pilot report)
+# What finishes a UFC rear-naked choke, and can a computer see it?
+### A pre-registered study of 75 hand-labeled attempts and a first test of automatic reading (pilot report)
 
 *Pilot report, 2026-11-01. 75 attempts from 43 men's UFC fights. The confirmatory test runs at ~150 attempts; every result below is exploratory unless marked otherwise. Code, labels and figures are in this repository. No UFC footage is included or redistributed.*
 
@@ -16,6 +16,7 @@
 > - Strong leg control did **not** help a single attempt finish. One explanation is that it keeps the attacker on the back for more attempts rather than finishing any one of them. A first test of that idea didn't confirm it.
 > - Finished chokes took a median of 9.6 seconds on the neck, almost exactly what a published study of MMA choke-outs found (9.0 s).
 > - The real test was written down in advance and runs at 150 attempts.
+> - **Can a computer do this alone? Not yet.** It finds back attacks on full broadcasts, but it can't read the arm or grip, and from video alone its odds and timing are no better than guessing the average.
 
 ---
 
@@ -38,25 +39,29 @@ Attempts were coded at a fixed landmark (2 s after the start) with a purpose-bui
 - Labels-only odds multipliers (no priors) point the same way but are inconclusive: arm ×2.8 (0.8–10.9), figure-four ×2.4 (0.6–10.6), hidden hand ×3.2 (0.6–20), flattened ×1.9 (0.7–5.9), two-on-one ×0.73 (0.2–2.6). A Bayesian model that adds expert priors gives firmer numbers (×4.6, ×3.2, ×2.1, ×2.3, ×0.58), which rest partly on those priors.
 - Median time on the neck to a finish: 9.6 s.
 
-**Applied.** The model gives a live finish probability.
-- From the 2-s snapshot it is barely better than a base-rate guess: Brier score 0.244 vs 0.256.
-- Following the position as it changes, it is clearly better: 0.223 vs 0.256.
-- An automatic attempt detector reaches a frame-level ROC-AUC of about 0.75 on held-out fights.
+**Can a computer see it?** Everything below was tested on fights left out of training.
+- Hand labels into a model give a replay finish chance. From the 2-s snapshot it barely beats a base-rate guess (Brier 0.244 vs 0.256). Following the position as it changes, it does clearly better (0.223 vs 0.256).
+- An automatic detector finds back attacks with a frame-level ROC-AUC of about 0.75.
+- Reading the details from video is near chance (κ ≤ 0.17), and odds from video alone show no gain (Brier 0.256 vs 0.257).
 
-**Conclusion.** The pilot points the way coaching expects for the arm, the grip and the hidden hand, without proving any of them yet. It challenges the role of leg control per attempt. The confirmatory test waits for 150 attempts.
+**Conclusion.** The pilot points the way coaching expects for the arm, the grip and the hidden hand, without proving any of them yet. It challenges the role of leg control per attempt. The computer finds the moment but can't yet read the choke. The confirmatory test waits for 150 attempts.
 
 ---
 
 ## 1. Why this project
 
-This started as a crossover between two interests: data science and the grappling side of MMA. I'm not a jiu-jitsu practitioner, but I'm a big fan. Watching UFC fights, I kept hearing commentators say a choke was "in deep" or "not under the chin". I wanted to know whether those calls could be measured, and how much each detail actually matters.
+This started as a crossover between two interests: data science and the grappling side of MMA. I'm not a jiu-jitsu practitioner, but I'm a big fan. Watching UFC fights, I kept hearing commentators say a choke was "in deep" or "not under the chin". I wanted to know whether those calls could be measured, how much each detail actually matters, and whether a computer could make the same calls from video.
 
 The rear-naked choke is the right place to start:
 - **It's common.** RNCs are about half of all UFC choke finishes (Stellpflug 2020: 904 choke finishes, 1993–2020).
 - **It's visible.** A broadcast usually shows where the arm and hands are.
 - **There is a clear expert theory to test:** coaches agree on the arm, the grip, the legs and the hand fight.
 
-**The question:** *among UFC rear-naked choke attempts, which technical states at a fixed early moment are associated with the attempt finishing?*
+**Two questions:**
+1. *Among UFC rear-naked choke attempts, which technical states at a fixed early moment are associated with the attempt finishing?*
+2. *How much of that can a computer read on its own from broadcast video: the attempt, the details, the odds and the time to a finish?*
+
+The first is pre-registered. The second is exploratory engineering, tested on fights left out of training. An honest "not yet" counts as a result: it shows where broadcast video stops being enough.
 
 **What is already known.** Stellpflug et al. (2020) timed 81 MMA choke-outs: from a locked choke to unconsciousness took 9.0 s on average (95% CI 8.3–9.9 s; RNC 8.9 s). The mechanism is pressure on the carotid arteries, not the airway. That's why a forearm across the jawbone, which shields the arteries, rarely puts anyone out. No study compares grip types or leg control as predictors of the finish ([evidence review](../../research/priors_evidence/EVIDENCE.md)).
 
@@ -94,7 +99,7 @@ With dozens of possible details and a small sample, *something* will always look
 
 **This pilot:** 75 attempts from 43 fights; 74 are analysable (one ended at the bell). 64 come from finish-list fights and 10 from failure rounds. The sample is heavily tilted toward finishes: 54% finished overall, far above reality. **Read the rates as comparisons with each other, never as real-world chances.**
 
-**Footage:** official UFC uploads and licensed broadcasters only, watched locally. Videos stay on one local laptop and are never uploaded; only labels and derived data are published.
+**Footage:** the labeled fights use official UFC uploads and licensed broadcasters, watched locally. Later rounds picked for computer training may use vetted fan uploads, marked as such. Videos stay on one local laptop and are never uploaded; only labels and derived data are published.
 
 ## 4. How an attempt is coded
 
@@ -220,9 +225,20 @@ This wasn't pre-registered, and it was found after looking at the data, so it ca
 
 **How much the data can say (power).** Simulating the pre-registered test with the real group shares ([POWER_NOTE.md](../../research/rnc_science/POWER_NOTE.md)): at 150 attempts, H1 is decided ~90–98% of the time, and H3 ~90% if its effect is as large as coaches expect (×0.3), but only ~38% at the pilot's ×0.56. H2 per attempt is unlikely ever to be supported if its effect is ~×1, which is why the retention question moves to the back-exposure analysis. Some real effects will honestly come out "inconclusive", and the paper will say so rather than hunt for significance.
 
-## 7. Applied tools (summary)
+## 7. Can a computer see it?
 
-**Live finish probability.**
+| Step, on fights left out of training | Status | Result |
+|---|---|---|
+| Find the back attack | Partly | Frame ROC-AUC ~0.75, 95% of attempts caught |
+| Place the start second | No | Correct about 9% of the time |
+| Read arm, grip, legs, hand fight | No | Near chance (κ ≤ 0.17) |
+| Odds from video alone | No | Brier 0.256 vs 0.257 for guessing the average |
+| Odds from public stats alone | Lead | Brier 0.248 vs 0.256, no vision; may partly reflect how fights were picked |
+| Time to a finish | No | 3.3 s error vs 3.4 s for guessing the median |
+
+Details are in [auto_odds.md](../../reports/auto_odds.md). Start times came from labels in the odds and timing tests, so these are best cases.
+
+**Replay finish chance, from hand labels.**
 - The same model, run second by second, powers a replay overlay. It shows the attacker's finish chance, plus the defender's "HP": a blood-flow dose that drains with squeeze strength and empties after ~9 s of a full squeeze.
 - Tested on fights it never saw (leave-one-fight-out), the 2-second snapshot barely beats a base-rate guess (Brier 0.244 vs 0.256, within noise). Following the position as it changes, it does clearly better (0.223 vs 0.256).
 - When it says ~80%, those attempts finished ~80% of the time (Figure 3). Lower down it runs too extreme: calibration slope 0.55, where 1.0 is perfect. A correction fixes the bins but doesn't improve overall accuracy, so the numbers are kept and disclosed.
@@ -231,8 +247,11 @@ This wasn't pre-registered, and it was found after looking at the data, so it ca
 
 **Automatic detection.**
 - Pose skeletons fail in tangled grappling (both fighters correct in 4 of 48 frames), so the detector uses general-purpose image features (CLIP) of the fighters plus the last few seconds of motion.
-- On held-out fights it reaches a frame-level ROC-AUC of ~0.75 (0.5 = guessing, 1 = perfect). It recognizes a back attack but not the exact second a choke starts, and it gives 0.7–1.0 false alarms per minute.
-- Recognizing the details themselves from video is not there yet: agreement with the labels was near chance in a first test ([factor_pilot.md](../../reports/factor_pilot.md)).
+- On held-out fights it reaches a frame-level ROC-AUC of ~0.75 (0.5 = guessing, 1 = perfect). It recognizes a back attack but not the exact second a choke starts, and it gives about 0.5 false alarms per minute.
+- It also leans on the kind of shot: camera-shot type alone scores 0.69, so much of what it learned is what a ground shot looks like.
+- Recognizing the details themselves is not there yet: agreement with the labels was near chance ([factor_pilot.md](../../reports/factor_pilot.md)).
+
+**A limit on the goal.** Even perfect automatic labels could only match the hand-labeled model, and that model has only a modest edge at 2 s. So a good result here means "clearly better than chance", not a sure prediction.
 
 ## 8. Limitations
 
@@ -240,19 +259,20 @@ This wasn't pre-registered, and it was found after looking at the data, so it ca
 - **One rater so far.** Reliability is untested.
 - **Broadcast views** hide the hands at times. Some details are "unclear", and camera cuts hide parts of attempts.
 - **Per-attempt scoring** can't credit position retention (section 6).
-- **Unlabeled confounders:** knockdowns before the back take, fatigue, the cage.
+- **Unlabeled confounders:** the cage, and damage before the back take on attempts coded before the new hand label.
 - **Expert priors** in the applied model are opinion, weighted lightly and disclosed. The pre-registered test uses data only.
 - **Supply:** free official footage covers only part of the target sample.
 
 ## 9. Next steps
 
-1. **Model whole back exposures.** Treat each back take as the unit: how long the attacker keeps the back, how many attempts they get, and whether any finishes. This directly tests the retention explanation for leg control.
-2. **Let the computer see the details.** Train a model on tight head-and-neck crops, saved for every labeled attempt, so the arm position, grip and hand fight no longer need hand labels. The decision point is ~150 attempts.
-3. Reach 150 attempts (with more failure rounds and the random subset), add a second rater, and run the pre-registered test exactly as written.
+1. **Teach the computer one detail at a time,** starting with legs, the only one above chance so far. Long-control rounds add varied training frames, and labeled videos now stay on the laptop so stronger image models can use them.
+2. **Model whole back exposures,** on failure rounds and fully watched fights, to test the retention explanation for leg control fairly.
+3. **Follow the damage lead** with the blind `defender_hurt_before` label and a dated amendment before testing it.
+4. Reach 150 attempts, add a second rater, and run the pre-registered test exactly as written.
 
 ## 10. Ethics and data
 
-No UFC footage is stored in the repository, uploaded or shared. Only timestamps, labels and numeric features are kept. A release check scans the repository and its history for video files and secrets before any public release.
+No UFC footage is stored in the repository, uploaded or shared. Videos stay on one local laptop; only timestamps, labels and numeric features are published. A release check scans the repository and its history for video files and secrets before any public release.
 
 ## References
 
