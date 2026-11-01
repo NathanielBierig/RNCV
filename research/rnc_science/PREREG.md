@@ -95,3 +95,9 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 - **Change:** extra rounds with 3:00+ of control and a submission attempt (`phase3_labels/labeling_queue_long.csv`), chosen for long sequences, not at random. Their attempts carry `found_via = candidate_round`; every analysis also reports results without the fights in that file.
 - **Why:** owner decision; the main focus is now the computer reading positions on its own, which needs long varied sequences.
 - **Timing:** made with 75 attempts labeled. No hypothesis, coding, model or decision rule changes.
+
+### A7 (2026-11-01): H4, grip ladder, tested on new attempts only
+- **Change:** new hypothesis H4: grip at the landmark ranks figure-four (2) > palm-to-palm, gable, wrist pull (1) > one arm, short choke (0), and each step raises the odds of a finish. Test: Firth logistic with the rank as one number and arm position held fixed, 95% profile interval, using the §8 decision rule. Unclear grips are left out.
+- **Data:** only attempts saved after 2026-11-01. The 75 earlier attempts are excluded from the test, because the pilot grip rates were seen before H4 was written. H4 runs in its own model, since the primary model is already at its 4 df limit.
+- **Why:** owner decision; coaching ranks grips and no study has measured it.
+- **Target:** 75 new attempts. Simulated power: about 75% at ×2.1 per step, 32% at ×1.5. H1–H3 are unchanged.

@@ -50,7 +50,7 @@ Attempts were coded at a fixed landmark (2 s after the start) with a purpose-bui
 
 ## 1. Why this project
 
-This started as a crossover between two interests: data science and the grappling side of MMA. I'm not a jiu-jitsu practitioner, but I'm a big fan. Watching UFC fights, I kept hearing commentators say a choke was "in deep" or "not under the chin". I wanted to know whether those calls could be measured, how much each detail actually matters, and whether a computer could make the same calls from video.
+This started as a crossover between data science and my love of MMA grappling. Watching UFC fights, I kept hearing commentators say a choke was "in deep" or "not under the chin". I wanted to know whether those calls could be measured, how much each detail actually matters, and whether a computer could make the same calls from video.
 
 The rear-naked choke is the right place to start:
 - **It's common.** RNCs are about half of all UFC choke finishes (Stellpflug 2020: 904 choke finishes, 1993–2020).
@@ -63,7 +63,11 @@ The rear-naked choke is the right place to start:
 
 The first is pre-registered. The second is exploratory engineering, tested on fights left out of training. An honest "not yet" counts as a result: it shows where broadcast video stops being enough.
 
-**What is already known.** Stellpflug et al. (2020) timed 81 MMA choke-outs: from a locked choke to unconsciousness took 9.0 s on average (95% CI 8.3–9.9 s; RNC 8.9 s). The mechanism is pressure on the carotid arteries, not the airway. That's why a forearm across the jawbone, which shields the arteries, rarely puts anyone out. No study compares grip types or leg control as predictors of the finish ([evidence review](../../research/priors_evidence/EVIDENCE.md)).
+**How a blood choke works.** A rear-naked choke doesn't work by cutting off air. Two carotid arteries run up the sides of the neck and carry most of the brain's blood. The attacker's biceps presses one side and the forearm presses the other, with the crook of the elbow under the chin, so the windpipe sits in the gap. Blood flow to the brain drops, and the defender either taps or loses consciousness. Once the squeeze is released, blood returns and a fighter usually wakes quickly.
+
+This is why the details matter. An arm under the chin reaches the arteries, while a forearm across the jawbone rests on bone and shields them. A locked grip lets the attacker hold that squeeze with both arms.
+
+**What is already known.** Stellpflug et al. (2020) timed 81 MMA choke-outs: from a locked choke to unconsciousness took 9.0 s on average (95% CI 8.3–9.9 s; RNC 8.9 s). No study compares grip types or leg control as predictors of the finish ([evidence review](../../research/priors_evidence/EVIDENCE.md)).
 
 ## 2. Pre-registration: deciding the test before seeing the data
 
@@ -76,6 +80,8 @@ With dozens of possible details and a small sample, *something* will always look
 | H3 | Defender's two-on-one hand fight | Fewer finishes |
 | — | Time left in the round | Adjustment only |
 
+**H4, added later (A7): grip ladder.** Better grips finish more: figure-four > two-handed lock without the biceps anchor (palm-to-palm, gable, wrist pull) > no real lock (one arm, short choke). In a figure-four, the choking hand anchors on the attacker's own biceps, so the second arm adds force behind the head and the hand is hard to peel off. Two-handed locks have grip strength but no anchor, and a one-armed choke has neither. H4 was added on 2026-11-01, after the pilot's grip numbers had been seen, so these 75 attempts can't confirm it. It is tested only on attempts labeled after that date, in its own model, with the arm position held fixed. At 75 new attempts the chance of confirming it is about 75% if the pilot's effect is real (×2.1 per step), and about 32% at ×1.5 (simulated estimates).
+
 **Decision rule, fixed in advance.** A hypothesis is:
 - *supported* if its 95% interval excludes "no effect" in the predicted direction;
 - *contradicted* if it excludes it in the opposite direction;
@@ -87,10 +93,11 @@ With dozens of possible details and a small sample, *something* will always look
 - A3, A4: a cap of 5 attacking rounds per fighter, so one specialist can't dominate.
 - A5: an exploratory field for damage going into the choke, added after a first look at strike stats, so it stays exploratory.
 - A6: long-control rounds added for computer training; every analysis also reports results without them.
+- A7: H4, the grip ladder, tested only on attempts labeled after 2026-11-01.
 
 ## 3. Data
 
-**Population:** men's UFC fights, 2018–2026, with at least one RNC attempt.
+**Population:** men's UFC fights, 2018–2026, with at least one RNC attempt. Women's fights are left out because finishing may differ and about 150 attempts can't power that comparison (A1). Men's fights should also suit the computer part: men fight shirtless, so more skin shows where bodies and arms begin and end, while rash guards hide more. That second reason is expected, not tested. Findings apply to men's divisions only.
 
 **Sampling**, in plain terms:
 - **Finish list.** Watching full fights at random to find chokes would take hundreds of hours, so most attempts come from fights known to end in an RNC (677 such finishes in the UFC's stats). This inflates the *overall* finish rate, but the *comparisons* between details stay valid, and those are what the hypotheses test. (Technically: sampling on the outcome biases the intercept of a logistic model, not its odds ratios.)
@@ -193,13 +200,15 @@ Finishes landed at almost exactly the 9.0 s from lock to unconsciousness measure
 
 *Figure 2.* Finish-enriched sample: compare the blocks with each other, not with the real world.
 
-**HP meter check.** Only 8 of 40 finishes reached HP 0, because fighters usually tap while conscious, and 5 of 34 failures did reach it. The lowest HP separates finishes from failures only weakly (AUC 0.62, a range that touches chance). HP is a readable estimate for viewers, not a validated measure ([hp_check.md](../../reports/hp_check.md)).
+**HP meter check.** Only 8 of 40 finishes reached HP 0, because fighters usually tap while conscious, and 5 of 34 failures did reach it. The lowest HP separates finishes from failures only weakly (AUC 0.62, a range that touches chance). HP is an average over fighters and can't see toughness: some fighters reach HP 0 and fight on anyway. It is a readable estimate for viewers, not a validated measure ([hp_check.md](../../reports/hp_check.md)).
 
 ### 5.4 What the pilot says about each hypothesis
 
 - **H1 (arm under the chin): points the predicted way** (raw 59% vs 40%; labels-only ×2.8, interval 0.8–10.9). Not yet decided.
 - **H3 (two-on-one): unclear.** Raw rates are equal (57% vs 53%). Labels-only it leans the predicted way (×0.73, interval 0.2–2.6). The stronger ×0.58 in the applied model comes partly from the priors.
 - **H2 (leg control): leans the opposite way per attempt** (body triangle 46%, one hook/none 65%; labels-only ×0.36, interval 0.09–1.38). See section 6.
+
+- **H4 (grip ladder, added later): points the predicted way** (×2.1 per step, 1.2–3.9), but these attempts helped suggest it, so it stays untested until new attempts arrive.
 
 These are pilot readings. The confirmatory test (Firth logistic regression with profile intervals, a bootstrap by attacker, and sensitivity checks; [prereg_analysis.py](../../research/rnc_science/prereg_analysis.py)) runs at 150 attempts.
 
@@ -223,7 +232,7 @@ This wasn't pre-registered, and it was found after looking at the data, so it ca
 
 **The hand fight needs more data.** The two-on-one shows no raw effect, and the labels-only estimate is too uncertain to call. Defenders may hand-fight hardest when the choke is already deep, which would hide its benefit in raw percentages.
 
-**The grip order matches coaching so far.** Figure-four > palm/gable/wrist lock > one arm, in both views, with wide intervals. No published study has measured this before.
+**The grip ladder is the strongest lead.** Figure-four finished 68%, wrist pull 44% and one arm 38%. With the arm position held fixed, each step up the ladder multiplied the odds by ×2.1 (1.2–3.9), the only technical detail here whose range excludes no effect ([grip_hierarchy.md](../../reports/grip_hierarchy.md)). Three cautions: the ladder was named after seeing these rates, so this is not a confirmation; the top step alone is uncertain (figure-four vs other locks ×2.4, 0.6–10.4); and the sample can't separate the middle grips, with 9 wrist pulls and only 1 palm-to-palm. H4 tests it on new attempts. No published study has measured this before.
 
 **How much the data can say (power).** Simulating the pre-registered test with the real group shares ([POWER_NOTE.md](../../research/rnc_science/POWER_NOTE.md)): at 150 attempts, H1 is decided ~90–98% of the time, and H3 ~90% if its effect is as large as coaches expect (×0.3), but only ~38% at the pilot's ×0.56. H2 per attempt is unlikely ever to be supported if its effect is ~×1, which is why the retention question moves to the back-exposure analysis. Some real effects will honestly come out "inconclusive", and the paper will say so rather than hunt for significance.
 
