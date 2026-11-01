@@ -46,6 +46,42 @@ def summary(ex):
             "neck": sum(sm.duration(r) for r in ex), "via": first["found_via"]}
 
 
+def model_lines(rows):
+    """Same simple Firth logistic at two levels: one attempt vs the whole back exposure. If leg control buys
+    retention, its odds ratio should rise from the attempt level to the exposure level."""
+    import math
+    import sys
+
+    import numpy as np
+    sys.path.insert(0, str(ROOT / "research/rnc_science"))
+    import prereg_analysis as pa
+
+    def x_of(r):
+        st = sm.state_at(r, sm.LANDMARK)
+        arm = {"under_chin": 1.0, "over_jaw": 0.0}.get(st.get("choke_arm_position", ""))
+        c = st.get("control", "")
+        legs = 1.0 if c in ("body_triangle", "two_hooks") else 0.0 if c in ("one_hook", "none") else None
+        two = {"True": 1.0, "False": 0.0}.get(st.get("defender_two_on_one", ""))
+        return None if None in (arm, legs, two) else [1.0, arm, legs, two]
+
+    def fit(pairs):
+        X = np.array([x for x, _ in pairs]); y = np.array([yy for _, yy in pairs], float)
+        beta, pl = pa.firth(X, y)
+        return [(math.exp(beta[j]), *[math.exp(v) for v in pa.profile_ci(X, y, j, beta, pl)]) for j in (1, 2, 3)], len(y)
+
+    att = [(x_of(r), r["outcome"] in SUCCESS) for r in rows if x_of(r)]
+    exp = [(x_of(e[0]), any(r["outcome"] in SUCCESS for r in e)) for e in exposures(rows) if x_of(e[0])]
+    (ra, na), (re, ne) = fit(att), fit(exp)
+    names = ["Arm under the chin", "Strong legs (body triangle or both hooks)", "Defender two-on-one"]
+    out = ["", "## Attempt level vs whole back take (Firth logistic, 95% profile intervals)", "",
+           f"| Detail at the first attempt's 2-s mark | One attempt (n = {na}) | Whole back take (n = {ne}) |", "|---|---|---|"]
+    for n, a, e in zip(names, ra, re):
+        out.append(f"| {n} | x{a[0]:.2f} ({a[1]:.2f}-{a[2]:.2f}) | x{e[0]:.2f} ({e[1]:.2f}-{e[2]:.2f}) |")
+    out += ["", "The retention idea predicts that the leg-control multiplier rises from the attempt column to the back-take "
+            "column. Exploratory; the intervals are wide and this is not the pre-registered test (H2 stays per attempt)."]
+    return out
+
+
 def main():
     rows = [r for r in csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8"))
             if "excluded_" not in r["notes"] and r["outcome"] != "bell"]
@@ -73,6 +109,7 @@ def main():
             "catch up with or pass the one-hook/none group, even though their per-attempt rate is lower "
             "([findings_pilot.md](findings_pilot.md)). With this few exposures, differences within the 95% intervals "
             "are not evidence either way."]
+    out += model_lines(rows)
     (ROOT / "reports/back_exposures.md").write_text("\n".join(out) + "\n", encoding="utf-8")
     print("\n".join(out))
 

@@ -7,8 +7,8 @@
 | Search | Fight | Event | Round to watch | File |
 |---|---|---|---|---|
 | `Raoni Barcelos` | Raoni Barcelos vs Raul Rosas Jr. | UFC Fight Night: Rosas Jr. vs. Barcelos (2026) | round 4 only; attempt type unknown, may not contain an RNC (log 0 attempts if none) | `f01_barcelos_rosas.mp4` |
-| `Kevin Holland` | Kevin Holland vs Randy Brown | UFC 327: Prochazka vs. Ulberg (2026) | round 2 only; attempt type unknown, may not contain an RNC (log 0 attempts if none) | `f02_holland_brown.mp4` ⚠️ phone screen recording (real fight, cramped view) |
-| `Randy Brown` | Randy Brown vs Elizeu Zaleski dos Santos | UFC 302: Makhachev vs. Poirier (2024) | round 2 only; attempt type unknown, may not contain an RNC (log 0 attempts if none) | `f16_brown_santos.mp4` ⚠️ may be a video-game render: check first |
+| `Kevin Holland` | Kevin Holland vs Randy Brown | UFC 327: Prochazka vs. Ulberg (2026) | round 2 only; attempt type unknown, may not contain an RNC (log 0 attempts if none) | `f02_holland_brown.mp4` ⚠️ fan upload, check it |
+| `Randy Brown` | Randy Brown vs Elizeu Zaleski dos Santos | UFC 302: Makhachev vs. Poirier (2024) | round 2 only; attempt type unknown, may not contain an RNC (log 0 attempts if none) | `f16_brown_santos.mp4` ⚠️ fan upload, check it |
 | `Dustin Poirier` | Dustin Poirier vs Benoit Saint Denis | UFC 299: O'Malley vs. Vera 2 (2024) | round 1 only; attempt type unknown, may not contain an RNC (log 0 attempts if none) | `f18_poirier_denis.mp4` |
 | `Marlon Vera` | Marlon Vera vs Davey Grant | UFC Fight Night: Jung vs. Ige (2021) | round 3 only; attempt type unknown, may not contain an RNC (log 0 attempts if none) | `f29_vera_grant.mp4` |
 

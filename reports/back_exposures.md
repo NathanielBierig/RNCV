@@ -11,3 +11,13 @@
 Exposures with more than one attempt: **9 of 65**. Finish rate when the attacker got 2+ attempts: 4/9; with a single attempt: 36/56.
 
 **How to read it:** if leg control buys retention, body-triangle and both-hooks exposures should show *more attempts* and *more seconds on the neck* per exposure, and their exposure-level finish rate should catch up with or pass the one-hook/none group, even though their per-attempt rate is lower ([findings_pilot.md](findings_pilot.md)). With this few exposures, differences within the 95% intervals are not evidence either way.
+
+## Attempt level vs whole back take (Firth logistic, 95% profile intervals)
+
+| Detail at the first attempt's 2-s mark | One attempt (n = 73) | Whole back take (n = 64) |
+|---|---|---|
+| Arm under the chin | x2.26 (0.71-7.76) | x1.78 (0.46-6.92) |
+| Strong legs (body triangle or both hooks) | x0.48 (0.17-1.32) | x0.38 (0.11-1.14) |
+| Defender two-on-one | x1.52 (0.54-4.54) | x2.06 (0.66-7.20) |
+
+The retention idea predicts that the leg-control multiplier rises from the attempt column to the back-take column. Exploratory; the intervals are wide and this is not the pre-registered test (H2 stays per attempt).
