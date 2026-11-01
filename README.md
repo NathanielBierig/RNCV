@@ -22,6 +22,8 @@
 
 Oliveira vs Gamrot, drawn only from derived data: the pose model's confident joints (with motion trails), the fighters' box, the reticle locked on the neck, and the side tab. The real detector flags the back attack (trained without this fight), the finish chance climbs as the figure-four goes in, and Gamrot's HP drains to the tap. No broadcast pixels: made with `python tools/mvp/demo.py <clip> --no-pixels`.
 
+**[Watch the 30-second reel](docs/media/rncv_reel.mp4)** (replay, first findings with their uncertainty, no broadcast footage; built by `tools/mvp/reel.py`).
+
 ---
 
 ## Results so far (honest numbers)
