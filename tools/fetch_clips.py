@@ -36,7 +36,7 @@ def surname(name):
 
 BROADCASTER = re.compile(r"^(Eurosport Italia|Eurosport|Eurosport Deutschland|Eurosport France)$")
 ALLOW_FAN = "--fan" in sys.argv
-BAD_CHANNELS = {"VAASMMA", "Everything UFC", "Inside Fighting", "Combat Sports on Fanatics View", "The AllStar"}   # game renders / interviews
+BAD_CHANNELS = {"VAASMMA", "Everything UFC", "Inside Fighting", "Combat Sports on Fanatics View", "The AllStar", "Full Reptile CLIPS", "Next MMA", "MMA Junkie", "MMAFightingonSBN", "PFL MMA", "Goran Poth"}   # game renders / interviews
 FAN_MIN = 360             # fan uploads: at least 6 minutes, both surnames, no game/highlight/reaction words
 BROADCASTER_MIN = 480     # licensed broadcasters post long "HIGHLIGHTS" (8-20 min) that show whole rounds
 BAD_ALWAYS = re.compile(r"discuss|motivated|exclusive|matchup|training camp|companion|play by play|fight szn|ufc ?[45]\b|\bea\b|game|simulation|cpu|compilation|reaction|breakdown|preview|recap|predict|interview", re.I)
@@ -51,7 +51,7 @@ def ok_hit(vid, ch, dur, title, att, dfn):
     if BROADCASTER.match(ch.strip()):            # long broadcaster highlights are allowed
         return dur >= BROADCASTER_MIN and not BAD_ALWAYS.search(title)
     if ALLOW_FAN and ch.strip() not in BAD_CHANNELS:   # --fan: fan uploads too (quality varies; the owner skips bad ones)
-        return dur >= FAN_MIN and not BAD.search(title) and not BAD_ALWAYS.search(title)
+        return dur >= FAN_MIN and "full fight" in t and not BAD.search(title) and not BAD_ALWAYS.search(title)
     return False
 
 
@@ -77,6 +77,7 @@ def search(att, dfn):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")    # video titles can hold characters the Windows console can't print
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     n_want = int(args[0]) if args else 15
     fail = "--failures" in sys.argv            # failure rounds (attempts that didn't finish) instead of finishes
