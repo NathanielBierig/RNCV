@@ -8,7 +8,7 @@ All times are estimates. "Sitting" = about 20–30 min of labeling.
 |---|---|---|---|
 | ✅ M0 Foundations | Plan, PREREG + amendments A1–A4, labeler, QA, queues, overlay renderer | done | — |
 | 🟡 **M1 Attempt detector usable** | 40 labeled fights, ~65 min of no-choke footage | frame ROC-AUC **~0.75** (target 0.80 not met); finds back attacks but not the start second; fails on highlight reels; camera-angle fixes gave no gain | more fights; mirrored training once ~20 new clips exist (only 5 of 41 feature clips still have video, so old clips can't be backfilled) |
-| 🔴 M2 First factor detector | pilot on whole-image features: near chance (κ ≤ 0.17) | neck-crop model being built from saved crops (16 fights) | decision at ~150 attempts |
+| 🔴 M2 First factor detector | pilot on whole-image features: near chance (best κ 0.24, bar 0.4) | neck-crop model being built from saved crops (16 fights) | decision at ~150 attempts |
 | 🟡 M3 Science v1 | **75 attempts / 43 fights**; second rater not yet | pilot report + exploratory findings done; confirmatory test waits on the recomputed target | footage supply is the bottleneck |
 | 🟢 M4 Finish-probability model | model v0.8 (expert priors + labels), held-out Brier 0.244 vs 0.256 at 2 s, 0.223 vs 0.256 as the position changes | done for the pilot; improves with labels | — |
 | 🟢 **MVP 0.3** | side-tab overlay, locked reticle, skeleton flashes, HP with seconds of air, local test app | done; polish for the pilot release | — |
@@ -21,7 +21,7 @@ Where each step stands, on fights left out of training:
 |---|---|---|
 | Find the back attack | 🟡 works on full broadcasts | frame ROC-AUC ~0.75, 95% of attempts caught, ~0.5 false alarms/min |
 | Place the start second | 🔴 | correct start ~9% |
-| Read arm, grip, legs, hand fight | 🔴 near chance | κ ≤ 0.17, [factor_pilot.md](../reports/factor_pilot.md) |
+| Read arm, grip, legs, hand fight | 🔴 near chance | best κ 0.24 (bar 0.4), [factor_pilot.md](../reports/factor_pilot.md) |
 | Odds from pixels alone | 🔴 no gain | Brier 0.256 vs 0.257 for guessing the average, even with labeled start times, [auto_odds.md](../reports/auto_odds.md) |
 | Odds from public stats alone | 🟡 lead | Brier 0.248 vs 0.256, no vision; may partly reflect how fights were picked |
 | Time to a finish | 🔴 no gain | 3.3 s error vs 3.4 s for guessing the median; finishes are roughly flat after 5 s ([time_curve.md](../reports/time_curve.md)) |

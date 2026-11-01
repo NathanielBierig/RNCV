@@ -42,7 +42,7 @@ Attempts were coded at a fixed landmark (2 s after the start) with a purpose-bui
 **Can a computer see it?** Everything below was tested on fights left out of training.
 - Hand labels into a model give a replay finish chance. From the 2-s snapshot it barely beats a base-rate guess (Brier 0.244 vs 0.256). Following the position as it changes, it does clearly better (0.223 vs 0.256).
 - An automatic detector finds back attacks with a frame-level ROC-AUC of about 0.75.
-- Reading the details from video is near chance (κ ≤ 0.17), and odds from video alone show no gain (Brier 0.256 vs 0.257).
+- Reading the details from video is near chance (best κ 0.24, bar 0.4), and odds from video alone show no gain (Brier 0.256 vs 0.257).
 
 **Conclusion.** The pilot points the way coaching expects for the arm, the grip and the hidden hand, without proving any of them yet. It challenges the role of leg control per attempt. The computer finds the moment but can't yet read the choke. The confirmatory test waits for 150 attempts.
 
@@ -233,7 +233,7 @@ This wasn't pre-registered, and it was found after looking at the data, so it ca
 |---|---|---|
 | Find the back attack | Partly | Frame ROC-AUC ~0.75, 95% of attempts caught |
 | Place the start second | No | Correct about 9% of the time |
-| Read arm, grip, legs, hand fight | No | Near chance (κ ≤ 0.17) |
+| Read arm, grip, legs, hand fight | No | Near chance (best κ 0.24, bar 0.4) |
 | Odds from video alone | No | Brier 0.256 vs 0.257 for guessing the average |
 | Odds from public stats alone | Lead | Brier 0.248 vs 0.256, no vision; may partly reflect how fights were picked |
 | Time to a finish | No | 3.3 s error vs 3.4 s for guessing the median |
