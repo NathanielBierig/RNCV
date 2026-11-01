@@ -13,10 +13,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INTERNAL = {"CLAUDE.md", "HUMAN_TASKS.md", "PROGRESS.md", "DOWNLOADS.md"}
-INTERNAL_PREFIX = ("docs/BRIEF", "docs/DECISIONS", "docs/ALIGNMENT", "docs/OPERATIONS", "docs/PODCAST", "docs/DECISION_",
+INTERNAL = {"CLAUDE.md", "HUMAN_TASKS.md", "PROGRESS.md"}
+INTERNAL_PREFIX = ("docs/BRIEF", "docs/DECISIONS", "docs/ALIGNMENT", "docs/PODCAST", "docs/DECISION_",
                    "docs/PLAN", "research/critique/", "research/venture/", "phase3_labels/pilot_15_RETIRED",
-                   "phase3_labels/NEXT_SESSION", "reports/TRAINING_STATUS", "tools/make_public.py")
+                   "phase3_labels/NEXT_SESSION", "tools/make_public.py")
 VIDEO = re.compile(r"\.(mp4|webm|mkv|mov|avi|m4v)$", re.I)
 LOCAL = re.compile(r"[A-Za-z]:[\\/]+Users[\\/]+\w+|\.venvs[\\/]|AppData[\\/]", re.I)
 SECRET = re.compile(r"KGAT_[A-Za-z0-9]{16,}|sk-[A-Za-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{30,}")

@@ -90,7 +90,7 @@ curl -L --fail -o data/raw/vicos/annotations.json https://data.vicos.si/datasets
 
 **Test the detector yourself:** `python -I tools/app/serve.py` starts a local app (drop a clip, the detector analyses it, you play it back with the readouts). See [tools/app/README.md](tools/app/README.md).
 
-How-tos (labeling, Kaggle, training, pose runs): [docs/OPERATIONS.md](docs/OPERATIONS.md). Status: [PROGRESS.md](PROGRESS.md) · [Roadmap](docs/ROADMAP.md).
+How-tos (labeling, Kaggle, training, pose runs): [docs/OPERATIONS.md](docs/OPERATIONS.md). Roadmap: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Footage and licenses
 

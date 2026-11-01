@@ -1,17 +1,17 @@
-# RNCV operations (internal how-tos)
+# RNCV how-tos
 
-Day-to-day steps for the owner and the Claude sessions. The public overview is in [README.md](../README.md).
+Day-to-day steps for labeling, training and processing. The overview is in [README.md](../README.md).
 
-## How to: label attempts (your main job)
+## How to: label attempts
 
 Full guide: **[docs/LABELING_GUIDE.md](LABELING_GUIDE.md)**. Pictures for each answer: **[docs/rnc_codebook.html](rnc_codebook.html)**.
 
 1. **Pick a fight:** [successes queue](../phase3_labels/labeling_queue_successes.csv) or [failures queue](../phase3_labels/labeling_queue_failures.csv), next row with status `todo` (men's only).
-2. **Get the clip** into `data\clips\` (local only, never uploaded). Ask Main for the download command if needed.
+2. **Get the clip** into `data\clips\` (local only, never uploaded).
 3. **Open the labeler:** `tools\labeler\index.html` in Chrome → **Ctrl+Shift+R** → *Load fight list(s) CSV* (the 3 queue files) → *Load labels.csv* → *Link labels.csv file* (both: `phase3_labels\labels.csv`).
 4. **Label:** **S** start → answer the frozen 2-second panel (**X** if the view is blocked) → **G** whenever something changes → **E** at the end → outcome → Enter.
-5. **Round with no RNC at all?** Tell Main "rank N watched, no RNC".
-6. **Check your work:** ask Main to "run the labels QA", or run it yourself:
+5. **Round with no RNC at all?** Mark it `watched_no_rnc` in the queue file.
+6. **Check your work:**
    ```powershell
    python -I phase3_labels\qa_labels.py
    ```
@@ -28,7 +28,7 @@ Full guide: **[docs/KAGGLE_FINETUNE.md](KAGGLE_FINETUNE.md)**.
    ```powershell
    kaggle kernels status nathanielbierig/finetune-pose
    ```
-5. When it says **COMPLETE**, tell Main **"pull the fine-tune"**. Main downloads `rncv_pose_v1.onnx` into `models\` and re-runs the pose checks, before vs after.
+5. When it says **COMPLETE**, download `rncv_pose_v1.onnx` into `models\` and re-run the pose checks.
 
 Never put UFC video on Kaggle (its rules forbid it). Only open datasets (VICOS, Harmony4D) go there.
 
@@ -48,12 +48,6 @@ python -I src\pose_smoke.py                   # whole clips → reports\pose_smo
 python -I tools\preview\corner_preview.py     # red/blue skeleton preview videos → data\pose\*_corners.mp4
 ```
 
-## How to: work with Claude sessions
-
-- **Main session** (in this folder) does the work and is the only one that commits and pushes. Start a fresh one any time: it reads [CLAUDE.md](../CLAUDE.md), [PROGRESS.md](../PROGRESS.md) and [HUMAN_TASKS.md](../HUMAN_TASKS.md) and catches up.
-- **Secretary** keeps [HUMAN_TASKS.md](../HUMAN_TASKS.md), [docs/BRIEF.md](BRIEF.md) and [docs/DECISIONS.md](DECISIONS.md) current.
-- Useful phrases for Main: "run the labels QA" · "pull the fine-tune" · "swap in the fine-tuned pose model" · "next 3 failure rounds" · "rank N watched, no RNC".
-
 ## Position classifier evaluation (VICOS, side experiment)
 
 - VICOS = 6 sparring sequences × up to 3 cameras. Each sequence's timeline is cut into 5 **time blocks**; each fold tests one block of every sequence (all cameras together) and drops training frames within 300 frames of it, so near-duplicate frames can't leak.
@@ -69,7 +63,7 @@ python -I tools\preview\corner_preview.py     # red/blue skeleton preview videos
 | GBM, role-invariant features | 0.62 | 0.62 |
 | Majority class | 0.14 accuracy | |
 
-## After a labeling batch ("rerun")
+## After a labeling batch
 1. `python -I phase3_labels/qa_labels.py` (fix every red row first).
 2. `python -I research/attempt_clf/attempt_clf.py --crop --refresh`: detector features for the new clips (only clips without a cache are extracted).
 3. `python -I tools/save_neck_crops.py`: head/neck crops of every labeled attempt (data/crops/, local only), the training set for the factor model.
