@@ -30,3 +30,11 @@
 | Round 2 or later only | x1.63 (0.42-7.98), n = 43 |
 
 **How to read it:** the pooled result looks strong, but it shrinks and its range includes no effect inside finish-list fights and inside rounds 2+. So part of it may come from how the sample was picked and from later rounds, not from damage itself. It is a lead, not a finding. Knockdowns show no raw link. These stats have no timestamps and can't see a fighter who is hurt without being knocked down, or leg and body damage in context.
+
+## Hand label `defender_hurt_before` (0 attempts coded so far)
+
+| Defender before the attempt | Attempts | Finished | 95% interval |
+|---|---|---|---|
+| none | 0 | - | - |
+| hurt | 0 | - | - |
+| knockdown | 0 | - | - |

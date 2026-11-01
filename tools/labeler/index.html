@@ -132,7 +132,7 @@ const CORE = ["fight_id","round","attempt_start_s","attempt_end_s","attacker","d
 const OPTIONAL = ["video_url","video_time_start","video_time_end","reviewer","confidence",
   "choke_arm_position","control","opponent_flattened","defender_two_on_one","rnc_style_at_L","rnc_style_sequence",
   "forearm_placement","choking_hand_tucked","second_hand_on_traps","squeeze_direction","chin_tucked","found_via",
-  "back_context","attacker_side","seconds_to_lock","fight_time_s","view_blocked","state_changes"];
+  "back_context","attacker_side","seconds_to_lock","fight_time_s","view_blocked","state_changes","defender_hurt_before"];
 const COLUMNS = CORE.concat(OPTIONAL);
 const LANDMARK_S = 2.0;
 const FPS = 30;
@@ -156,6 +156,7 @@ const FACTOR_GROUPS = [   // every landmark field, coded blind at start + 2 s
   ["opponent_flattened",  BOOL],
   ["back_context",        ["ground_back","turtle_ride","standing_back","scramble"]],
   ["attacker_side",       ["left","right"]],
+  ["defender_hurt_before",["none","hurt","knockdown","unclear"]],
 ];
 // State changes after the landmark (G key). Descriptive / hazard-model only: never primary predictors (PREREG §4).
 const CHANGE_GROUPS = [

@@ -33,6 +33,7 @@ One **attempt** as defined in [LABEL_SCHEMA.md](../../phase3_labels/LABEL_SCHEMA
 | `opponent_flattened` | yes / no | Flattened = can't turn in |
 | `round`, weight class | stats | Fatigue and division effects |
 | `attacker_side` | left / right | Sanity check: should show no effect |
+| `defender_hurt_before` | none / hurt / knockdown / unclear, strikes in the ~30 s before the attempt | Does damage going in make chokes finish? Exploratory only (PREREG A5). Hand label; computer vision can't read it |
 
 Excluded as predictors (part of the escape definition, so tautological): `defender_turning`, `arm = off`.
 

@@ -129,6 +129,10 @@ def main():
             "finish-list fights and inside rounds 2+. So part of it may come from how the sample was picked and from later rounds, "
             "not from damage itself. It is a lead, not a finding. Knockdowns show no raw link. These stats have no timestamps and "
             "can't see a fighter who is hurt without being knocked down, or leg and body damage in context."]
+    coded = [(r.get("defender_hurt_before", ""), r["outcome"] in SUCCESS) for r in rows if r.get("defender_hurt_before", "") not in ("", "unclear")]
+    out += ["", f"## Hand label `defender_hurt_before` ({len(coded)} attempts coded so far)", "",
+            "| Defender before the attempt | Attempts | Finished | 95% interval |", "|---|---|---|---|"]
+    out += [line(v, [(None, y) for h, y in coded if h == v]) for v in ("none", "hurt", "knockdown")]
     (ROOT / "reports/damage.md").write_text("\n".join(out) + "\n", encoding="utf-8")
     print("\n".join(out))
 

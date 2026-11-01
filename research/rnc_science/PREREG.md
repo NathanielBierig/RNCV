@@ -85,3 +85,8 @@ Among UFC RNC attempts, which technical states at a fixed early moment are assoc
 - **Change:** the A3 cap becomes **at most 5 rounds in which a fighter is the attacker** (the 20-attempt cap per attacker is unchanged; still no cap on defenders).
 - **Why:** owner decision. Prolific back-takers (e.g. Charles Oliveira, already 4 labeled rounds) are a real part of UFC RNC data; 5 rounds still stops any one fighter from dominating, and attacker clustering is handled in the analysis (§7).
 - **Timing:** made with 36 attempts labeled, **before any outcome was tabulated or any factor model was fitted**. No hypothesis, coding, model or decision rule changes. The Oliveira–Gamrot round, excluded under A3, is restored.
+
+### A5 (2026-11-01): exploratory factor for damage going into the choke
+- **Change:** new exploratory field `defender_hurt_before` (FACTORS.md), plus exploratory use of public round-by-round strike stats. Neither enters the primary model.
+- **Why:** owner decision. Damage before the choke is a plausible driver of finishes that the code book did not cover.
+- **Timing:** made with 75 attempts labeled, **after outcomes were tabulated and after a first look at strike stats** (`reports/damage.md`). So anything found here stays exploratory; testing it would need a further amendment made before looking at new data. Attempts already labeled stay blank. No hypothesis, coding, model or decision rule changes.
