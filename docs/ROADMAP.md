@@ -14,6 +14,25 @@ All times are estimates. "Sitting" = about 20–30 min of labeling.
 | 🟢 **MVP 0.3** | side-tab overlay, locked reticle, skeleton flashes, HP with seconds of air, local test app | done; polish for the pilot release | — |
 | ⏸️ Parked | Precise skeletons (pose merges tangled fighters; 4/48 correct). Revisit with a different kind of pose model later | — | — |
 
+## Main focus (owner, 2026-11-01): the computer labels on its own and gives the odds and the time to a finish
+Where each step stands, on fights left out of training:
+
+| Step | Status | Evidence |
+|---|---|---|
+| Find the back attack | 🟡 works on full broadcasts | frame ROC-AUC ~0.75, 95% of attempts caught, ~0.5 false alarms/min |
+| Place the start second | 🔴 | correct start ~9% |
+| Read arm, grip, legs, hand fight | 🔴 near chance | κ ≤ 0.17, [factor_pilot.md](../reports/factor_pilot.md) |
+| Odds from pixels alone | 🔴 no gain | Brier 0.256 vs 0.257 for guessing the average, even with labeled start times, [auto_odds.md](../reports/auto_odds.md) |
+| Odds from public stats alone | 🟡 lead | Brier 0.248 vs 0.256, no vision; may partly reflect how fights were picked |
+| Time to a finish | 🔴 no gain | 3.3 s error vs 3.4 s for guessing the median; finishes are roughly flat after 5 s ([time_curve.md](../reports/time_curve.md)) |
+
+Plan, in order (estimates):
+1. **Keep labeled videos on the laptop.** Only 5 of 41 feature clips still have video, and every better model needs the pixels. Old clips can be re-downloaded from `phase3_labels/downloads_log.csv`.
+2. **Log more moments.** Each G-panel change gives extra training frames for the same labeling work.
+3. **Start with the easiest detail:** legs (body triangle), the only one above chance so far, before the arm.
+4. **Try a stronger image model on the laptop CPU** (no GPU; Kaggle stays closed to footage). Worth trying from about 30 fights of crops.
+5. **Show stats-based odds until vision earns its place,** labeled as stats, not sight.
+
 ## Pilot release: portfolio-ready (owner, 2026-10-29)
 Goal: proof that it works, basic findings and a working model, presented honestly as a pilot. No waiting for 150 attempts. Estimate: 1–2 weeks of sessions, mostly Main's work. Labeling continues on the side.
 
