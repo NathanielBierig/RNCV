@@ -54,7 +54,7 @@ This started as a crossover between two interests: data science and the grapplin
 
 The rear-naked choke is the right place to start:
 - **It's common.** RNCs are about half of all UFC choke finishes (Stellpflug 2020: 904 choke finishes, 1993–2020).
-- **It's visible.** A broadcast usually shows where the arm and hands are.
+- **It's mostly visible.** A broadcast often shows the arm and hands, which makes it a fair test of what video alone can reveal.
 - **There is a clear expert theory to test:** coaches agree on the arm, the grip, the legs and the hand fight.
 
 **Two questions:**
@@ -85,6 +85,8 @@ With dozens of possible details and a small sample, *something* will always look
 - A1: men's divisions only.
 - A2: an upper-body field and a position change log, for descriptive use.
 - A3, A4: a cap of 5 attacking rounds per fighter, so one specialist can't dominate.
+- A5: an exploratory field for damage going into the choke, added after a first look at strike stats, so it stays exploratory.
+- A6: long-control rounds added for computer training; every analysis also reports results without them.
 
 ## 3. Data
 
