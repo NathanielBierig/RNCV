@@ -1,12 +1,20 @@
 # RNCV: what makes a UFC rear-naked choke finish?
 
-RNCV (**RNC + CV**, computer vision) asks a BJJ question with data: *which details of a rear-naked choke decide whether a UFC fighter taps?* It has three parts:
+**Commentators say a choke is "in deep". This project measures it.** RNCV (RNC + computer vision) is a pre-registered study of 75 hand-labeled rear-naked choke attempts from 43 UFC fights, a live finish-probability model, and an automatic back-attack detector. No UFC footage is published: only labels, numbers and code.
 
-1. **A pre-registered study** of hand-labeled UFC choke attempts: 36 so far, target ~150. The hypotheses were frozen before labeling ([PREREG](research/rnc_science/PREREG.md)).
-2. **A replay overlay** with two readouts. The attacker's **finish chance** is a forecast that the attempt ends in a tap or stoppage. The defender's **HP** shows how much choking they have already absorbed (with an estimate of the seconds of air left).
-3. **An early automatic attempt detector** (experimental).
+**In 30 seconds**
+- **What decides a finish so far:** the arm under the chin (61% finished vs 40% over the jaw), a figure-four grip (68% vs 42% with one arm), a hidden choking hand (75% vs 48%), and a flattened defender (66% vs 49%).
+- **The surprise:** leg control doesn't help a single attempt finish. It seems to buy retention and re-attacks instead.
+- **A check against physiology:** finished chokes took a median 9.6 s on the neck; a published study of 81 MMA choke-outs found 9.0 s.
+- **The honest part:** it's a pilot. The sample is small and tilted toward finishes, and the confirmatory test runs at ~150 attempts ([why 150](research/rnc_science/POWER_NOTE.md)).
 
-**Status: early.** The finish model mixes expert priors (the owner's BJJ judgment plus a published-evidence review) with a small labeled set. So far it beats a base-rate guess only slightly. UFC footage is never published: the repo holds only derived data (timestamps, labels, keypoints).
+**Try it:** [interactive explorer](docs/explorer/index.html) (no footage) · [pilot report](docs/paper/PILOT_REPORT.md) · [local detector app](tools/app/README.md)
+
+| | Status |
+|---|---|
+| 🟢 Works | Hand-labeled dataset with blind coding and QA; finish model and HP meter; replay overlay; the detector finds back attacks on full broadcasts (frame ROC-AUC ~0.75, catches 95% of attempts) |
+| 🟡 Partly | The finish model beats a base-rate guess only slightly from one snapshot, and clearly when it follows the position |
+| 🔴 Not yet | The computer can't read the details (arm, grip, legs) by itself; it misses the exact second a choke starts; it doesn't carry over to edited highlight reels |
 
 ### What the computer sees (footage-free replay)
 
@@ -20,10 +28,10 @@ Oliveira vs Gamrot, drawn only from derived data: the pose model's confident joi
 
 | Piece | Result | What it means |
 |---|---|---|
-| Labeled data | 73 attempts from 42 UFC fights, men's divisions | Too few for the pre-registered analysis yet (needs ~150) |
+| Labeled data | 75 attempts from 43 UFC fights, men's divisions | Too few for the pre-registered analysis yet (needs ~150) |
 | Finish model v0.8 | Brier 0.245 at 2 s vs 0.254 for always guessing the average; 0.224 vs 0.254 as the position changes | Following the position adds real information; the 2-s snapshot alone is within noise so far |
 | Defender HP (choke dose) | Pantoja vs Asakura: hits 0 at 18 s, he went out at 19 s; labeled finishes took a median 9.6 s on the neck | Timing from physiology (≈9 s, Stellpflug 2020), not fitted |
-| Attempt detector v2 | Frame ROC-AUC ~0.75 (0.73–0.80 as fights were added), leave-one-fight-out, 39 fights, ~60 min of no-attempt footage | Spots back attacks; not yet the second the choke starts. The demo's "BACK ATTACK DETECTED" comes from it |
+| Attempt detector v2 | Frame ROC-AUC ~0.75, leave-one-fight-out, 40 fights, ~65 min of no-attempt footage; catches 95% of attempts at ~0.5 false alarms per minute | Spots back attacks; not yet the second the choke starts. The demo's "BACK ATTACK DETECTED" comes from it |
 | Pose skeletons | Both fighters correct in 4/48 tangled frames | Parked; the overlay draws only confident parts (box, heads) |
 
 ### The science so far (pilot data; the pre-registered test waits for ~150 attempts)

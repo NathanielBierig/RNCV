@@ -525,6 +525,7 @@ function saveAttempt(endVals) {
     }
     warn += ` Clock anchored to the known finish (${fmtClock(fin.finish_s)})${n ? `; ${n} earlier attempt(s) backfilled` : ""}.`;
   } else if (clockOffset == null) warn += ` <span class="bad">No clock yet: round times left blank (filled in if a later finish in this clip anchors the clock, or press <kbd>C</kbd>).</span>`;
+  if (Number(row.attempt_end_s) > 300.5) warn += ` <span class="bad">Round time is past 5:00: this attempt is probably in a later round. Set the right round, pause on the on-screen clock and press <kbd>C</kbd>, then redo it (or tell Main).</span>`;
   rows.push(row); touched.set(rowKey(row), row); touchedAt.set(rowKey(row), Date.now()); persist(); renderTable(); writeLinked().catch(err => alert("Write failed: " + err.message));
   cur = null; timerStart = null; drawTimeline(); showSeq();
   setStatus(`Saved ${row.outcome} (${row.attempt_start_s}–${row.attempt_end_s} s, round ${rnd}).${warn} Next attempt: <kbd>S</kbd>.`);
