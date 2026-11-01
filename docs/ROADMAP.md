@@ -23,15 +23,16 @@ Where each step stands, on fights left out of training:
 | Place the start second | 🔴 | correct start ~9% |
 | Read arm, grip, legs, hand fight | 🔴 near chance | best κ 0.24 (bar 0.4), [factor_pilot.md](../reports/factor_pilot.md) |
 | Odds from pixels alone | 🔴 no gain | Brier 0.256 vs 0.257 for guessing the average, even with labeled start times, [auto_odds.md](../reports/auto_odds.md) |
-| Odds from public stats alone | 🟡 lead | Brier 0.248 vs 0.256, no vision; may partly reflect how fights were picked |
-| Time to a finish | 🔴 no gain | 3.3 s error vs 3.4 s for guessing the median; finishes are roughly flat after 5 s ([time_curve.md](../reports/time_curve.md)) |
+| Odds from public stats alone | 🔴 no gain end to end | Brier 0.248 vs 0.256 with the true attacker, but 0.258 vs 0.259 in the [full pipeline](../reports/auto_demo.md) |
+| Pick the attacker | 🟢 works | 96% from control time in the round |
+| Time to a finish | 🔴 no gain | 23 s error from the detector's start, 3.3 s even with the true start (3.4 s for guessing the median); finishes are roughly flat after 5 s ([time_curve.md](../reports/time_curve.md)) |
 
 Plan, in order (estimates):
 1. 🟢 **Keep labeled videos on the laptop** (owner, 2026-11-01; `cleanup_clips.py` now only lists). Only 5 of 41 feature clips still have video, and every better model needs the pixels. Old clips can be re-downloaded from `phase3_labels/downloads_log.csv`.
 2. **Log more moments.** Each G-panel change gives extra training frames for the same labeling work.
 3. **Start with the detail that shows a hint:** the two-on-one (κ 0.24 with DINOv2 at 20 fights, below the 0.4 bar). Legs fell back to chance.
 4. **Stronger image model on the laptop CPU** (no GPU; Kaggle stays closed to footage). DINOv2 at 20 fights of crops: best κ 0.24, others near 0. Retry at about 30 fights.
-5. **Show stats-based odds until vision earns its place,** labeled as stats, not sight.
+5. 🟡 **Crude automatic demo built** (`tools/mvp/auto_demo.py`, local only): flags the attack and picks the attacker, but its odds are a coin flip. The round number is still given by hand.
 
 ## Pilot release: portfolio-ready (owner, 2026-10-29)
 Goal: proof that it works, basic findings and a working model, presented honestly as a pilot. No waiting for 150 attempts. Estimate: 1–2 weeks of sessions, mostly Main's work. Labeling continues on the side.

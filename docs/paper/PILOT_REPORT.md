@@ -235,8 +235,9 @@ This wasn't pre-registered, and it was found after looking at the data, so it ca
 | Place the start second | No | Correct about 9% of the time |
 | Read arm, grip, legs, hand fight | No | Near chance (best κ 0.24, bar 0.4) |
 | Odds from video alone | No | Brier 0.256 vs 0.257 for guessing the average |
-| Odds from public stats alone | Lead | Brier 0.248 vs 0.256, no vision; may partly reflect how fights were picked |
-| Time to a finish | No | 3.3 s error vs 3.4 s for guessing the median |
+| Odds from public stats alone | No | 0.248 vs 0.256 with the true attacker, but 0.258 vs 0.259 run end to end |
+| Pick the attacker | Yes | 96% correct, from control time in the round |
+| Time to a finish | No | 23 s error from the detector's start; 3.3 s with the true start, vs 3.4 s for guessing the median |
 
 Details are in [auto_odds.md](../../reports/auto_odds.md). Start times came from labels in the odds and timing tests, so these are best cases.
 
