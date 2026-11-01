@@ -1,0 +1,137 @@
+"""Damage going into the choke (EXPLORATORY)    python research/model/damage.py  -> reports/damage.md
+
+Joins each attempt to the public round-by-round UFC stats (phase3_labels/raw_sources, scraped from ufcstats.com), no video.
+Per attempt, for the defender: knockdowns and significant strikes absorbed in earlier rounds (always before the attempt),
+and in the attempt's own round. Own-round numbers are a whole-round count: stats have no timestamps, so on a failed
+attempt some of them can come after it. A second field in labels would fix that.
+"""
+import csv
+import math
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+import numpy as np
+
+import state_model as sm
+
+ROOT = Path(__file__).resolve().parents[2]
+RAW = ROOT / "phase3_labels/raw_sources"
+SUCCESS = {"tap", "ref_stop", "unconscious"}
+
+
+def stats_by_fight():
+    bout = {}
+    for r in csv.DictReader(open(RAW / "ufc_fight_details.csv", encoding="utf-8")):
+        bout[(r["EVENT"].strip(), " ".join(r["BOUT"].split()))] = r["URL"].strip().rsplit("/", 1)[-1]
+    out = defaultdict(list)
+    for r in csv.DictReader(open(RAW / "ufc_fight_stats.csv", encoding="utf-8")):
+        fid = bout.get((r["EVENT"].strip(), " ".join(r["BOUT"].split())))
+        if fid and r["ROUND"].startswith("Round"):
+            out[fid].append({"round": int(r["ROUND"].split()[1]), "fighter": r["FIGHTER"].strip(), "kd": int(float(r["KD"] or 0)),
+                             "sig": int(r["SIG.STR."].split(" of ")[0])})
+    return out
+
+
+def surname(n):
+    return n.strip().split()[-1].lower()
+
+
+def damage(row, stats):
+    """(kd earlier, sig earlier, kd this round, sig this round) landed BY the attacker, or None if the fight isn't in the snapshot."""
+    rows = stats.get(row["fight_id"])
+    if not rows:
+        return None
+    rnd = int(row["round"])
+    mine = [s for s in rows if surname(s["fighter"]) == surname(row["attacker"])]
+    if not mine:                            # label uses another spelling: the attacker is whoever the defender isn't
+        mine = [s for s in rows if surname(s["fighter"]) != surname(row["defender"])]
+    return (sum(s["kd"] for s in mine if s["round"] < rnd), sum(s["sig"] for s in mine if s["round"] < rnd),
+            sum(s["kd"] for s in mine if s["round"] == rnd), sum(s["sig"] for s in mine if s["round"] == rnd))
+
+
+def line(name, group):
+    n, k = len(group), sum(y for _, y in group)
+    if not n:
+        return f"| {name} | 0 | - | - |"
+    lo, hi = sm.wilson(k, n)
+    return f"| {name} | {n} | {k} ({100 * k / n:.0f}%) | {100 * lo:.0f}–{100 * hi:.0f}% |"
+
+
+def strikes_or(items, value, keep=lambda r: True):
+    """Odds multiplier per 50 significant strikes, with arm and grip held fixed."""
+    sys.path.insert(0, str(ROOT / "research/rnc_science"))
+    import prereg_analysis as pa
+    X, y = [], []
+    for r, d in items:
+        st = sm.state_at(r, sm.LANDMARK)
+        arm = {"under_chin": 1.0, "over_jaw": 0.0}.get(st.get("choke_arm_position", ""))
+        if arm is None or not keep(r):
+            continue
+        X.append([1.0, arm, float(st.get("rnc_style", "") == "figure_four"), value(d) / 50])
+        y.append(float(r["outcome"] in SUCCESS))
+    X, y = np.array(X), np.array(y)
+    beta, pl = pa.firth(X, y)
+    lo, hi = pa.profile_ci(X, y, 3, beta, pl)
+    return f"x{math.exp(beta[3]):.2f} ({math.exp(lo):.2f}-{math.exp(hi):.2f}), n = {len(y)}"
+
+
+def firth_line(items):
+    sys.path.insert(0, str(ROOT / "research/rnc_science"))
+    import prereg_analysis as pa
+    X, y = [], []
+    for r, d in items:
+        st = sm.state_at(r, sm.LANDMARK)
+        arm = {"under_chin": 1.0, "over_jaw": 0.0}.get(st.get("choke_arm_position", ""))
+        if arm is None:
+            continue
+        X.append([1.0, arm, float(st.get("rnc_style", "") == "figure_four"), float(d[2] + d[0] > 0), min(d[1] + d[3], 150) / 50])
+        y.append(float(r["outcome"] in SUCCESS))
+    X, y = np.array(X), np.array(y)
+    beta, pl = pa.firth(X, y)
+    res = []
+    for j, nm in ((3, "Knockdown by the attacker, this round or earlier"), (4, "Each 50 significant strikes landed by the attacker before the round ended")):
+        lo, hi = pa.profile_ci(X, y, j, beta, pl)
+        res.append(f"| {nm} | x{math.exp(beta[j]):.2f} ({math.exp(lo):.2f}-{math.exp(hi):.2f}) |")
+    return len(y), res
+
+
+def main():
+    rows = [r for r in csv.DictReader(open(ROOT / "phase3_labels/labels.csv", encoding="utf-8"))
+            if "excluded_" not in r["notes"] and r["outcome"] != "bell"]
+    stats = stats_by_fight()
+    items = [(r, damage(r, stats)) for r in rows]
+    have = [(r, d) for r, d in items if d]
+    rec = [(d, r["outcome"] in SUCCESS) for r, d in have]
+    med = float(np.median([d[1] + d[3] for d, _ in rec]))
+    out = ["# Damage going into the choke (exploratory)", "",
+           f"{len(have)} of {len(rows)} attempts matched to public round-by-round stats. Generated by `research/model/damage.py`. "
+           "Own-round counts cover the whole round, so on a failed attempt some strikes can come after it. "
+           "Finish-enriched sample: compare rows with each other.", "",
+           "| Defender before or around the attempt | Attempts | Finished | 95% interval |", "|---|---|---|---|",
+           line("Knocked down this round", [(d, y) for d, y in rec if d[2] > 0]),
+           line("Knocked down in an earlier round only", [(d, y) for d, y in rec if d[0] > 0 and d[2] == 0]),
+           line("Not knocked down", [(d, y) for d, y in rec if d[0] + d[2] == 0]),
+           line(f"Absorbed more than {med:.0f} significant strikes so far", [(d, y) for d, y in rec if d[1] + d[3] > med]),
+           line(f"Absorbed {med:.0f} or fewer", [(d, y) for d, y in rec if d[1] + d[3] <= med]),
+           line("Round 2 or later: absorbed 30+ in earlier rounds", [(d, y) for r, d in have for y in [r["outcome"] in SUCCESS] if int(r["round"]) > 1 and d[1] >= 30]),
+           line("Round 2 or later: absorbed under 30 in earlier rounds", [(d, y) for r, d in have for y in [r["outcome"] in SUCCESS] if int(r["round"]) > 1 and d[1] < 30])]
+    n, res = firth_line(have)
+    out += ["", f"## With arm and grip held fixed (Firth logistic, n = {n}, 95% profile intervals)", "", "| Detail | Odds multiplier |", "|---|---|"] + res
+    total = lambda d: d[1] + d[3]
+    out += ["", "## How sturdy is the strikes result?", "", "| Version | Multiplier per 50 strikes |", "|---|---|",
+            f"| All strikes so far | {strikes_or(have, total)} |",
+            f"| Earlier rounds only (certainly before the attempt) | {strikes_or(have, lambda d: d[1])} |",
+            f"| This round only | {strikes_or(have, lambda d: d[3])} |",
+            f"| Finish-list fights only | {strikes_or(have, total, lambda r: r['found_via'] == 'finish_list')} |",
+            f"| Round 2 or later only | {strikes_or(have, total, lambda r: int(r['round']) > 1)} |",
+            "", "**How to read it:** the pooled result looks strong, but it shrinks and its range includes no effect inside "
+            "finish-list fights and inside rounds 2+. So part of it may come from how the sample was picked and from later rounds, "
+            "not from damage itself. It is a lead, not a finding. Knockdowns show no raw link. These stats have no timestamps and "
+            "can't see a fighter who is hurt without being knocked down, or leg and body damage in context."]
+    (ROOT / "reports/damage.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+    print("\n".join(out))
+
+
+if __name__ == "__main__":
+    main()

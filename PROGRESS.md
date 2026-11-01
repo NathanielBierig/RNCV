@@ -3,6 +3,8 @@
 🟢 done · 🟡 in progress · 🔴 needs the owner · ⚪ not started
 
 ## ▶ Next session starts here (2026-11-01)
+- 🟢 **Reels:** [footage-free](docs/media/rncv_reel.mp4) in the repo (dense layered bodies, `tools/mvp/reel.py`); footage version only at `data/mvp/rncv_reel_footage.mp4`, local.
+- 🟡 **New leads (exploratory):** damage going in ([damage.md](reports/damage.md): about ×3 per 50 strikes pooled, but not sturdy inside finish-list fights), time on the neck ([time_curve.md](reports/time_curve.md): flat after 5 s), HP check ([hp_check.md](reports/hp_check.md): weak, readable estimate only).
 - **Labels: 75 attempts / 43 fights**, QA clean. 15 fights left in `data/clips/to_label/` ([NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md)), failure rounds first. Press C on the on-screen clock in failure rounds.
 - **Pilot release (roadmap):** footage-free demo, explorer (https://claude.ai/artifact/URsMmrkWwQcGzC1EbZzecY, private), local app, README, PDF report (`docs/paper/RNCV_pilot_report.pdf`) and clean public export (`tools/make_public.py`, 0 issues) are done. Open: license choice and the decision to go public.
 - **Honest science status:** with labels alone, every effect's 95% interval includes "no effect" ([labels_only.md](reports/labels_only.md)); the directions match coaching. Model v0.8's stronger multipliers lean on priors. Leg control: the attempt vs back-take test does not confirm "retention" yet ([back_exposures.md](reports/back_exposures.md)).

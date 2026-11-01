@@ -180,6 +180,14 @@ The raw rates mix details together: deep chokes tend to be figure-fours with the
 
 Finishes landed at almost exactly the 9.0 s from lock to unconsciousness measured in MMA (Stellpflug 2020), an independent check on the labels. Duration alone doesn't separate finishes from failures; position does.
 
+**When finishes happen.** Of the 74 attempts, 8% finished in the first 5 seconds. Of those still going, 29% finished in the 5–10 s block, 25% in 10–15 s and 24% in 15–20 s. So the danger arrives after about 5 seconds, then stays roughly flat rather than climbing with time. The ranges are wide ([time_curve.md](../../reports/time_curve.md)).
+
+![Figure 2. Share of attempts still going that finished in each block of time on the neck; bars are 95% ranges.](../media/time_on_neck.png)
+
+*Figure 2.* Finish-enriched sample: compare the blocks with each other, not with the real world.
+
+**HP meter check.** Only 8 of 40 finishes reached HP 0, because fighters usually tap while conscious, and 5 of 34 failures did reach it. The lowest HP separates finishes from failures only weakly (AUC 0.62, a range that touches chance). HP is a readable estimate for viewers, not a validated measure ([hp_check.md](../../reports/hp_check.md)).
+
 ### 5.4 What the pilot says about each hypothesis
 
 - **H1 (arm under the chin): points the predicted way** (raw 59% vs 40%; labels-only ×2.8, interval 0.8–10.9). Not yet decided.
@@ -196,7 +204,15 @@ A first look at whole back takes ([back_exposures.md](../../reports/back_exposur
 - Body-triangle back takes do get more attempts (1.3 vs 1.1) and more time on the neck (12.2 vs 9.3 s).
 - But in a model of whole back takes the leg-control multiplier doesn't rise (×0.48 per attempt, ×0.38 per back take; intervals wide).
 
-So the idea is **not confirmed**. The test is also weak by design: a finish-list round always contains a finish, so "did any attempt finish?" partly reflects how fights were picked. Only failure rounds and fully watched fights can test it fairly. Another live explanation: many quick finishes come right after a knockdown, on a dazed opponent, before any hooks are in, and that isn't labeled yet.
+So the idea is **not confirmed**. The test is also weak by design: a finish-list round always contains a finish, so "did any attempt finish?" partly reflects how fights were picked. Only failure rounds and fully watched fights can test it fairly.
+
+**Damage going in: a lead worth following.** Public round-by-round stats (no video) let each attempt be matched to the strikes the defender had absorbed ([damage.md](../../reports/damage.md)).
+- Knockdowns show no raw link: 56% finished after a knockdown that round, 54% with no knockdown.
+- Strikes do: defenders who had absorbed more than the median 26 significant strikes were finished 62% of the time, vs 46%.
+- With arm and grip held fixed, each 50 strikes multiplied the odds about ×3 (1.0–10.6). Using only earlier rounds, which are certainly before the attempt, gives ×4.0 (1.2–17.3).
+- It isn't sturdy yet: inside finish-list fights it falls to ×1.8 (0.6–6.4), and inside rounds 2+ to ×1.6 (0.4–8.0). Sampling and later rounds may explain part of it.
+
+This wasn't pre-registered, and it was found after looking at the data, so it can't count as a result. It is the first candidate for a dated amendment, ideally with a hand label for "hurt just before the choke".
 
 **The hand fight needs more data.** The two-on-one shows no raw effect, and the labels-only estimate is too uncertain to call. Defenders may hand-fight hardest when the choke is already deep, which would hide its benefit in raw percentages.
 
@@ -209,9 +225,9 @@ So the idea is **not confirmed**. The test is also weak by design: a finish-list
 **Live finish probability.**
 - The same model, run second by second, powers a replay overlay. It shows the attacker's finish chance, plus the defender's "HP": a blood-flow dose that drains with squeeze strength and empties after ~9 s of a full squeeze.
 - Tested on fights it never saw (leave-one-fight-out), the 2-second snapshot barely beats a base-rate guess (Brier 0.244 vs 0.256, within noise). Following the position as it changes, it does clearly better (0.223 vs 0.256).
-- When it says ~80%, those attempts finished ~80% of the time (Figure 2). Lower down it runs too extreme: calibration slope 0.55, where 1.0 is perfect. A correction fixes the bins but doesn't improve overall accuracy, so the numbers are kept and disclosed.
+- When it says ~80%, those attempts finished ~80% of the time (Figure 3). Lower down it runs too extreme: calibration slope 0.55, where 1.0 is perfect. A correction fixes the bins but doesn't improve overall accuracy, so the numbers are kept and disclosed.
 
-![Figure 2. Calibration on held-out fights.](../media/calibration.png)
+![Figure 3. Calibration on held-out fights.](../media/calibration.png)
 
 **Automatic detection.**
 - Pose skeletons fail in tangled grappling (both fighters correct in 4 of 48 frames), so the detector uses general-purpose image features (CLIP) of the fighters plus the last few seconds of motion.
