@@ -126,8 +126,16 @@ def _extract_new(clips, per):
         sys.path.insert(0, str(ROOT / "src"))
         from yolo_pose_onnx import YoloPoseOnnx
         det = YoloPoseOnnx(ROOT / "models/rncv_pose_v1.onnx")
+    def encode(batch, X, Xm):
+        """Fingerprints of the frames and of their mirror images: a mirrored choke teaches the other side."""
+        with torch.no_grad():
+            imgs = torch.stack(batch)
+            for out, x in ((X, imgs), (Xm, torch.flip(imgs, dims=[3]))):
+                e = model.encode_image(x).float()
+                out.append((e / e.norm(dim=-1, keepdim=True)).numpy())
+
     for name, info in sorted(clips.items()):
-        X, t_s = [], []
+        X, Xm, t_s = [], [], []
         cap = cv2.VideoCapture(str(clip_path(name)))
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
         step = max(1, int(round(fps / FPS_S)))
@@ -147,15 +155,11 @@ def _extract_new(clips, per):
                     meta.append(t)
                 i += 1
                 if len(batch) == 32:
-                    with torch.no_grad():
-                        e = model.encode_image(torch.stack(batch)).float()
-                    X.append((e / e.norm(dim=-1, keepdim=True)).numpy()); t_s += meta; batch, meta = [], []
+                    encode(batch, X, Xm); t_s += meta; batch, meta = [], []
         if batch:
-            with torch.no_grad():
-                e = model.encode_image(torch.stack(batch)).float()
-            X.append((e / e.norm(dim=-1, keepdim=True)).numpy()); t_s += meta
+            encode(batch, X, Xm); t_s += meta
         cap.release()
-        np.savez_compressed(per / f"{name}.npz", X=np.concatenate(X), t=np.array(t_s))
+        np.savez_compressed(per / f"{name}.npz", X=np.concatenate(X), Xm=np.concatenate(Xm), t=np.array(t_s))
         print(f"extracted {name}: {len(t_s)} frames", flush=True)
 
 

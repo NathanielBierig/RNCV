@@ -2,26 +2,13 @@
 
 🟢 done · 🟡 in progress · 🔴 needs the owner · ⚪ not started
 
-## ▶ Next session starts here (2026-10-30): walk the owner through these first
-The owner asked (2026-10-29, "explain this stuff to me when I start next session"). Explain each in plain words, a few lines each, then ask what to do next:
-1. **RNC Finish Explorer**: interactive page, no footage (https://claude.ai/artifact/URsMmrkWwQcGzC1EbZzecY, copy in `docs/explorer/`). Presets (Pantoja vs Asakura), live finish % + HP + seconds of air. Private until shared.
-2. **Footage-free demo GIF** (`docs/media/oliveira_gamrot_nopixels.gif`, `demo.py --no-pixels`): joints/box/reticle drawn from derived data, so it's safe for GitHub.
-3. **Local "test the detector" app** (`python -I tools/app/serve.py` → localhost:8765): 2-minute analysis from any point, test pool of never-trained clips (Diaz–McGregor 1 works; the Maia highlight reel doesn't fire: an honest limit), attempt stays live through the choke, HP recovers between attempts.
-4. **Detector trigger lowered** to 0.40/0.25 (owner prefers false alarms): catches 95% of attempts vs 84%, ~0.5 false alarms/min.
-5. **Camera angles tried:** no gain. The detector mostly recognizes the *kind of shot*; fighter orientation is the deeper problem (mirrored training going forward).
-6. **Sample size note** (`research/rnc_science/POWER_NOTE.md`): 150 is justified for H1 (arm) and H3 if large; H2 (legs) per attempt won't be supported at any size, so back exposures test retention instead.
-7. **Back exposures** (`reports/back_exposures.md`): body-triangle back takes get more attempts and neck time; mild support for "retention, not finishing".
-8. **Pilot report** rewritten in the owner's voice (`docs/paper/PILOT_REPORT.md`). The owner is a fan, not a practitioner.
-9. **Queue:** 16 fights in `data/clips/to_label/` (5 failure rounds first), list in `phase3_labels/NEXT_SESSION.md`; fan uploads flagged.
-10. **Pilot-release plan** (`docs/ROADMAP.md`): items 1–2 done; next are finish-model calibration, README story, public hygiene.
-
-## ▶ Next session starts here (2026-10-28)
-- **Labels: 73 attempts / 42 fights**, QA clean. 64 come from finish-list fights and only 9 from failure rounds: **failure rounds are the labeling priority** (5 fights on disk: [NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md)). Official YouTube uploads are nearly used up; the owner can paste links.
-- **Detector:** frame ROC-AUC **~0.75** on 40 fights (0.80 on 29 was partly luck). Finds back attacks; start timing and false alarms (~0.7–1.0/min) are the weak spots.
-- **Finish model v0.8** (leaner v0.7c): Brier 0.245 vs 0.254 at 2 s (within noise); 0.224 vs 0.254 as the position changes. Six variants tested and logged ([MODEL_SPEC §4g](docs/MODEL_SPEC.md)).
-- **Findings (exploratory):** [reports/findings_pilot.md](reports/findings_pilot.md). Hidden hand 75% vs 48% finished, flattened 66% vs 49%, finishes took a median 9.6 s on the neck (9.0 s in the published MMA data). Body triangle shows no edge per attempt, likely because leg control buys re-attacks, which this model doesn't count.
-- **Factor recognition (M2):** not yet. Neck-crop pipeline running (15 fights so far); a decision at ~150 attempts.
-- **MVP 0.3 demo:** side tab (detector, finish %, HP + seconds of air, factor boxes), calm skeleton flashes, locked reticle. README GIF updated.
+## ▶ Next session starts here (2026-11-01)
+- **Labels: 75 attempts / 43 fights**, QA clean. 15 fights left in `data/clips/to_label/` ([NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md)), failure rounds first. Press C on the on-screen clock in failure rounds.
+- **Pilot release (roadmap):** footage-free demo, explorer (https://claude.ai/artifact/URsMmrkWwQcGzC1EbZzecY, private), local app, README, PDF report (`docs/paper/RNCV_pilot_report.pdf`) and clean public export (`tools/make_public.py`, 0 issues) are done. Open: license choice and the decision to go public.
+- **Honest science status:** with labels alone, every effect's 95% interval includes "no effect" ([labels_only.md](reports/labels_only.md)); the directions match coaching. Model v0.8's stronger multipliers lean on priors. Leg control: the attempt vs back-take test does not confirm "retention" yet ([back_exposures.md](reports/back_exposures.md)).
+- **Model:** v0.8 Brier 0.244 vs 0.256 at 2 s, 0.223 as the position changes; too extreme (calibration slope 0.55), numbers kept and disclosed (MODEL_SPEC 4h).
+- **Detector:** frame ROC-AUC ~0.75, catches 95% of attempts (trigger 0.40/0.25), ~0.5 false alarms/min; fails on highlight reels. New clips now store mirrored features; switch on mirrored training at ~20 clips.
+- **Second-rater kit** is built (`tools/second_rater/`), parked: owner says low priority.
 
 ## Fresh-eyes review (2026-10-26, concept and user-facing)
 - 🟢 Done: README rewritten for outsiders (results table with honest numbers); how-tos moved to [docs/OPERATIONS.md](docs/OPERATIONS.md); counts reconciled; MODEL_SPEC has a "current model" box; defender gauge renamed **choke meter** on screen ("consciousness" sounded like a medical measurement).

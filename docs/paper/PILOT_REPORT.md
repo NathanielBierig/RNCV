@@ -176,7 +176,7 @@ The raw rates mix details together: deep chokes tend to be figure-fours with the
 | | Median | Middle half |
 |---|---|---|
 | Finished chokes (n = 40) | **9.6 s** | 6.5–12.9 s |
-| Failed attempts (n = 32) | 9.6 s | 6.3–15.1 s |
+| Failed attempts (n = 34) | 9.6 s | 6.2–15.4 s |
 
 Finishes landed at almost exactly the 9.0 s from lock to unconsciousness measured in MMA (Stellpflug 2020), an independent check on the labels. Duration alone doesn't separate finishes from failures; position does.
 
@@ -220,7 +220,7 @@ So the idea is **not confirmed**. The test is also weak by design: a finish-list
 
 ## 8. Limitations
 
-- **Small and finish-heavy sample:** 72 attempts, 64 from finish-list fights. Wide intervals, inflated overall rate.
+- **Small and finish-heavy sample:** 74 attempts, 64 from finish-list fights. Wide intervals, inflated overall rate.
 - **One rater so far.** Reliability is untested.
 - **Broadcast views** hide the hands at times. Some details are "unclear", and camera cuts hide parts of attempts.
 - **Per-attempt scoring** can't credit position retention (section 6).

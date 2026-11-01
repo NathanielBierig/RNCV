@@ -1,9 +1,10 @@
 # Your tasks (most urgent first)
 
-## ▶ Now (updated 2026-10-28)
-1. 🔴 **Label the 5 fights in [NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md)**, failure rounds first. Load **both** fight lists in the labeler.
-2. 🔴 **Find more fights:** official uploads are nearly used up. Paste YouTube links (failure rounds especially) into Main and it downloads them.
-3. 🟡 Open decisions: add the coach's label fields (hand inside the choke, arm trapped, hurt before the back take)? These would help the body-triangle puzzle.
+## ▶ Now (updated 2026-11-01)
+1. 🔴 **Label failure rounds first** ([NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md)): Vera R3, Barcelos R4, Holland R2, then finish fights. Press C on the on-screen clock.
+2. 🟡 **Choose a license** for the public copy (suggested: MIT for code, CC BY-NC for labels).
+3. 🟡 Decide when to go public, and whether display numbers stay as they are or use the calibrated version.
+4. ⚪ Second rater: later (kit ready in `tools/second_rater/`).
 
 ---
 
