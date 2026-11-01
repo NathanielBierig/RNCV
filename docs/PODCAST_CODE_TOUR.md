@@ -39,7 +39,7 @@ The project turns UFC choke footage into three things: a **labeled dataset** (th
 
 **fetch_clips** walks the list of 254 findable RNC finishes, searches YouTube and downloads only official UFC uploads at 720p into `data/clips/to_label/`. It skips women's bouts, pre-2018 fights and capped fighters. **The lesson behind it:** hand-picked links included a video-game render (EA UFC), an Allen highlight compilation and a fan channel calling itself "Ufc". So now there's a channel whitelist, a list of banned title words (highlights, interview, countdown, best of) and a blocklist. Official uploads are nearly used up: 18 of 254 so far. A `--failures` mode fetches rounds where a choke failed, which matter most now.
 
-**cleanup_clips** deletes a labeled video only when both its detector features and its neck pictures are saved, and never while labeling is active (labels saved in the last 30 minutes). **About 1.8 GB** of used clips were freed in one night.
+**cleanup_clips** (since 2026-11-01 it only lists, unless given `--delete`) deletes a labeled video only when both its detector features and its neck pictures are saved, and never while labeling is active (labels saved in the last 30 minutes). **About 1.8 GB** of used clips were freed in one night.
 
 ## Stop 4: `research/attempt_clf/attempt_clf.py`, turning video into numbers the detector can use
 

@@ -27,7 +27,7 @@ Where each step stands, on fights left out of training:
 | Time to a finish | 🔴 no gain | 3.3 s error vs 3.4 s for guessing the median; finishes are roughly flat after 5 s ([time_curve.md](../reports/time_curve.md)) |
 
 Plan, in order (estimates):
-1. **Keep labeled videos on the laptop.** Only 5 of 41 feature clips still have video, and every better model needs the pixels. Old clips can be re-downloaded from `phase3_labels/downloads_log.csv`.
+1. 🟢 **Keep labeled videos on the laptop** (owner, 2026-11-01; `cleanup_clips.py` now only lists). Only 5 of 41 feature clips still have video, and every better model needs the pixels. Old clips can be re-downloaded from `phase3_labels/downloads_log.csv`.
 2. **Log more moments.** Each G-panel change gives extra training frames for the same labeling work.
 3. **Start with the easiest detail:** legs (body triangle), the only one above chance so far, before the arm.
 4. **Try a stronger image model on the laptop CPU** (no GPU; Kaggle stays closed to footage). Worth trying from about 30 fights of crops.

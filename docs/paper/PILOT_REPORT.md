@@ -94,7 +94,7 @@ With dozens of possible details and a small sample, *something* will always look
 
 **This pilot:** 75 attempts from 43 fights; 74 are analysable (one ended at the bell). 64 come from finish-list fights and 10 from failure rounds. The sample is heavily tilted toward finishes: 54% finished overall, far above reality. **Read the rates as comparisons with each other, never as real-world chances.**
 
-**Footage:** official UFC uploads and licensed broadcasters only, watched locally. Videos are deleted after processing, and only labels and numeric features are kept.
+**Footage:** official UFC uploads and licensed broadcasters only, watched locally. Videos stay on one local laptop and are never uploaded; only labels and derived data are published.
 
 ## 4. How an attempt is coded
 

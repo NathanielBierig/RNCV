@@ -1,4 +1,4 @@
-"""Save tight head/neck crops for every labeled attempt, so factor models can be trained after the videos are deleted.
+"""Save tight head/neck crops for every labeled attempt, so factor models can train from small crops without reopening the videos.
 
     python -I tools/save_neck_crops.py           # all labeled clips still on disk that have no crops yet
 

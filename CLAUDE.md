@@ -10,7 +10,7 @@ RNCV = RNC + CV. A UFC-only study of what makes rear-naked chokes finish (pre-re
 
 ## Rules
 - **Git:** commit piece by piece with clear messages (`Phase N: ...`, `Docs: ...`, `Tools: ...`, `Research: ...`), then push to `origin main` (github.com/NathanielBierig/RNCV, private). Background helper sessions never commit; the main session does.
-- **Footage:** UFC video never goes into git, Kaggle, cloud or social media. Only derived data (keypoints, timestamps, labels) is kept. Clips live in `data/clips/` (git-ignored).
+- **Footage:** UFC video never goes into git, Kaggle, cloud or social media. Only derived data (keypoints, timestamps, labels) is kept. Clips live in `data/clips/` (git-ignored) and are kept there after labeling (owner, 2026-11-01).
 - **Science:** PREREG.md is frozen at v1.0 before pilot labeling; after that, only dated amendments. FACTORS.md is the single code book.
 - **Python:** OpenCV/rtmlib need a short-path venv (`C:\Users\netan\.venvs\ufc-cv`) because of a Windows long-path DLL issue.
 - **Communication:** short, color-coded bullets (🟢 done, 🟡 in progress, 🔴 needs owner, ⚪ not started), terms defined on first use, estimates marked as estimates, honest about weak results. End with the owner's next action in bold. Batch the owner's to-dos into one notification.
