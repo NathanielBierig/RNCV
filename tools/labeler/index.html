@@ -119,6 +119,7 @@
         <kbd>X</kbd> in the factor panel: view blocked (referee, cut, angle), so all factors are left blank and the attempt is flagged · <kbd>X</kbd> during an attempt: toggle the "view blocked" flag<br>
         <kbd>T</kbd> then <kbd>1</kbd>–<kbd>7</kbd> add a grip style to the sequence (after the landmark) · <kbd>W</kbd> swap attacker/defender<br>
         <kbd>G</kbd> log a state change (hooks, body lock, arm position, two-on-one, chin, flattened, context) at the current time<br>
+        <kbd>K</kbd> back control began here (when hooks or a seatbelt are first in, before any choke): fills the next saved attempt, or the next one you start<br>
         <kbd>U</kbd> undo last saved row · <kbd>B</kbd> back 10 s
       </div>
     </div>
@@ -194,6 +195,7 @@ let hints = [];                  // [{start,end}] in video seconds
 let fights = new Map();          // fight_id -> info
 let fileHandle = null;
 let cur = null;                  // attempt in progress
+let backAt = null;               // K: video time back control began, waiting for the next attempt's S
 let panel = null;                // {kind, groups, values, active}
 let timerStart = null;
 
@@ -503,7 +505,7 @@ function saveAttempt(endVals) {
     camera_cut_flag: endVals.camera_cut_flag, notes: notes.filter(Boolean).join("; "),
     video_url: videoName, video_time_start: cur.startV.toFixed(2), video_time_end: cur.endV.toFixed(2),
     reviewer: $("reviewer").value.trim(), confidence: endVals.confidence || "",
-    seconds_to_lock: $("x_stl").value, fight_time_s: s == null ? "" : r1((rnd - 1) * 300 + s),
+    seconds_to_lock: $("x_stl").value || (backAt != null && backAt <= cur.startV ? r1(cur.startV - backAt) : ""), fight_time_s: s == null ? "" : r1((rnd - 1) * 300 + s),
     found_via: $("found_via").value, view_blocked: cur.viewBlocked ? "True" : "",
     state_changes: $("x_chg").value.trim(),
   };
@@ -528,8 +530,26 @@ function saveAttempt(endVals) {
   } else if (clockOffset == null) warn += ` <span class="bad">No clock yet: round times left blank (filled in if a later finish in this clip anchors the clock, or press <kbd>C</kbd>).</span>`;
   if (Number(row.attempt_end_s) > 300.5) warn += ` <span class="bad">Round time is past 5:00: this attempt is probably in a later round. Set the right round, pause on the on-screen clock and press <kbd>C</kbd>, then redo it (or tell Main).</span>`;
   rows.push(row); touched.set(rowKey(row), row); touchedAt.set(rowKey(row), Date.now()); persist(); renderTable(); writeLinked().catch(err => alert("Write failed: " + err.message));
-  cur = null; timerStart = null; drawTimeline(); showSeq();
+  cur = null; backAt = null; timerStart = null; drawTimeline(); showSeq();
   setStatus(`Saved ${row.outcome} (${row.attempt_start_s}–${row.attempt_end_s} s, round ${rnd}).${warn} Next attempt: <kbd>S</kbd>.`);
+}
+
+// K = "back control began here". The gap to the attempt's start is seconds_to_lock (LABEL_SCHEMA), which teaches the
+// computer back control WITHOUT a choke. On a clip already labeled, it fills the next saved attempt within 3 min;
+// otherwise it waits for the next S.
+function markBackStart() {
+  const t = v.currentTime;
+  const next = rows.filter(r => r.video_url === videoName && Number(r.video_time_start) >= t && Number(r.video_time_start) - t <= 180)
+                   .sort((a, b) => Number(a.video_time_start) - Number(b.video_time_start))[0];
+  if (next) {
+    next.seconds_to_lock = r1(Number(next.video_time_start) - t);
+    touched.set(rowKey(next), next); touchedAt.set(rowKey(next), Date.now()); persist(); renderTable();
+    writeLinked().catch(err => alert("Write failed: " + err.message));
+    setStatus(`Back control start saved: ${next.seconds_to_lock} s before the attempt at ${Number(next.video_time_start).toFixed(1)} s (${next.outcome}). Press <kbd>K</kbd> again to correct it.`);
+  } else {
+    backAt = t;
+    setStatus(`Back control start marked at ${t.toFixed(1)} s. It goes on the next attempt you start with <kbd>S</kbd>.`);
+  }
 }
 
 // ---------- panels ----------
@@ -667,6 +687,7 @@ document.addEventListener("keydown", e => {
     setStatus(cur.viewBlocked ? "Attempt flagged: view blocked." : "View-blocked flag removed.");
     e.preventDefault(); return;
   }
+  if ((k === "k" || k === "K") && !cur) { e.preventDefault(); markBackStart(); return; }
   if (k === "g" || k === "G") { e.preventDefault(); openChangePanel(); return; }
   if (k === "t" || k === "T") {
     if (!cur || !cur.factorsDone) { setStatus("Add styles after the landmark factors are coded (<kbd>S</kbd> first)."); return; }

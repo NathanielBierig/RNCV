@@ -43,7 +43,7 @@ Added for the study of which details predict a finish. All are **reviewer-labele
 | `back_context` | `ground_back`, `turtle_ride`, `standing_back`, `scramble` | where the back attack happens |
 | `attacker_side` | `left`, `right` | which arm is the choking arm |
 | `defender_hurt_before` | `none`, `hurt`, `knockdown`, `unclear` (blank = not coded) | defender's state from strikes in the ~30 s before the attempt: `knockdown` = dropped by a strike; `hurt` = visibly rocked (wobbled, legs gone, shelling up) without being dropped; `unclear` = that stretch isn't shown. Coded in the blind panel at the landmark. Blank on attempts labeled before 2026-11-01 |
-| `seconds_to_lock` | float | seconds from back control established to the choke going in |
+| `seconds_to_lock` | float | seconds from back control established to the choke going in; set with **K** in the labeler (2026-11-03), used to teach the computer back control without a choke |
 | `round` | int | already a core column; repeated here only for the analysis table |
 | `fight_time_s` | float | seconds since the fight began = (round - 1) x 300 + `attempt_start_s` (valid for 5-minute rounds; fill by script, not by hand) |
 
