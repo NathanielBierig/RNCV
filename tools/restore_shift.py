@@ -65,7 +65,7 @@ def shift_video(src, dst, d, ffmpeg):
     else:
         cmd = [ffmpeg, "-y", "-loglevel", "error", "-i", str(src), "-vf", f"tpad=start_duration={-d:.3f}",
                "-af", f"adelay={int(-d * 1000)}:all=1"]
-    subprocess.run(cmd + ["-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-c:a", "aac", str(dst)], check=True)
+    subprocess.run(cmd + ["-f", "mp4", "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-c:a", "aac", str(dst)], check=True)
 
 
 def main():
