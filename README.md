@@ -91,4 +91,4 @@ On Windows, put the venv at a short path if OpenCV DLLs fail to load. Three envi
 
 - **UFC footage** stays on one local laptop and is never uploaded, committed or shared; only derived data is published ([footage policy](docs/FOOTAGE.md)). Public fight statistics come from ufcstats.com via the Greco1899 scrape (GPL-3.0).
 - **Third-party:** VICOS CC BY-NC-SA 4.0 (Hudovernik & Skočaj, MMSports'22), YOLO11 AGPL-3.0, RTMO/MMPose/rtmlib Apache-2.0 ([full table](docs/DOWNLOADS.md)).
-- **This repo:** no license chosen yet, so all rights are reserved for now.
+- **This repo:** code under [MIT](LICENSE); labels, derived data and writing under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Details: [LICENSING.md](LICENSING.md).
