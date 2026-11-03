@@ -1,6 +1,7 @@
-"""Second-rater kit (PREREG §7: a second rater codes at least 30 attempts; Cohen's kappa per factor).
+"""Reliability kit (PREREG A8: the owner re-codes 30 attempts weeks later; a second rater codes 15 of the same ones).
 
-    python tools/second_rater/make_kit.py          -> tools/second_rater/rater.html
+    python tools/second_rater/make_kit.py          -> tools/second_rater/rater.html (30 attempts: the owner's self re-code)
+    python tools/second_rater/make_kit.py --n 15   -> tools/second_rater/rater_15.html (the first 15 of the same 30: the helper)
     python tools/second_rater/make_kit.py --score answers.csv     -> agreement per factor
 
 Picks 30 attempts at random (fixed seed; half finishes, half failures where possible) that have a public YouTube
@@ -61,6 +62,8 @@ def build():
     pick = fail[:15]
     pick += fin[:30 - len(pick)]
     rng.shuffle(pick)
+    n = int(sys.argv[sys.argv.index("--n") + 1]) if "--n" in sys.argv else 30
+    pick = pick[:n]                        # a prefix of the same fixed order, so the helper's set sits inside the owner's
     items = []
     for r in pick:
         s = float(r["video_time_start"])
@@ -69,9 +72,10 @@ def build():
                       "start": round(s, 1), "pause": round(s + 2, 1)})
     page = (HERE / "template.html").read_text(encoding="utf-8")
     page = page.replace("/*ITEMS*/[]", json.dumps(items)).replace("/*FIELDS*/{}", json.dumps({k: {"label": v[0], "opts": v[1]} for k, v in FIELDS.items()}))
-    (HERE / "rater.html").write_text(page, encoding="utf-8")
+    out = HERE / ("rater.html" if n == 30 else f"rater_{n}.html")
+    out.write_text(page, encoding="utf-8")
     print(f"{len(items)} attempts ({sum(r['outcome'] in SUCCESS for r in pick)} finishes, {len(pick) - sum(r['outcome'] in SUCCESS for r in pick)} failures) from "
-          f"{len({r['fight_id'] for r in pick})} fights -> {HERE / 'rater.html'}")
+          f"{len({r['fight_id'] for r in pick})} fights -> {out}")
 
 
 def kappa(a, b):

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RNC Second Rater</title>
+<style>
+  :root { --bg:#0e1116; --card:#151a21; --line:#2c333d; --ink:#eceff4; --dim:#8b95a3; --amber:#ffaa28; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 "Segoe UI",system-ui,sans-serif; padding:18px max(16px,3vw) 60px; }
+  main { max-width:860px; margin:0 auto; display:grid; gap:14px; }
+  h1 { margin:0; font-size:26px; }
+  p { color:var(--dim); margin:6px 0; max-width:70ch; }
+  p b { color:var(--ink); font-weight:600; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; display:grid; gap:10px; }
+  .card.done { border-color:#3c6b4a; }
+  .head { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:baseline; }
+  .fight { font-weight:600; font-size:17px; }
+  a { color:var(--amber); }
+  .pause { color:var(--dim); font-size:14px; }
+  .pause b { color:var(--ink); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:8px; }
+  label { display:grid; gap:3px; font-size:13px; color:var(--dim); }
+  select { background:#1d242e; color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:7px; font:inherit; }
+  textarea { background:#1d242e; color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:7px; font:inherit; width:100%; }
+  .bar { position:sticky; bottom:10px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 14px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  button { background:var(--amber); color:#14100a; border:0; border-radius:7px; padding:10px 14px; font:600 15px inherit; cursor:pointer; }
+</style>
+<main>
+  <h1>RNC second rater</h1>
+  <p>Thanks for helping. This checks whether two people see the same details in UFC rear-naked chokes.</p>
+  <p><b>For each attempt:</b> open the link (it starts about 4 seconds early), watch until the video timer reaches the <b>pause time</b>, pause, and answer what you see at that moment. Don't watch ahead to the end of the choke. If you can't see something, choose "can't tell". The attacker is named on each card. Picture guide: ask for the code book.</p>
+  <p>Definitions: <b>under the chin</b> = forearm on the neck, not on the jaw. <b>Hand hidden</b> = the choking hand is tucked behind the head or shoulder, out of reach. <b>Two-on-one</b> = both of the defender's hands are on the choking arm. <b>Flattened</b> = the defender is flat on his stomach.</p>
+  <p>Your answers save in this browser. When you're done, press <b>Save answers</b> and send the file back.</p>
+  <div id="list" style="display:grid;gap:14px"></div>
+  <div class="bar"><span id="count"></span><button id="save" type="button">Save answers (CSV)</button></div>
+</main>
+<script>
+const ITEMS = [{"key": "d869eaea38426f06|1|q39_walker_cutelaba.mp4|278.08", "fight": "Johnny Walker vs Ion Cutelaba", "attacker": "Johnny Walker", "url": "https://www.youtube.com/watch?v=ZX-NXOzTTNQ&t=274s", "start": 278.1, "pause": 280.1}, {"key": "d1621b3da377f34b|1|q13_smith_spann.mp4|368.53", "fight": "Anthony Smith vs Ryan Spann", "attacker": "Anthony Smith", "url": "https://www.youtube.com/watch?v=CmAwV68gBHY&t=364s", "start": 368.5, "pause": 370.5}, {"key": "8bc0c220f7dcefa7|1|q10_tybura_tuivasa.mp4|210.32", "fight": "Marcin Tybura vs Tai Tuivasa", "attacker": "Marcin Tybura", "url": "https://www.youtube.com/watch?v=AzSY34tjmaM&t=206s", "start": 210.3, "pause": 212.3}, {"key": "241a0833e1c76804|3|q16_maia_askren.mp4|1136.77", "fight": "Demian Maia vs Ben Askren", "attacker": "Demian Maia", "url": "https://www.youtube.com/watch?v=ESNeuaZ-K0Q&t=1132s", "start": 1136.8, "pause": 1138.8}, {"key": "d869eaea38426f06|1|q39_walker_cutelaba.mp4|269.72", "fight": "Johnny Walker vs Ion Cutelaba", "attacker": "Johnny Walker", "url": "https://www.youtube.com/watch?v=ZX-NXOzTTNQ&t=265s", "start": 269.7, "pause": 271.7}, {"key": "301f230c90c4bd7d|1|q122_almeida_turkalj.mp4|241.86", "fight": "Jailton Almeida vs Anton Turkalj", "attacker": "Jailton Almeida", "url": "https://www.youtube.com/watch?v=P5sReaaWEhg&t=237s", "start": 241.9, "pause": 243.9}, {"key": "1535fb6549fa8bab|3|q73_dawson_madsen.mp4|140.61", "fight": "Grant Dawson vs Mark Madsen", "attacker": "Grant Dawson", "url": "https://www.youtube.com/watch?v=63pSQ1Rb5d8&t=136s", "start": 140.6, "pause": 142.6}, {"key": "d69bd8e53ec858dc|2|q07_moicano_duncan.mp4|415.26", "fight": "Renato Moicano vs Chris Duncan", "attacker": "Renato Moicano", "url": "https://www.youtube.com/watch?v=-BmqMDT3ERE&t=411s", "start": 415.3, "pause": 417.3}, {"key": "6e73ebbd089aff5e|2|f18_poirier_denis.mp4|378.17", "fight": "Dustin Poirier vs Benoit Saint Denis", "attacker": "Dustin Poirier", "url": "https://www.youtube.com/watch?v=G4HksWLfGhE&t=374s", "start": 378.2, "pause": 380.2}, {"key": "2ba11e0bf32829d6|3|q12_allen_muniz.mp4|974.85", "fight": "Brendan Allen vs Andre Muniz", "attacker": "Brendan Allen", "url": "https://www.youtube.com/watch?v=KLXUfitsCLo&t=970s", "start": 974.9, "pause": 976.9}, {"key": "6e73ebbd089aff5e|2|f18_poirier_denis.mp4|366.70", "fight": "Dustin Poirier vs Benoit Saint Denis", "attacker": "Dustin Poirier", "url": "https://www.youtube.com/watch?v=G4HksWLfGhE&t=362s", "start": 366.7, "pause": 368.7}, {"key": "034c04e480d87b8f|3|q05_silva_delgado.mp4|655.96", "fight": "Jean Silva vs Jose Delgado", "attacker": "Jean Silva", "url": "https://www.youtube.com/watch?v=5L184TA9VDQ&t=651s", "start": 656.0, "pause": 658.0}, {"key": "a3d75cc363a6544b|3|q115_ulberg_jung.mp4|901.50", "fight": "Carlos Ulberg vs Da Woon Jung", "attacker": "Carlos Ulberg", "url": "https://www.youtube.com/watch?v=OIi00xClU7Y&t=897s", "start": 901.5, "pause": 903.5}, {"key": "1535fb6549fa8bab|3|q73_dawson_madsen.mp4|131.14", "fight": "Grant Dawson vs Mark Madsen", "attacker": "Grant Dawson", "url": "https://www.youtube.com/watch?v=63pSQ1Rb5d8&t=127s", "start": 131.1, "pause": 133.1}, {"key": "f17813d03fcd8e7a|2|q23_anjos_barberena.mp4|497.73", "fight": "Rafael Dos Anjos vs Bryan Barberena", "attacker": "Rafael Dos Anjos", "url": "https://www.youtube.com/watch?v=yCk9Aq2fdGQ&t=493s", "start": 497.7, "pause": 499.7}];
+const FIELDS = {"choke_arm_position": {"label": "Choking arm", "opts": {"under_chin": "under the chin", "over_jaw": "over the jaw", "unclear": "can't tell"}}, "rnc_style_at_L": {"label": "Grip", "opts": {"figure_four": "figure-four", "palm_to_palm": "palm to palm", "gable": "gable", "wrist_pull": "wrist pull", "short_choke": "short choke", "one_arm": "one arm", "unclear": "can't tell"}}, "control": {"label": "Legs", "opts": {"body_triangle": "body triangle", "two_hooks": "both hooks", "one_hook": "one hook", "none": "none", "unclear": "can't tell"}}, "defender_two_on_one": {"label": "Defender two-on-one", "opts": {"True": "yes", "False": "no", "unclear": "can't tell"}}, "choking_hand_tucked": {"label": "Choking hand hidden", "opts": {"True": "yes", "False": "no", "unclear": "can't tell"}}, "chin_tucked": {"label": "Chin tucked", "opts": {"True": "yes", "False": "no", "unclear": "can't tell"}}, "opponent_flattened": {"label": "Defender flattened", "opts": {"True": "yes", "False": "no", "unclear": "can't tell"}}};
+const KEY = "rnc-second-rater-v1";
+let A = {};
+try { A = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+const list = document.getElementById("list");
+ITEMS.forEach((it, i) => {
+  const c = document.createElement("div"); c.className = "card"; c.id = "c" + i;
+  const sel = Object.entries(FIELDS).map(([f, d]) => `<label>${d.label}<select data-f="${f}"><option value="">-</option>${Object.entries(d.opts).map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></label>`).join("");
+  c.innerHTML = `<div class="head"><span class="fight">${i + 1}. ${it.fight}</span><a href="${it.url}" target="_blank" rel="noopener">open video at ${mmss(it.start - 4)}</a></div>
+    <div class="pause">Attacker: <b>${it.attacker}</b>. Choke starts about ${mmss(it.start)}. <b>Pause at ${mmss(it.pause)}</b>.</div>
+    <div class="grid">${sel}</div>`;
+  const a = A[it.key] || {};
+  c.querySelectorAll("select").forEach(s => {
+    s.value = a[s.dataset.f] || "";
+    s.onchange = () => { A[it.key] = A[it.key] || {}; A[it.key][s.dataset.f] = s.value; persist(); update(); };
+  });
+  list.appendChild(c);
+});
+function persist() { try { localStorage.setItem(KEY, JSON.stringify(A)); } catch (e) {} }
+function update() {
+  let done = 0;
+  ITEMS.forEach((it, i) => {
+    const a = A[it.key] || {}, full = Object.keys(FIELDS).every(f => a[f]);
+    document.getElementById("c" + i).classList.toggle("done", full); done += full;
+  });
+  document.getElementById("count").textContent = `${done} of ${ITEMS.length} done`;
+}
+document.getElementById("save").onclick = () => {
+  const cols = ["key", ...Object.keys(FIELDS)];
+  const esc = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const rows = [cols.join(",")].concat(ITEMS.map(it => cols.map(c => esc(c === "key" ? it.key : (A[it.key] || {})[c])).join(",")));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["﻿" + rows.join("\n")], { type: "text/csv" }));
+  a.download = "rater_answers.csv"; a.click();
+};
+update();
+</script>
+</html>
