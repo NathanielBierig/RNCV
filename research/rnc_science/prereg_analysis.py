@@ -112,7 +112,7 @@ def code(r, unclear_as=None):
     arm = val(r["choke_arm_position"], {"under_chin"}, {"over_jaw"})
     legs = val(r["control"], {"body_triangle", "two_hooks"}, {"one_hook", "none"})
     two = val(r["defender_two_on_one"], {"True"}, {"False"})
-    left = (300.0 - float(r["attempt_start_s"])) / 60.0
+    left = (300.0 - float(r["attempt_start_s"])) / 60.0 if r["attempt_start_s"] else None   # no round clock: excluded
     x = [1.0, arm, legs, two, left]
     if ADJUST_FOUND_VIA:
         x.append(0.0 if r["found_via"] == "random_fight" else 1.0)
@@ -120,7 +120,8 @@ def code(r, unclear_as=None):
 
 
 def eligible(r):
-    dur = float(r["attempt_end_s"]) - float(r["attempt_start_s"])
+    a, b = ("attempt_start_s", "attempt_end_s") if r["attempt_start_s"] and r["attempt_end_s"] else ("video_time_start", "video_time_end")
+    dur = float(r[b]) - float(r[a])          # round times can be blank (no clock seen); video times always exist
     return (r["outcome"] != "bell" and r["rnc_style_at_L"] != "one_arm" and dur >= MIN_DUR
             and "excluded_" not in r["notes"])
 

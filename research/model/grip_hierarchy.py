@@ -52,8 +52,17 @@ def main():
         if sub:
             a, b = sm.wilson(k, len(sub))
             out.append(f"| {name} | {len(sub)} | {k} ({100 * k / len(sub):.0f}%) | {100 * a:.0f}–{100 * b:.0f}% |")
+    rounds = {}
+    for r in sorted(rows, key=lambda q: float(q["video_time_start"])):
+        rounds.setdefault((r["fight_id"], r["round"]), []).append(r)
+    first = [rs[0] for rs in rounds.values()]
     out += ["", f"Each step up the ladder, arm position held fixed: **{trend(rows)}**.",
-            f"Figure-four vs other two-handed locks, arm position held fixed: **{trend(rows, split=True)}**."]
+            f"First attempt in each round only: **{trend(first)}**.",
+            f"Figure-four vs other two-handed locks, arm position held fixed: **{trend(rows, split=True)}**.", "",
+            "**How to read it:** attempts in one round aren't independent. A round can end only once, so every earlier attempt "
+            "in a finish round failed, and attackers had usually improved their grip by the last attempt. Part of the all-attempts "
+            "trend may come from that order. The first attempt in each round avoids it, and there the range includes no effect. "
+            "Only 1 palm-to-palm and 0 gables were seen, so the ladder is mostly figure-four against everything else."]
     (ROOT / "reports/grip_hierarchy.md").write_text("\n".join(out) + "\n", encoding="utf-8")
     print("\n".join(out))
 

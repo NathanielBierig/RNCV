@@ -4,15 +4,15 @@
 
 <img src="docs/media/oliveira_gamrot_nopixels.gif" width="640" alt="Footage-free replay of Oliveira vs Gamrot: layered pose keypoints, neck reticle and the side tab">
 
-*Oliveira vs Gamrot, drawn only from derived data. The detector (trained without this fight) flags the back attack, the finish chance climbs as the figure-four goes in, and Gamrot's HP drains to the tap.* **[Watch the 30-second reel](docs/media/rncv_reel.mp4)** · **[Read the pilot report (PDF)](docs/paper/RNCV_pilot_report.pdf)** · **[Try the model in your browser](docs/explorer/index.html)**
+*Oliveira vs Gamrot, drawn only from derived data. The detector (trained without this fight) flags the back attack; the finish chance and HP come from hand-labeled positions, not from vision.* **[Watch the 30-second reel](docs/media/rncv_reel.mp4)** · **[Read the pilot report (PDF)](docs/paper/RNCV_pilot_report.pdf)** · **[Try the model in your browser](docs/explorer/index.html)**
 
 ## In 30 seconds
 
 - **What lines up with finishes:** the arm under the chin (59% finished vs 40% over the jaw), a better grip (figure-four 68%, wrist pull 44%, one arm 38%), a hidden choking hand (75% vs 46%) and a flattened defender (63% vs 48%).
-- **Strongest lead:** each step up the grip ladder multiplied the odds by about ×2.1 (95% range 1.2–3.9). It was named after seeing the data, so it's now a fourth hypothesis tested only on new attempts.
+- **Most promising lead, not a finding:** each step up the grip ladder multiplied the odds by about ×2.1 (1.2–3.9) across all attempts, but only ×1.5 (0.7–3.4) using each round's first attempt, because attempts in one round aren't independent: earlier ones in a finish round always failed, and grips usually improved by the last one. It was named after seeing the data, so it's now a fourth hypothesis tested only on new attempts.
 - **The surprise:** strong leg control didn't help any single attempt finish.
-- **A check against physiology:** finished chokes took a median 9.6 s on the neck; a published study of MMA choke-outs found 9.0 s.
-- **Can a computer do it alone? Not yet.** It finds back attacks on full broadcasts and picks the attacker 96% of the time, but it can't see the choke start or read the arm and grip, and from video alone its odds are no better than guessing.
+- **Timing:** finished chokes took a median 9.6 s from the start of the attempt to the tap. Failed ones lasted just as long, so time alone tells you nothing. A published study measured 9.0 s from a locked choke to unconsciousness: a different clock, so this is a rough match, not a validation.
+- **Can a computer do it alone? Not yet.** It flags back-control stretches on full broadcasts, and public control stats name the likely attacker (96%, not vision), but it can't see the choke start or read the arm and grip, and from video alone its odds are no better than guessing.
 - **The honest part:** it's a pilot. The sample is small and tilted toward finishes, and the confirmatory test runs at ~150 attempts ([why 150](research/rnc_science/POWER_NOTE.md)).
 
 | | Status |
@@ -38,7 +38,7 @@ All model numbers are on fights left out of training.
 
 <img src="docs/media/effects.png" width="620" alt="Odds multipliers per choke factor in model v0.8">
 
-Odds multipliers in model v0.8, which blends expert estimates with the labels. With the labels alone, every single-factor effect still has a range that includes "no effect"; the grip ladder is the one trend whose range excludes it. Full write-up: [pilot report](docs/paper/PILOT_REPORT.md) · [pre-registration](research/rnc_science/PREREG.md) · [code book](research/rnc_science/FACTORS.md) · [model spec](docs/MODEL_SPEC.md).
+Odds multipliers in model v0.8, which blends expert estimates with the labels. The expert estimates were given after about 40–60 attempts had been labeled, so they aren't fully independent of the data. With the labels alone, every single-factor effect still has a range that includes "no effect". These results come from about 25 exploratory looks at 75 attempts, so some patterns will be chance. Full write-up: [pilot report](docs/paper/PILOT_REPORT.md) · [pre-registration](research/rnc_science/PREREG.md) · [code book](research/rnc_science/FACTORS.md) · [model spec](docs/MODEL_SPEC.md).
 
 <img src="docs/media/calibration.png" width="380" align="right" alt="Calibration of the finish chance on held-out fights">
 

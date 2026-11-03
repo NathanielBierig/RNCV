@@ -14,7 +14,7 @@
 >   - a flattened defender (63% vs 48%).
 > - **These are directions, not proof.** With the labels alone, every one of these effects still has an uncertainty range that includes "no effect". The sample is too small to be sure.
 > - Strong leg control did **not** help a single attempt finish. One explanation is that it keeps the attacker on the back for more attempts rather than finishing any one of them. A first test of that idea didn't confirm it.
-> - Finished chokes took a median of 9.6 seconds on the neck, almost exactly what a published study of MMA choke-outs found (9.0 s).
+> - Finished chokes took a median of 9.6 seconds from the start to the tap, and failed ones lasted just as long. A published study found 9.0 s from a locked choke to unconsciousness, which is a different clock, so this is a rough match, not a check.
 > - The real test was written down in advance and runs at 150 attempts.
 > - **Can a computer do this alone? Not yet.** It finds back attacks on full broadcasts, but it can't read the arm or grip, and from video alone its odds and timing are no better than guessing the average.
 
@@ -101,7 +101,7 @@ With dozens of possible details and a small sample, *something* will always look
 **Population:** men's UFC fights, 2018–2026, with at least one RNC attempt. Women's fights are left out because finishing may differ and about 150 attempts can't power that comparison (A1). Men's fights should also suit the computer part: men fight shirtless, so more skin shows where bodies and arms begin and end, while rash guards hide more. That second reason is expected, not tested. Findings apply to men's divisions only.
 
 **Sampling**, in plain terms:
-- **Finish list.** Watching full fights at random to find chokes would take hundreds of hours, so most attempts come from fights known to end in an RNC (677 such finishes in the UFC's stats). This inflates the *overall* finish rate, but the *comparisons* between details stay valid, and those are what the hypotheses test. (Technically: sampling on the outcome biases the intercept of a logistic model, not its odds ratios.)
+- **Finish list.** Watching full fights at random to find chokes would take hundreds of hours, so most attempts come from fights known to end in an RNC (677 such finishes in the UFC's stats). This inflates the overall finish rate. Comparisons between details are less affected but not immune: a round ends only once, so the failed attempts mostly come from rounds the attacker went on to finish (24 of 34), and failures against defenders who survived are underrepresented. That is why failure rounds and fully watched random fights matter (none of the random fights is labeled yet), and why results are also checked on each round's first attempt.
 - **Failure rounds.** Rounds with flagged submission attempts that didn't finish.
 - **A random subset** (planned): about 10 fully watched fights, for an honest base rate.
 
@@ -197,7 +197,7 @@ The raw rates mix details together: deep chokes tend to be figure-fours with the
 | Finished chokes (n = 40) | **9.6 s** | 6.5–12.9 s |
 | Failed attempts (n = 34) | 9.6 s | 6.2–15.4 s |
 
-Finishes landed at almost exactly the 9.0 s from lock to unconsciousness measured in MMA (Stellpflug 2020), an independent check on the labels. Duration alone doesn't separate finishes from failures; position does.
+The finish median sits near the 9.0 s from lock to unconsciousness measured in MMA (Stellpflug 2020), but the clocks differ (start of the attempt to a mostly conscious tap here), so it is not a validation. Duration alone doesn't separate finishes from failures; position does.
 
 **When finishes happen.** Of the 74 attempts, 8% finished in the first 5 seconds. Of those still going, 29% finished in the 5–10 s block, 25% in 10–15 s and 24% in 15–20 s. So the danger arrives after about 5 seconds, then stays roughly flat rather than climbing with time. The ranges are wide ([time_curve.md](../../reports/time_curve.md)).
 
@@ -213,7 +213,7 @@ Finishes landed at almost exactly the 9.0 s from lock to unconsciousness measure
 - **H3 (two-on-one): unclear.** Raw rates are equal (57% vs 53%). Labels-only it leans the predicted way (×0.73, interval 0.2–2.6). The stronger ×0.58 in the applied model comes partly from the priors.
 - **H2 (leg control): leans the opposite way per attempt** (body triangle 46%, one hook/none 65%; labels-only ×0.36, interval 0.09–1.38). See section 6.
 
-- **H4 (grip ladder, added later): points the predicted way** (×2.1 per step, 1.2–3.9), but these attempts helped suggest it, so it stays untested until new attempts arrive.
+- **H4 (grip ladder, added later): points the predicted way** across all attempts (×2.1, 1.2–3.9), but only ×1.5 (0.7–3.4) on first attempts, and these attempts helped suggest it, so it stays untested until new attempts arrive.
 
 These are pilot readings. The confirmatory test (Firth logistic regression with profile intervals, a bootstrap by attacker, and sensitivity checks; [prereg_analysis.py](../../research/rnc_science/prereg_analysis.py)) runs at 150 attempts.
 
@@ -237,7 +237,7 @@ This wasn't pre-registered, and it was found after looking at the data, so it ca
 
 **The hand fight needs more data.** The two-on-one shows no raw effect, and the labels-only estimate is too uncertain to call. Defenders may hand-fight hardest when the choke is already deep, which would hide its benefit in raw percentages.
 
-**The grip ladder is the strongest lead.** Figure-four finished 68%, wrist pull 44% and one arm 38%. With the arm position held fixed, each step up the ladder multiplied the odds by ×2.1 (1.2–3.9), the only technical detail here whose range excludes no effect ([grip_hierarchy.md](../../reports/grip_hierarchy.md)). Three cautions: the ladder was named after seeing these rates, so this is not a confirmation; the top step alone is uncertain (figure-four vs other locks ×2.4, 0.6–10.4); and the sample can't separate the middle grips, with 9 wrist pulls and only 1 palm-to-palm. H4 tests it on new attempts. No published study has measured this before.
+**The grip ladder is the most promising lead, and the most fragile.** Figure-four finished 68%, wrist pull 44% and one arm 38%. Across all attempts, each step up the ladder multiplied the odds by ×2.1 (1.2–3.9), and that holds when any one fight or fighter is left out. But using only the first attempt in each round, it falls to ×1.5 (0.7–3.4): attempts in a round aren't independent, and attackers usually had a better grip by the last one ([grip_hierarchy.md](../../reports/grip_hierarchy.md)). The ladder was also named after seeing these rates, and with 1 palm-to-palm and 0 gables it is mostly figure-four against everything else. H4 tests it on new attempts. No published study has measured this before.
 
 **How much the data can say (power).** Simulating the pre-registered test with the real group shares ([POWER_NOTE.md](../../research/rnc_science/POWER_NOTE.md)): at 150 attempts, H1 is decided ~90–98% of the time, and H3 ~90% if its effect is as large as coaches expect (×0.3), but only ~38% at the pilot's ×0.56. H2 per attempt is unlikely ever to be supported if its effect is ~×1, which is why the retention question moves to the back-exposure analysis. Some real effects will honestly come out "inconclusive", and the paper will say so rather than hunt for significance.
 
@@ -250,7 +250,7 @@ This wasn't pre-registered, and it was found after looking at the data, so it ca
 | Read arm, grip, legs, hand fight | No | Near chance (best κ 0.24, bar 0.4) |
 | Odds from video alone | No | Brier 0.256 vs 0.257 for guessing the average |
 | Odds from public stats alone | No | 0.248 vs 0.256 with the true attacker, but 0.258 vs 0.259 run end to end |
-| Pick the attacker | Yes | 96% correct, from control time in the round |
+| Pick the attacker | Yes, but not vision | 96% correct, read from public control-time stats; the round number came from labels |
 | Time to a finish | No | 23 s error from the detector's start; 3.3 s with the true start, vs 3.4 s for guessing the median |
 
 Details are in [auto_odds.md](../../reports/auto_odds.md). Start times came from labels in the odds and timing tests, so these are best cases.
@@ -274,10 +274,13 @@ Details are in [auto_odds.md](../../reports/auto_odds.md). Start times came from
 
 - **Small and finish-heavy sample:** 74 attempts, 64 from finish-list fights. Wide intervals, inflated overall rate.
 - **One rater so far.** Reliability is untested.
+- **Weak blinding on finish-list fights.** The outcome is hidden at the 2-s landmark, but the coder already knows a finish-list round ends in a choke (64 of 74 attempts).
+- **Many looks.** About 25 exploratory analyses ran on 75 attempts. Expect some patterns to be chance; only pre-registered tests on new data count.
+- **Attempts in a round aren't independent.** A round ends once, so every earlier attempt in a finish round failed (0 of 31), and attackers had usually improved their grip by the last attempt. Analyses that pool all attempts can mistake that order for an effect.
 - **Broadcast views** hide the hands at times. Some details are "unclear", and camera cuts hide parts of attempts.
 - **Per-attempt scoring** can't credit position retention (section 6).
 - **Unlabeled confounders:** the cage, and damage before the back take on attempts coded before the new hand label.
-- **Expert priors** in the applied model are opinion, weighted lightly and disclosed. The pre-registered test uses data only.
+- **Expert priors** in the applied model are opinion, weighted lightly and disclosed. They were given after about 40–60 attempts had been labeled, so they aren't fully independent of the data, and the model version was chosen on the same held-out score. The pre-registered test uses data only.
 - **Supply:** free official footage covers only part of the target sample.
 
 ## 9. Next steps
