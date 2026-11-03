@@ -8,6 +8,9 @@ analysis (prereg_analysis.py: Firth logistic, profile 95% CIs, verdict rule) on 
 and two effect scenarios, and reports the share of runs where each hypothesis comes out SUPPORTED (= power).
   A "coach view"  : H1 x4, H2 x2, H3 x0.3   (what the pre-registration expected)
   B "pilot view"  : H1 x4.6, H2 x1.0, H3 x0.56 (model v0.8 adjusted estimates, 71 attempts)
+  C "labels only" : H1 x2.8, H2 x0.5, H3 x0.73 (Firth, no priors, 2026-11-03). Only about 60% of labeled attempts are
+                    eligible for the primary model (one-arm chokes, short attempts and missing clocks drop out), so
+                    90 eligible is roughly 150 labeled.
 """
 import math
 
@@ -17,8 +20,9 @@ import prereg_analysis as pa
 
 P_ARM, P_LEGS, P_TWO = 0.78, 0.70, 0.32
 SCEN = {"A coach view (x4, x2, x0.3)": (math.log(4), math.log(2), math.log(0.3)),
-        "B pilot view (x4.6, x1.0, x0.56)": (math.log(4.6), 0.0, math.log(0.56))}
-NS, SIMS = (100, 150, 200, 300), 60
+        "B pilot view (x4.6, x1.0, x0.56)": (math.log(4.6), 0.0, math.log(0.56)),
+        "C labels only (x2.8, x0.5, x0.73)": (math.log(2.8), math.log(0.5), math.log(0.73))}
+NS, SIMS = (90, 150, 200, 300), 60
 
 
 def simulate(n, eff, seed):
