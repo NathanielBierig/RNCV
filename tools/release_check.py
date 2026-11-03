@@ -20,7 +20,7 @@ VIDEO = re.compile(r"^(?!docs/media/rncv_reel\.mp4$).*\.(mp4|webm|mkv|mov|avi|m4
 LOCAL = re.compile(r"[A-Za-z]:[\\/]+Users[\\/]+\w+|\.venvs[\\/]|AppData[\\/]", re.I)
 SECRET = re.compile(r"(KGAT_[A-Za-z0-9]{16,}|\"key\"\s*:\s*\"[0-9a-f]{32}\"|sk-[A-Za-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{30,})")
 EMAIL = re.compile(r"[\w.+-]+@gmail\.com", re.I)
-INTERNAL = {"CLAUDE.md", "HUMAN_TASKS.md", "docs/BRIEF.md", "docs/DECISIONS.md", "docs/ALIGNMENT.md", "docs/OPERATIONS.md"}
+INTERNAL = {"CLAUDE.md"}      # docs/internal/ holds working notes, public on purpose since the owner kept the repo public (2026-11-01)
 TEXT = {".py", ".md", ".txt", ".csv", ".json", ".html", ".js", ".ipynb", ".yml", ".yaml", ".toml", ".cfg", ".ps1", ".sh", ".patch"}
 
 

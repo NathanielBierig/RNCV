@@ -1,6 +1,6 @@
 # Eval harness (Phases 2, 4, 5)
 
-These are the evaluation rules from [docs/PLAN.md](../../docs/PLAN.md), written as code so a model can't break them by accident. It depends only on numpy, pandas and scikit-learn. Revised after [the critique](../../research/critique/CRITIQUE.md), rows #5, #6, #7, #9, #10, #12, #19, #21.
+These are the evaluation rules from [docs/internal/PLAN.md](../../docs/internal/PLAN.md), written as code so a model can't break them by accident. It depends only on numpy, pandas and scikit-learn. Revised after [the critique](../../research/critique/CRITIQUE.md), rows #5, #6, #7, #9, #10, #12, #19, #21.
 
 | Module | What it does | Used in |
 |---|---|---|

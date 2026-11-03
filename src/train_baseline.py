@@ -134,7 +134,7 @@ def main():
             "seconds": round(time.time() - t0, 1)})
         print(fold_rows[-1])
 
-    out = ROOT / "reports"
+    out = ROOT / "reports/vicos_baseline"
     out.mkdir(exist_ok=True)
     summary = {
         "model": args.model, "features": args.features, "swap_aug": args.swap_aug, "annotations": Path(args.annotations).name,

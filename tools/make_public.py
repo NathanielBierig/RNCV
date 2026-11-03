@@ -13,8 +13,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INTERNAL = {"CLAUDE.md", "HUMAN_TASKS.md", "PROGRESS.md"}
-INTERNAL_PREFIX = ("docs/BRIEF", "docs/DECISIONS", "docs/ALIGNMENT", "docs/PODCAST", "docs/DECISION_",
+INTERNAL = {"CLAUDE.md", "docs/internal/HUMAN_TASKS.md", "docs/internal/PROGRESS.md"}
+INTERNAL_PREFIX = ("docs/internal/",
                    "docs/PLAN", "research/critique/", "research/venture/", "phase3_labels/pilot_15_RETIRED",
                    "phase3_labels/NEXT_SESSION", "tools/make_public.py")
 VIDEO = re.compile(r"^(?!docs/media/rncv_reel\.mp4$).*\.(mp4|webm|mkv|mov|avi|m4v)$", re.I)   # the reel has no broadcast pixels

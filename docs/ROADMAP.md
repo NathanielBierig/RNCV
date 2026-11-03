@@ -48,7 +48,7 @@ Goal: proof that it works, basic findings and a working model, presented honestl
 
 ## Public release (owner, 2026-10-26: "when the project is more promising, soon")
 The GitHub repo becomes outward-facing:
-1. **README for outsiders:** what RNCV is, results, demo GIF/video, no local-machine details (local paths already removed from public docs; `CLAUDE.md`, `HUMAN_TASKS.md` and the internal docs move out or get cleaned before going public).
+1. **README for outsiders:** what RNCV is, results, demo GIF/video, no local-machine details (local paths already removed from public docs; `CLAUDE.md`, `docs/internal/HUMAN_TASKS.md` and the internal docs move out or get cleaned before going public).
 2. **"Test the detector" portal:** an interactive app (drop a clip → overlay with finish % + consciousness gauge). Hosted demo or a local one-command app; never redistributes UFC footage.
 3. **Research paper (thesis style) on choke variables:** the pre-registered study ("what makes the UFC RNC finish"), methods, results with confidence intervals, the evidence review, limitations. PDF in the repo.
 4. **Checklist before flipping to public:** licenses (VICOS NC, AGPL YOLO), no UFC pixels in the repo or history, no personal paths or tokens, reproducible commands.

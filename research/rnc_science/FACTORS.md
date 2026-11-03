@@ -1,6 +1,6 @@
 # Science-based RNC: what makes a rear-naked choke finish?
 
-Study design for direction #1, **UFC only** (see [docs/FOOTAGE.md](../../docs/FOOTAGE.md)). The analysis rules follow [PLAN.md §5a](../../docs/PLAN.md) (revised after the critic's science review). If this file and PLAN §5a disagree, PLAN wins until `PREREG.md` is written and committed.
+Study design for direction #1, **UFC only** (see [docs/FOOTAGE.md](../../docs/FOOTAGE.md)). The analysis rules follow [PLAN.md §5a](../../docs/internal/PLAN.md) (revised after the critic's science review). If this file and PLAN §5a disagree, PLAN wins until `PREREG.md` is written and committed.
 
 ## Unit of analysis
 

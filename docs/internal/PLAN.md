@@ -9,7 +9,7 @@
 **Showcase: the live overlay.** It shows the finish probability *plus the factors driving it* right now.
 
 What this changes in the plan:
-- **Phase 3:** the labels must record each factor, coded blind at the 2-s landmark; the code book is [FACTORS.md](../research/rnc_science/FACTORS.md). These are the science variables, so labeling them carefully matters more than the attempt count alone.
+- **Phase 3:** the labels must record each factor, coded blind at the 2-s landmark; the code book is [FACTORS.md](../../research/rnc_science/FACTORS.md). These are the science variables, so labeling them carefully matters more than the attempt count alone.
 - **Phase 5:** the model must be **interpretable first** (logistic regression → odds ratios with CIs), and predictive second.
 - **Phase 6:** the overlay shows the top factors along with the probability.
 - Study design lives in `research/rnc_science/` and the renderer in `tools/overlay/`, both owned by the main session. This plan only sets the interfaces.
@@ -97,12 +97,12 @@ Run pose plus tracking on **3–5 short UFC ground clips** (at least one RNC eac
 
 **Goal:** About 150 labeled RNC attempts with start/end times and outcomes, from about 100 fights. This is the asset nobody else has.
 
-### 3.1 Footage (decided 2026-10-18: UFC only; see [FOOTAGE.md](FOOTAGE.md))
+### 3.1 Footage (decided 2026-10-18: UFC only; see [FOOTAGE.md](../FOOTAGE.md))
 - **Labeling** (timestamps, outcome, factors, style tags) is done from legitimate streams (UFC Fight Pass, UFC's official free fights on YouTube). No copies are needed.
 - **Pose work** (2b, 4, 5b, 6) uses private local clips of single attempts, kept on the laptop and run on the CPU. This is a personal-research risk the user accepts knowingly (not legal advice). Raw video never goes to git, Kaggle, cloud drives or social media.
 - **Public output is derived only:** labels, stats, plots, and skeleton-only renders on a blank background. Overlays on real UFC frames stay private (shown live in interviews). No gym footage or other promotions for now.
 
-### 3.2 Sampling: hybrid design (matches [PREREG v0.2 §2](../research/rnc_science/PREREG.md))
+### 3.2 Sampling: hybrid design (matches [PREREG v0.2 §2](../../research/rnc_science/PREREG.md))
 Watching whole fights at random is too slow, so the sample is built from three sources. Every attempt records its source in `found_via`.
 
 | Source (`found_via`) | How | Queue file (`phase3_labels/`) | Why |
@@ -124,8 +124,8 @@ Run pose → tracker → Phase 2 position model over every candidate round. Outp
 ### 3.4 Label schema: one source of truth
 
 The earlier draft of this section disagreed with the labeling files on the start rule, the escape rule and the outcome codes (critique #4). **The authoritative definitions are now:**
-- **Attempts:** [`phase3_labels/LABEL_SCHEMA.md`](../phase3_labels/LABEL_SCHEMA.md). Columns are `fight_id, round, attempt_start_s, attempt_end_s` on the round clock, plus `attacker, defender, outcome, camera_cut_flag`. Outcome codes are `tap, ref_stop, unconscious, escape, position_change, bell`. Start requires back control *and* the arm across the neck *and* the second hand locking.
-- **Science factors: [`research/rnc_science/FACTORS.md`](../research/rnc_science/FACTORS.md) is the single code book** (factor names, codes, style tags, landmark rule). PLAN keeps no code list of its own (critique S12). If FACTORS disagrees with LABEL_SCHEMA, FACTORS wins.
+- **Attempts:** [`phase3_labels/LABEL_SCHEMA.md`](../../phase3_labels/LABEL_SCHEMA.md). Columns are `fight_id, round, attempt_start_s, attempt_end_s` on the round clock, plus `attacker, defender, outcome, camera_cut_flag`. Outcome codes are `tap, ref_stop, unconscious, escape, position_change, bell`. Start requires back control *and* the arm across the neck *and* the second hand locking.
+- **Science factors: [`research/rnc_science/FACTORS.md`](../../research/rnc_science/FACTORS.md) is the single code book** (factor names, codes, style tags, landmark rule). PLAN keeps no code list of its own (critique S12). If FACTORS disagrees with LABEL_SCHEMA, FACTORS wins.
 - **Code:** `tools/eval_harness/horizons.normalize_labels()` reads that schema and **fails loudly** on unknown columns or codes.
 
 Rules this plan adds on top:

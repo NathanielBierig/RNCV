@@ -38,7 +38,7 @@ Never put UFC video on Kaggle (its rules forbid it). Only open datasets (VICOS, 
 python -I src\train_baseline.py --model gbm --swap-aug --tag _swapaug
 ```
 - Other keypoints: add `--annotations data\raw\vicos\annotations_yolo11m-pose_stride1.json --tag _swapaug_yolo11m`.
-- About 30–40 min. Results land in `reports\metrics_*.json`, `per_class_*.csv`, `confusion_*.png`.
+- About 30–40 min. Results land in `reports\vicos_baseline\metrics_*.json`, `per_class_*.csv`, `confusion_*.png`.
 
 ## How to: run pose on clips
 

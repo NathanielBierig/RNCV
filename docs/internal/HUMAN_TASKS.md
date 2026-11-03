@@ -1,11 +1,11 @@
 # Your tasks (most urgent first)
 
-## ▶ Now (updated 2026-11-01)
-1. 🔴 **Label failure rounds first** ([NEXT_SESSION.md](phase3_labels/NEXT_SESSION.md)): Vera R3, Barcelos R4, Holland R2, then finish fights. Press C on the on-screen clock.
+## ▶ Now (updated 2026-11-03)
+1. 🔴 **Label failure rounds first** ([NEXT_SESSION.md](../../phase3_labels/NEXT_SESSION.md)): Vera R3, Barcelos R4, Holland R2, then finish fights. Press C on the on-screen clock.
 2. 🟡 **Mark back-control starts** (about 20 min, estimate): open each clip that has labeled attempts, go back to where back control began (hooks or seatbelt first in, before any choke) and press **K**. It fills the next saved attempt. Reload the labeler first. In new fights, press K before S.
 3. 🟡 **Choose a license** for the public copy (suggested: MIT for code, CC BY-NC for labels).
-4. 🟡 Decide when to go public, and whether display numbers stay as they are or use the calibrated version.
-4. ⚪ Reliability, in a few weeks: re-code 20–30 attempts yourself without seeing your old labels, then have one person code about 15 of the same ones (kit ready in `tools/second_rater/`).
+4. 🟡 Decide whether display numbers stay as they are or use the calibrated version (the repo is already public).
+5. ⚪ Reliability, in a few weeks: re-code 20–30 attempts yourself without seeing your old labels, then have one person code about 15 of the same ones (kit ready in `tools/second_rater/`).
 
 ---
 
@@ -14,7 +14,7 @@
 
 
 ## 📖 First, next free time (30 min)
-- [ ] **Read the code tour: [docs/CODE_TOUR.md](docs/CODE_TOUR.md).** The code-tour session is refreshing it tonight.
+- [ ] **Read the code tour: [docs/CODE_TOUR.md](../CODE_TOUR.md).** The code-tour session is refreshing it tonight.
 - ℹ️ Kaggle fine-tune v2 (9 h, 960 px) is running on Kaggle overnight, started by the Main session through the command line. Nothing for you to do; Main pulls it when it finishes.
 
 
@@ -28,11 +28,11 @@ Work day tomorrow, so this is the short version. Estimates: Kaggle setup 15 min,
 3. Excel is not needed. You use Google Sheets.
 
 ## Step 1 ✅ DONE: Kaggle fine-tune finished (COMPLETE) and Main downloaded it by CLI. Old clicks below kept for reference. It runs about 4-6 h by itself (15 min of clicks)
-Do this first so it trains while you work. Full guide: [docs/KAGGLE_FINETUNE.md](docs/KAGGLE_FINETUNE.md). No UFC video goes to Kaggle.
+Do this first so it trains while you work. Full guide: [docs/KAGGLE_FINETUNE.md](../KAGGLE_FINETUNE.md). No UFC video goes to Kaggle.
 1. Go to kaggle.com and sign in (sign up first if you have no account).
 2. Click your **profile picture** (top right) > **Settings** > **Phone verification** > enter your phone and the code.
 3. Click **Create** (left menu) > **New Notebook**.
-4. Click **File** > **Import Notebook** > **Browse files**. Choose `C:\Users\netan\projects\RNCV\notebooks\kaggle_finetune_pose\finetune.ipynb`. Click **Import**.
+4. Click **File** > **Import Notebook** > **Browse files**. Choose `<project folder>\notebooks\kaggle_finetune_pose\finetune.ipynb`. Click **Import**.
 5. Open the right sidebar (the **<** arrow, top right) > **Session options**.
 6. **Accelerator** > **GPU T4 x1** > confirm.
 7. **Internet** > **On**.
@@ -47,7 +47,7 @@ Rule: skip women's fights. Take **3 clips, then label them (Step 3)**, then the 
 
 For each row below: search YouTube for `[fighter 1] vs [fighter 2] full fight` on the official **@UFC** channel. Open the video, scrub to the round, and find the choke (it starts about 60 s before the finish; the clock time to jump to is in the table). Write down two video times: where it starts, and a few seconds after it ends. Then paste this in a **new PowerShell** window, filling in the three CAPS parts:
 ```powershell
-cd C:\Users\netan\projects\RNCV
+cd <project folder>
 yt-dlp --download-sections "*START-END" --force-keyframes-at-cuts -f "bv*+ba/b" --merge-output-format mp4 -o "data/clips/NAME.%(ext)s" "LINK"
 ```
 Example for START-END: `14:39-14:52`. If you cannot find the fight in 10 minutes, write `unwatchable` in the sheet and take the next row. Or send me the link and times and I make the command for you.
@@ -68,7 +68,7 @@ Example for START-END: `14:39-14:52`. If you cannot find the fight in 10 minutes
 Skipped as women's fights: success 313, 312, 303, 302, 297. More men's rows if you need them: success 304, 301, 300, 299. For failure rows there is no known finish, so clip the part of the round where an RNC is tried. If there is none, the label is "no RNC in this round", which is a valid result. Also: the success rows above are all recent-to-old from the bottom of the sheet; recent fights (2025-26) are more likely Paramount+ only.
 
 ## Step 3: Labeling loop (about 20 min per sitting, 3 clips)
-Current guide: [docs/LABELING_GUIDE.md](docs/LABELING_GUIDE.md) (workflow, how to judge each field, G / X keys, clock, Link). Picture code book: [docs/rnc_codebook.html](docs/rnc_codebook.html). The old Google Doc is superseded.
+Current guide: [docs/LABELING_GUIDE.md](../LABELING_GUIDE.md) (workflow, how to judge each field, G / X keys, clock, Link). Picture code book: [docs/rnc_codebook.html](../rnc_codebook.html). The old Google Doc is superseded.
 1. Open `tools\labeler\index.html` in Chrome. Press **F5**.
 2. Click **Load fight list(s) CSV** and select the three queue files (hold Ctrl): `labeling_queue_successes.csv`, `labeling_queue_failures.csv`, `random_10.csv`.
 3. Click **Link labels.csv** and choose `phase3_labels\labels.csv` (**not** a queue file; the tool now refuses those).
@@ -83,7 +83,7 @@ Current guide: [docs/LABELING_GUIDE.md](docs/LABELING_GUIDE.md) (workflow, how t
 ncv_pose_v1.onnx is in place). Old steps kept for reference:
 1. Kaggle > **Your Work** > the notebook > **Versions** > the finished version > **Output** tab.
 2. Download `rncv_pose_v1.onnx`, `rncv_pose_v1_results.md`, `rncv_pose_v1_metrics.json` and `yolo_pose_onnx.py`.
-3. Move `rncv_pose_v1.onnx` into `C:\Users\netan\projects\RNCV\models\` (create `models` if it does not exist).
+3. Move `rncv_pose_v1.onnx` into `<project folder>\models\` (create `models` if it does not exist).
 4. Tell the Main session: **swap in the fine-tuned pose model**.
 
 ---
@@ -99,11 +99,11 @@ Owned by the secretary session. Tick a box when done and tell the secretary. Tim
 
 ## 🔴 Open tasks, in order
 
-- [ ] **0a. Two quick answers for Main** (2 min): (1) keep Elkins row 1 (113.4-140.9) or rows 2+3? (2) OK to add `compilation` to the 3 Sterling rows and `pilot` to the first 15 rows at commit time? Close the labeler tab first, then Main edits `labels.csv`. Check: [reports/labels_qa.md](reports/labels_qa.md).
+- [ ] **0a. Two quick answers for Main** (2 min): (1) keep Elkins row 1 (113.4-140.9) or rows 2+3? (2) OK to add `compilation` to the 3 Sterling rows and `pilot` to the first 15 rows at commit time? Close the labeler tab first, then Main edits `labels.csv`. Check: [reports/labels_qa.md](../../reports/labels_qa.md).
 - [x] ~~**0. Approve PREREG amendment A2**~~ approved 2026-10-21 (new `upper_body` variable: body_lock / seatbelt / none). Main is asking you. Recommended: approve, it is descriptive only.
 
-- [ ] **1. Pilot labeling, in short sittings** (3–5 attempts per sitting, 15–20 min). Open `tools/labeler/index.html` in Chrome or Edge, click "Link labels.csv" so every save is written, and follow [phase3_labels/PILOT.md](phase3_labels/PILOT.md) (8 successes + 7 failures). Timing is logged automatically. **Step-by-step: see "How to label" at the bottom of this file.**
-- [ ] **2. Read [docs/CODE_TOUR.md](docs/CODE_TOUR.md)** (30 min).
+- [ ] **1. Pilot labeling, in short sittings** (3–5 attempts per sitting, 15–20 min). Open `tools/labeler/index.html` in Chrome or Edge, click "Link labels.csv" so every save is written, and follow [phase3_labels/PILOT.md](../../phase3_labels/PILOT.md) (8 successes + 7 failures). Timing is logged automatically. **Step-by-step: see "How to label" at the bottom of this file.**
+- [ ] **2. Read [docs/CODE_TOUR.md](../CODE_TOUR.md)** (30 min).
 - [ ] **3. Decide corner (red/blue) labeling:** (a) one click per clip in the UI ("this skeleton is red"), or (b) pull red/blue from fight data (ufcstats/Tapology) and match by appearance. The main session will recommend one.
 - [ ] **4. Housekeeping:** archive idle helper sessions in the RNCV sidebar group (chief-of-staff, critic, entrepreneur, ufc-labels, code-tour, build-phase2). Keep Main and Secretary.
 - [ ] **5. Second rater:** ask a training partner, if not done yet (5 min). Suggested message: "I'm doing a data project on UFC rear-naked chokes. Could you label ~30 short clips for me (hooks vs body triangle, arm under chin, etc.)? About an hour, I'll show you the tool."
@@ -111,7 +111,7 @@ Owned by the secretary session. Tick a box when done and tell the secretary. Tim
 
 ## 🟡 Soon
 - [ ] Kaggle account + phone verification (10 min): [sign up](https://www.kaggle.com/account/login?phase=startRegisterTab), then [kaggle.com/settings](https://www.kaggle.com/settings).
-- [ ] Read [docs/DECISION_PHASE5_6.md](docs/DECISION_PHASE5_6.md) and pick (recommended: 5-B + 6-A).
+- [ ] Read [docs/internal/DECISION_PHASE5_6.md](DECISION_PHASE5_6.md) and pick (recommended: 5-B + 6-A).
 
 ## ⚪ Later
 - [ ] Label about 150 attempts total (about 8–12 h, an estimate measured in the pilot).
@@ -124,7 +124,7 @@ Owned by the secretary session. Tick a box when done and tell the secretary. Tim
 You label **one clip at a time**. A sitting = 3–5 clips (15–20 min). Do the same steps every time.
 
 ## A. Get one clip (about 3 min)
-1. Open [phase3_labels/labeling_queue_successes.csv](phase3_labels/labeling_queue_successes.csv) (Excel is fine). Take the next row without `status` filled in. Columns you need: `attacker`, `defender`, `round`, `known_finish_elapsed` (the finish time in the round), `ufc_youtube_channel_search` (a link: click it).
+1. Open [phase3_labels/labeling_queue_successes.csv](../../phase3_labels/labeling_queue_successes.csv) (Excel is fine). Take the next row without `status` filled in. Columns you need: `attacker`, `defender`, `round`, `known_finish_elapsed` (the finish time in the round), `ufc_youtube_channel_search` (a link: click it).
 2. Find the fight on the official UFC YouTube channel (or the free-fight video on Paramount+/Fight Pass). If you can't find it legally in **10 minutes**, write `unwatchable` in the `status` column and take the next row. Never skip a row because it looks hard.
 3. In the video, find the **round** and note two times (video timestamps, like 41:25): where the choke attempt starts (or about 60 s before the finish if unsure) and a few seconds after the end.
 4. Send me: the YouTube link and the two timestamps, e.g. `https://youtu.be/XXXX 41:15 to 41:50, Allen vs Duncan R5`. I send you back one command.

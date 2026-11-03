@@ -1,6 +1,6 @@
 # Venture ideas: the entrepreneur's pass
 
-> Written 2026-10-18 by the venture session. It only adds to `docs/DIRECTIONS.md` and `docs/PLAN.md`; nothing there is changed.
+> Written 2026-10-18 by the venture session. It only adds to `docs/internal/DIRECTIONS.md` and `docs/internal/PLAN.md`; nothing there is changed.
 > All scores are **judgement calls**. All market numbers are from the linked pages and were not independently checked. No one was contacted, no account was made, nothing was paid for.
 
 ## The reframe in one paragraph

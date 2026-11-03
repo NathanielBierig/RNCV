@@ -7,9 +7,9 @@
 2. **May helper sessions commit to git?** CLAUDE.md says main only. Recommended: keep main-only (fewer conflicts) unless it becomes a bottleneck.
 3. **Phase 5/6 option:** [memo](DECISION_PHASE5_6.md). Recommended: 5-B + 6-A.
 
-## 🔴 Your tasks (top 3, full list in [HUMAN_TASKS.md](../HUMAN_TASKS.md))
-1. **Pilot labeling in short sittings:** 3–5 attempts, 15–20 min each, with `tools/labeler/index.html` ([PILOT.md](../phase3_labels/PILOT.md): 8 successes + 7 failures).
-2. **Read [CODE_TOUR.md](CODE_TOUR.md)** (30 min).
+## 🔴 Your tasks (top 3, full list in [docs/internal/HUMAN_TASKS.md](HUMAN_TASKS.md))
+1. **Pilot labeling in short sittings:** 3–5 attempts, 15–20 min each, with `tools/labeler/index.html` ([PILOT.md](../../phase3_labels/PILOT.md): 8 successes + 7 failures).
+2. **Read [CODE_TOUR.md](../CODE_TOUR.md)** (30 min).
 3. **Corner decision** (above).
 
 ## What changed since last brief

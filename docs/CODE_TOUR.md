@@ -69,7 +69,7 @@ Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton prev
 ## 2. Stop by stop
 
 ### Stop 1 · The question and the rules (no code, 10 min)
-- [`CLAUDE.md`](../CLAUDE.md), [`PROGRESS.md`](../PROGRESS.md), [`research/rnc_science/PREREG.md`](../research/rnc_science/PREREG.md) (frozen pre-registration: what we will test, before looking at results) and [`FACTORS.md`](../research/rnc_science/FACTORS.md) (the code book: every BJJ detail we label, e.g. forearm placement).
+- [`CLAUDE.md`](../CLAUDE.md), [`docs/internal/PROGRESS.md`](internal/PROGRESS.md), [`research/rnc_science/PREREG.md`](../research/rnc_science/PREREG.md) (frozen pre-registration: what we will test, before looking at results) and [`FACTORS.md`](../research/rnc_science/FACTORS.md) (the code book: every BJJ detail we label, e.g. forearm placement).
 - Also now: [`docs/LABELING_GUIDE.md`](LABELING_GUIDE.md) (how to judge each of the 12 fields) and [`docs/rnc_codebook.html`](rnc_codebook.html) (picture code book, open in a browser).
 - Why it matters: every later file exists to serve these. Nothing here is run.
 
@@ -87,8 +87,8 @@ Also: `tools/preview/corner_preview.py` 🟢 draws red/blue-corner skeleton prev
 
 ### Stop 4 · `src/train_baseline.py` 🟢: the position classifier
 - **What:** trains a gradient-boosting model (many small decision trees voting) or a small neural net (`--model mlp`) to name the position, scored on the 5 time-block folds. `--swap-aug` trains on every frame twice (as-is and with the two athletes swapped) because UFC tracker IDs are arbitrary.
-- **Look at:** [`make_model()`](../src/train_baseline.py:41), [`swap_label_index()`](../src/train_baseline.py:62) (maps `mount1`↔`mount2`), [`main()`](../src/train_baseline.py:76) for the fold loop. Results: macro-F1 0.63 (swap-aug GBM), see `reports/TRAINING_STATUS.md`. Weak classes: half guard, takedowns.
-- **In/out:** VICOS annotations → `reports/metrics_*.json`, `per_class_*.csv`, `oof_*.csv`, `confusion_*.png`.
+- **Look at:** [`make_model()`](../src/train_baseline.py:41), [`swap_label_index()`](../src/train_baseline.py:62) (maps `mount1`↔`mount2`), [`main()`](../src/train_baseline.py:76) for the fold loop. Results: macro-F1 0.63 (swap-aug GBM), see `reports/vicos_baseline/TRAINING_STATUS.md`. Weak classes: half guard, takedowns.
+- **In/out:** VICOS annotations → `reports/vicos_baseline/metrics_*.json`, `per_class_*.csv`, `oof_*.csv`, `confusion_*.png`.
 - **Caveat:** same gym, same athletes in train and test. It shows the features separate positions, **not** that it works on UFC footage.
 - **Try it (about a minute, estimate):** `$PY_RNCV -I src/train_baseline.py --model gbm --train-stride 8 --tag _tour` (coarser training stride for speed; writes `*_tour` files into `reports/`, safe to delete).
 
@@ -233,7 +233,7 @@ Housekeeping: check `src/` for stray `*.tmp.*` files (one appeared before); they
 
 ## 5. Suggested 30-minute self-tour
 
-1. **(5 min)** Read `PROGRESS.md`, `docs/ROADMAP.md` and skim PREREG's headings. Know the question and the milestones before the code.
+1. **(5 min)** Read `docs/internal/PROGRESS.md`, `docs/ROADMAP.md` and skim PREREG's headings. Know the question and the milestones before the code.
 2. **(5 min)** Read the one-screen summary of `research/pose_review/REVIEW.md` (Stop 8c), then watch one `data/pose/*_preview.mp4`. See the mixed-skeleton problem yourself.
 3. **(8 min)** Read `reports/attempt_clf_crop.md` and the top of `research/attempt_clf/attempt_clf.py` (Stop 8d). Why does a no-pose detector sidestep the problem, and why is 0.70 not enough?
 4. **(7 min)** Run the MVP demo (Stop 12c) and watch the output next to your own labels for that fight. Which parts are real, which are stand-in?
