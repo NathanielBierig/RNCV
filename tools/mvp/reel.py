@@ -6,7 +6,8 @@
     python tools/mvp/demo.py data/clips/demos/oliveira_gamrot.mp4.webm --out data/mvp/oliveira_gamrot.mp4_demo.mp4
     python tools/mvp/reel.py --footage      # data/mvp/rncv_reel_footage.mp4: real broadcast pixels, stays local (git-ignored)
 
-Title card -> the derived-data replay at 1.5x with captions -> pilot rates with their 95% intervals -> end card.
+Title card -> the derived-data replay at 1.5x with captions -> pilot rates with their 95% intervals -> what the computer
+can and can't do yet -> end card.
 The rates are read from reports/findings_pilot.md, so rerunning after new labels keeps the numbers current.
 """
 import re
@@ -27,7 +28,7 @@ FFMPEG = shutil.which("ffmpeg")
 W, H, FPS = 1280, 720, 30
 SPEED = 1.5
 T_IN, T_OUT = 6.0, 34.5                     # stretch of the replay, in its own seconds
-TITLE_S, RATES_S, END_S, FADE = 3.0, 5.5, 2.5, 0.3
+TITLE_S, RATES_S, COMPUTER_S, END_S, FADE = 3.0, 5.0, 4.0, 2.5, 0.3
 CAPTIONS = [(6.0, 12.0, "A detector that never saw this fight flags the back attack"),
             (12.0, 19.5, "Position details are hand-labeled; the model turns them into a finish chance"),
             (19.5, 27.0, "The grip becomes a figure-four: the finish chance jumps"),
@@ -106,9 +107,14 @@ def main():
     title = card([("Commentators say a choke is “in deep”.", H / 2 - 44, 50, INK),
                   ("This project measures it.", H / 2 + 28, 50, ORANGE),
                   ("Rear-naked chokes in the UFC" + ("" if FOOTAGE else "  ·  shown here as derived data, no broadcast footage"), H - 90, 22, DIM)])
+    computer = card([("Can a computer see it?", H / 2 - 110, 50, INK),
+                     ("Not yet.", H / 2 - 40, 50, ORANGE),
+                     ("It finds back control on full broadcasts,", H / 2 + 40, 30, INK),
+                     ("but it can't see the choke start or read the grip.", H / 2 + 84, 30, INK),
+                     ("Tested on fights it never trained on  ·  more labeled fights needed", H - 90, 22, DIM)])
     end = card([("RNCV", H / 2 - 64, 76, ORANGE),
-                ("A pre-registered study and a replay finish-chance overlay", H / 2 + 8, 32, INK),
-                ("Pilot: proof of concept, built from hand labels and computer vision", H / 2 + 56, 24, DIM)])
+                ("What finishes a UFC choke, and can a computer see it?", H / 2 + 8, 32, INK),
+                ("Pilot: hand labels, pre-registered tests and honest computer-vision results", H / 2 + 56, 24, DIM)])
     enc = subprocess.Popen([FFMPEG, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
                             "-c:v", "libx264", "-preset", "slow", "-crf", "27", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(OUT)],
                            stdin=subprocess.PIPE)
@@ -138,6 +144,9 @@ def main():
     for i in range(n):
         g = min(1.0, i / (0.9 * FPS))
         enc.stdin.write(faded(done if g == 1 else rates_frame(1 - (1 - g) ** 3), i, n).tobytes())
+    n = int(COMPUTER_S * FPS)
+    for i in range(n):
+        enc.stdin.write(faded(computer, i, n).tobytes())
     n = int(END_S * FPS)
     for i in range(n):
         enc.stdin.write(faded(end, i, n).tobytes())

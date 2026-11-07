@@ -4,7 +4,7 @@
 
 <img src="docs/media/oliveira_gamrot_nopixels.gif" width="640" alt="Footage-free replay of Oliveira vs Gamrot: layered pose keypoints, neck reticle and the side tab">
 
-*Oliveira vs Gamrot, drawn only from derived data. The detector (trained without this fight) flags the back attack; the finish chance and HP come from hand-labeled positions, not from vision.* **[Watch the 30-second reel](docs/media/rncv_reel.mp4)** · **[Read the pilot report (PDF)](docs/paper/RNCV_pilot_report.pdf)** · **[Try the model in your browser](docs/explorer/index.html)**
+*Oliveira vs Gamrot, drawn only from derived data. The detector (trained without this fight) flags the back attack; the finish chance and HP come from hand-labeled positions, not from vision.* **[Watch the short reel](docs/media/rncv_reel.mp4)** · **[Read the pilot report (PDF)](docs/paper/RNCV_pilot_report.pdf)** · **[Try the model in your browser](docs/explorer/index.html)**
 
 ## In 30 seconds
 
