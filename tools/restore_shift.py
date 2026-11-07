@@ -93,7 +93,7 @@ def main():
             print(name, "no usable official video", flush=True); continue
         tmp = OUT / f"_tmp_{hit[0]}"
         subprocess.run(["yt-dlp", "-q", "--no-playlist", "-f", "bv*[height<=720]+ba/b[height<=720]/b", "--merge-output-format", "mp4",
-                        "-o", f"{tmp}.%(ext)s", f"https://www.youtube.com/watch?v={hit[0]}"])
+                        "-o", f"{tmp}.%(ext)s", f"https://www.youtube.com/watch?v={hit[0]}"], timeout=1800)
         got = next(iter(OUT.glob(f"_tmp_{hit[0]}.mp4")), None)
         if got is None:
             print(name, "download failed", flush=True); continue
