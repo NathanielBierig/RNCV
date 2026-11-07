@@ -29,7 +29,7 @@ All model numbers are on fights left out of training.
 |---|---|---|
 | Labeled data | 75 attempts from 43 men's UFC fights | Too few for the pre-registered test yet (~150) |
 | Finish model v0.8 (expert priors + labels) | Brier 0.244 at 2 s vs 0.256 for guessing the average; 0.223 vs 0.256 as the position changes | Following the position adds real information; the 2-s snapshot alone is within noise |
-| Attempt detector | Frame ROC-AUC ~0.75; overlaps 72 of 74 attempts; ~0.5 false alarms per minute | Finds the back-control position, not the moment the choke starts |
+| Attempt detector | Frame ROC-AUC ~0.74 and PR-AUC ~0.3 (base rate ~0.14); flags 39% of the footage, so it overlaps 72 of 74 attempts where randomly placed flags would overlap ~64%; 32% of its flags touch an attempt | Finds the back-control position broadly, not the moment the choke starts ([details](reports/auto_demo.md)). Training on mirrored frames didn't help (0.741 vs 0.724, [details](reports/mirror_try.md)) |
 | Fully automatic pipeline | Attacker right 96%; odds Brier 0.258 vs 0.259; end-time error 23 s | No position labels: it can flag the attack but can't give useful odds yet ([details](reports/auto_demo.md)) |
 | Reading details from video | Best κ 0.24 (two-on-one); arm, grip and legs near chance | Needs many more labeled fights ([details](reports/factor_pilot.md)) |
 | HP meter | Only 8 of 40 finishes reached HP 0 | Fighters usually tap before going out; HP is a readable estimate, not a measurement ([details](reports/hp_check.md)) |

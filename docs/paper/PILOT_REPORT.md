@@ -245,7 +245,7 @@ This wasn't pre-registered, and it was found after looking at the data, so it ca
 
 | Step, on fights left out of training | Status | Result |
 |---|---|---|
-| Find the back attack | Partly | Frame ROC-AUC ~0.75, 95% of attempts caught |
+| Find the back attack | Partly | Frame ROC-AUC ~0.74; flags 39% of the footage, so it overlaps 97% of attempts, against ~64% for randomly placed flags |
 | Place the start second | No | Correct about 9% of the time |
 | Read arm, grip, legs, hand fight | No | Near chance (best κ 0.24, bar 0.4) |
 | Odds from video alone | No | Brier 0.256 vs 0.257 for guessing the average |

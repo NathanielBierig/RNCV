@@ -19,7 +19,7 @@ Where each step stands, on fights left out of training:
 
 | Step | Status | Evidence |
 |---|---|---|
-| Find the back attack | 🟡 works on full broadcasts | frame ROC-AUC ~0.75, 95% of attempts caught, ~0.5 false alarms/min |
+| Find the back attack | 🟡 broad | frame ROC-AUC ~0.74; flags 39% of footage; overlaps 97% of attempts vs ~64% by chance; mirrored training no help |
 | Place the start second | 🔴 | correct start ~9% |
 | Read arm, grip, legs, hand fight | 🔴 near chance | best κ 0.24 (bar 0.4), [factor_pilot.md](../reports/factor_pilot.md) |
 | Odds from pixels alone | 🔴 no gain | Brier 0.256 vs 0.257 for guessing the average, even with labeled start times, [auto_odds.md](../reports/auto_odds.md) |
