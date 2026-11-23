@@ -119,6 +119,7 @@
         <kbd>X</kbd> in the factor panel: view blocked (referee, cut, angle), so all factors are left blank and the attempt is flagged · <kbd>X</kbd> during an attempt: toggle the "view blocked" flag<br>
         <kbd>T</kbd> then <kbd>1</kbd>–<kbd>7</kbd> add a grip style to the sequence (after the landmark) · <kbd>W</kbd> swap attacker/defender<br>
         <kbd>G</kbd> log a state change (hooks, body lock, arm position, two-on-one, chin, flattened, context) at the current time<br>
+        <kbd>N</kbd> K pass: jump to 30 s before the next labeled attempt that has no K yet (<kbd>Shift+N</kbd> back); then <kbd>K</kbd> fills it and moves on<br>
         <kbd>K</kbd> back control began here (when hooks or a seatbelt are first in, before any choke): fills the next saved attempt, or the next one you start<br>
         <kbd>U</kbd> undo last saved row · <kbd>B</kbd> back 10 s
       </div>
@@ -293,6 +294,7 @@ function drawTimeline() {
     if (r.video_url !== videoName || r.video_time_start === "" || r.video_time_start == null) continue;
     const a = Number(r.video_time_start), b = Number(r.video_time_end);
     const d = document.createElement("div"); d.className = "att"; d.style.left = pct(a); d.style.width = pct(Math.max(0.2, b - a)); d.title = r.outcome; tl.appendChild(d);
+    if (r.seconds_to_lock) { const k = document.createElement("div"); k.className = "att"; k.style.left = pct(a - Number(r.seconds_to_lock)); k.style.width = "2px"; k.style.background = "var(--ok, #4ade80)"; k.title = "K: back control began"; tl.appendChild(k); }
   }
   if (cur && cur.startV != null) { const d = document.createElement("div"); d.className = "att"; d.style.left = pct(cur.startV); d.style.width = "3px"; d.style.background = "var(--acc)"; tl.appendChild(d); }
 }
@@ -537,15 +539,51 @@ function saveAttempt(endVals) {
 // K = "back control began here". The gap to the attempt's start is seconds_to_lock (LABEL_SCHEMA), which teaches the
 // computer back control WITHOUT a choke. On a clip already labeled, it fills the next saved attempt within 3 min;
 // otherwise it waits for the next S.
+// K pass (N): on a clip already labeled, jump to K_LEAD s before the next attempt that has no K yet and play, so the
+// back take shows up in a few seconds. K fills THAT attempt and moves on; N skips it, Shift+N goes back one.
+const K_LEAD = 30;
+let kTarget = null;
+function kRows() {
+  return rows.filter(r => r.video_url === videoName && r.video_time_start !== "" && r.video_time_start != null)
+             .sort((a, b) => Number(a.video_time_start) - Number(b.video_time_start));
+}
+function kOtherClips() {
+  const left = new Map();
+  for (const r of rows) if (r.video_url && r.video_url !== videoName && r.video_time_start !== "" && !r.seconds_to_lock) left.set(r.video_url, (left.get(r.video_url) || 0) + 1);
+  return [...left.entries()].map(([n, c]) => `${n} (${c})`).join(", ");
+}
+function kPass(dir) {
+  if (cur) return;
+  const all = kRows();
+  if (!all.length) { setStatus("K pass: no saved attempts for this video. Link labels.csv first, then open a clip that has labeled attempts."); return; }
+  const i = kTarget ? all.findIndex(r => rowKey(r) === rowKey(kTarget)) : -1;
+  const j = dir > 0 ? all.findIndex((r, n) => n > i && !r.seconds_to_lock) : (i > 0 ? i - 1 : -1);
+  if (j < 0) {
+    const done = all.filter(r => r.seconds_to_lock).length, other = kOtherClips();
+    setStatus(dir > 0 ? `K pass done for this clip: ${done}/${all.length} attempts have a K.${other ? " Still to do in: " + other : " Nothing left in other clips."}` : "K pass: no earlier attempt.");
+    return;
+  }
+  kTarget = all[j];
+  const s = Number(kTarget.video_time_start);
+  v.currentTime = Math.max(0, s - K_LEAD); v.playbackRate = 1; v.play().catch(() => {});
+  const left = all.filter(r => !r.seconds_to_lock).length;
+  setStatus(`K pass ${j + 1}/${all.length}: ${kTarget.outcome} attempt at ${s.toFixed(1)} s (${left} left in this clip). Press <kbd>K</kbd> when back control begins, <kbd>N</kbd> to skip, <kbd>Shift+N</kbd> for the previous one.`);
+  drawTimeline();
+}
 function markBackStart() {
   const t = v.currentTime;
-  const next = rows.filter(r => r.video_url === videoName && Number(r.video_time_start) >= t && Number(r.video_time_start) - t <= 180)
-                   .sort((a, b) => Number(a.video_time_start) - Number(b.video_time_start))[0];
+  if (kTarget && Number(kTarget.video_time_start) - t < 0) { setStatus(`K pass: you are past the attempt start (${Number(kTarget.video_time_start).toFixed(1)} s). Go back a few seconds, or press <kbd>N</kbd> to skip it.`); return; }
+  const next = kTarget && kTarget.video_url === videoName ? kTarget
+    : rows.filter(r => r.video_url === videoName && Number(r.video_time_start) >= t && Number(r.video_time_start) - t <= 180)
+          .sort((a, b) => Number(a.video_time_start) - Number(b.video_time_start))[0];
   if (next) {
     next.seconds_to_lock = r1(Number(next.video_time_start) - t);
     touched.set(rowKey(next), next); touchedAt.set(rowKey(next), Date.now()); persist(); renderTable();
     writeLinked().catch(err => alert("Write failed: " + err.message));
-    setStatus(`Back control start saved: ${next.seconds_to_lock} s before the attempt at ${Number(next.video_time_start).toFixed(1)} s (${next.outcome}). Press <kbd>K</kbd> again to correct it.`);
+    const msg = `Back control start saved: ${next.seconds_to_lock} s before the attempt at ${Number(next.video_time_start).toFixed(1)} s (${next.outcome}).`;
+    if (kTarget) { kPass(1); if (kTarget && !kTarget.seconds_to_lock) setStatus(msg + " " + $("status").innerHTML); }
+    else setStatus(msg + ` Press <kbd>K</kbd> again to correct it.`);
+    drawTimeline();
   } else {
     backAt = t;
     setStatus(`Back control start marked at ${t.toFixed(1)} s. It goes on the next attempt you start with <kbd>S</kbd>.`);
@@ -687,6 +725,7 @@ document.addEventListener("keydown", e => {
     setStatus(cur.viewBlocked ? "Attempt flagged: view blocked." : "View-blocked flag removed.");
     e.preventDefault(); return;
   }
+  if ((k === "n" || k === "N") && !cur) { e.preventDefault(); kPass(e.shiftKey ? -1 : 1); return; }
   if ((k === "k" || k === "K") && !cur) { e.preventDefault(); markBackStart(); return; }
   if (k === "g" || k === "G") { e.preventDefault(); openChangePanel(); return; }
   if (k === "t" || k === "T") {
