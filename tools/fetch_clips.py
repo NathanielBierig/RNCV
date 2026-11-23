@@ -127,6 +127,11 @@ def main():
             print(f"#{rank} {att} vs {dfn}: no official video", flush=True)
             continue
         vid, ch, dur, title = hit
+        need = (int(r["round"].split()[0].strip(";,")) - 1) * 300 + 120 if str(r.get("round", "")).strip()[:1].isdigit() else 0
+        if dur < need:                               # a rematch or another fight of the same pair can match both surnames (Oliveira-Chandler 2021 vs 2024)
+            w.writerow([today, rank, r["fight_id"], att, dfn, f"video too short for round {r['round']} ({dur // 60} min): probably another fight", vid, ch, dur, title, ""]); logf.flush()
+            print(f"#{rank} {att} vs {dfn}: {dur // 60} min is too short for round {r['round']}, skipped", flush=True)
+            continue
         name = f"{prefix}{int(rank):02d}_{surname(att)}_{surname(dfn)}"
         ok = subprocess.run(["yt-dlp", "-q", "--no-playlist", "-f", "bv*[height<=720]+ba/b[height<=720]/b",
                              "--merge-output-format", "mp4", "-o", str(CLIPS / f"{name}.%(ext)s"),
