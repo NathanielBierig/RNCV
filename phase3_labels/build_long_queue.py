@@ -16,13 +16,14 @@ MIN_CONTROL = 180
 FIRST = ["Renato Moicano"]        # owner's pick: he strings long sequences together (2026-11-01)
 
 
-def main():
+def prep(min_control=MIN_CONTROL):
+    """Every men's round since 2018 with min_control s of control and a submission attempt, in unlabeled fights."""
     s = pd.read_csv(RAW / "ufc_fight_stats.csv").dropna(subset=["ROUND", "CTRL"])
     s = s[s.ROUND.astype(str).str.startswith("Round") & s.CTRL.astype(str).str.contains(":")].copy()
     s["control_s"] = s.CTRL.str.split(":").apply(lambda x: int(x[0]) * 60 + int(x[1]))
     s["sub_att_count"] = pd.to_numeric(s["SUB.ATT"], errors="coerce").fillna(0).astype(int)
     s["round"] = s.ROUND.str.split().str[1].astype(int)
-    s = s[(s.control_s >= MIN_CONTROL) & (s.sub_att_count >= 1)]
+    s = s[(s.control_s >= min_control) & (s.sub_att_count >= 1)]
     for c in ("EVENT", "BOUT"):
         s[c] = s[c].str.strip().str.split().str.join(" ")
     ev = pd.read_csv(RAW / "ufc_event_details.csv")
@@ -38,7 +39,11 @@ def main():
     s = s[(s.date >= "2018-01-01") & ~s.WEIGHTCLASS.str.contains("Women", case=False, na=False)]
     s["fight_id"] = s.URL.str.strip().str.rsplit("/", n=1).str[-1]
     skip = {r["fight_id"] for r in csv.DictReader(open(L3 / "labels.csv", encoding="utf-8"))}
-    s = s[~s.fight_id.isin(skip)]
+    return s[~s.fight_id.isin(skip)]
+
+
+def main():
+    s = prep()
     s["first"] = s.FIGHTER.isin(FIRST)
     s = s.sort_values(["first", "control_s", "sub_att_count"], ascending=False).drop_duplicates("FIGHTER")
     rows = []

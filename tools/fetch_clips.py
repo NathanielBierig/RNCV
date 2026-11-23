@@ -3,6 +3,7 @@
     python tools/fetch_clips.py [N]               # default 15 finish-list fights (files q<rank>_...)
     python tools/fetch_clips.py [N] --failures    # failure rounds: RNC attempts that didn't finish (f<rank>_...)
     python tools/fetch_clips.py [N] --long        # long-control rounds for training the automatic readers (L<rank>_...)
+    python tools/fetch_clips.py [N] --long --min-rank 207   # only queue ranks from 207 up (the back-rider rounds)
 
 Walks phase3_labels/labeling_queue_findable.csv in rank order and skips: fights already labeled or already on
 disk, women's bouts (PREREG A1), fights before 2018 (PREREG §2), attackers at the round cap (A4: 5 rounds).
@@ -24,7 +25,7 @@ CLIPS = ROOT / "data/clips/to_label"          # new downloads wait here; demos/ 
 LOG = ROOT / "phase3_labels/downloads_log.csv"
 OFFICIAL = re.compile(r"^(UFC|UFC Español|ufcespanol|UFC Brasil|UFC Eurasia|UFC Russia|UFC Europe|UFC India|UFC Arabia|UFC on Paramount\+|UFC and UFC on Paramount\+)$")   # exact case: a fan channel "Ufc" got through
 BLOCK = {"VwHu1u7Jc6g", "DG3b4zVAE2w"}   # Allen compilation (2026-10-26); unofficial Urbina-Battle upload, bad view (2026-10-27)
-BAD = re.compile(r"best of|interview|countdown|press|highli|ufc ?[45]\b|\bea\b|game|simulation|cpu|compilation|every |all .*(finishes|submissions)|top \d|reaction|breakdown|preview|recap|journey|behind the scenes|predict", re.I)
+BAD = re.compile(r"best of|interview|countdown|press|highli|ufc ?[45]\b|\bea\b|game|simulation|cpu|compilation|every |all .*(finishes|submissions)|top \d|reaction|breakdown|preview|recap|journey|behind the scenes|predict|must.see|matchup|first look|promo|trailer", re.I)
 MIN_SECONDS = 240
 
 
@@ -78,10 +79,11 @@ def search(att, dfn):
 
 def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")    # video titles can hold characters the Windows console can't print
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    args = [a for a in sys.argv[1:] if not a.startswith("--") and not (a.isdigit() and sys.argv[sys.argv.index(a) - 1] == "--min-rank")]
     n_want = int(args[0]) if args else 15
     fail = "--failures" in sys.argv            # failure rounds (attempts that didn't finish) instead of finishes
     long_ = "--long" in sys.argv
+    min_rank = int(sys.argv[sys.argv.index("--min-rank") + 1]) if "--min-rank" in sys.argv else 0
     fail = fail or long_
     queue = "labeling_queue_long.csv" if long_ else "labeling_queue_failures.csv" if fail else "labeling_queue_findable.csv"
     rank_col, prefix = ("queue_rank", "L" if long_ else "f") if fail else ("findable_rank", "q")
@@ -99,20 +101,23 @@ def main():
     import datetime
     today = datetime.date.today().isoformat()
     got = 0
+    fetched = {r["fight_id"] for r in csv.DictReader(open(LOG, encoding="utf-8")) if r["result"] == "downloaded"} if log_exists else set()
     for r in csv.DictReader(open(ROOT / "phase3_labels" / queue, encoding="utf-8")):
         if got >= n_want:
             break
         rank, att, dfn = r[rank_col], r["attacker"], r["defender"]
         why = None
-        if r["fight_id"] in done or f"{prefix}{int(rank):02d}" in on_disk:
+        if r["fight_id"] in done or f"{prefix}{int(rank):02d}" in on_disk or int(rank) < min_rank:
             continue
+        if long_ and r["fight_id"] in fetched:
+            continue                                  # another round of a fight already downloaded: label it from that video
         if fail and r.get("status", "todo") != "todo":
             continue
         if "women" in r["weight_class"].lower():
             why = "skip: women's bout (A1)"
         elif r["date"][:4] < "2018":
             why = "skip: before 2018"
-        elif rounds[att] >= 5:
+        elif not long_ and rounds[att] >= 5:
             why = "skip: attacker at the 5-round cap (A4)"
         if why:
             w.writerow([today, rank, r["fight_id"], att, dfn, why, "", "", "", "", ""]); continue
@@ -130,6 +135,8 @@ def main():
         logf.flush()
         print(f"#{rank} {att} vs {dfn}: {'OK' if ok else 'FAIL'} {ch} {dur // 60} min | {title}", flush=True)
         got += ok
+        if ok:
+            fetched.add(r["fight_id"])
     logf.close()
     print(f"downloaded {got}")
 
