@@ -25,7 +25,7 @@ CLIPS = ROOT / "data/clips/to_label"          # new downloads wait here; demos/ 
 LOG = ROOT / "phase3_labels/downloads_log.csv"
 OFFICIAL = re.compile(r"^(UFC|UFC Español|ufcespanol|UFC Brasil|UFC Eurasia|UFC Russia|UFC Europe|UFC India|UFC Arabia|UFC on Paramount\+|UFC and UFC on Paramount\+)$")   # exact case: a fan channel "Ufc" got through
 BLOCK = {"VwHu1u7Jc6g", "DG3b4zVAE2w"}   # Allen compilation (2026-10-26); unofficial Urbina-Battle upload, bad view (2026-10-27)
-BAD = re.compile(r"best of|interview|countdown|press|highli|ufc ?[45]\b|\bea\b|game|simulation|cpu|compilation|every |all .*(finishes|submissions)|top \d|reaction|breakdown|preview|recap|journey|behind the scenes|predict|must.see|matchup|first look|promo|trailer", re.I)
+BAD = re.compile(r"best of|interview|countdown|press|highli|ufc ?[45]\b|\bea\b|game|simulation|cpu|compilation|every |all .*(finishes|submissions)|top \d|reaction|breakdown|preview|recap|journey|behind the scenes|predict|weigh.?in|instant classic|must.see|matchup|first look|promo|trailer", re.I)
 MIN_SECONDS = 240
 
 
