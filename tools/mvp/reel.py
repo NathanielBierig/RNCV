@@ -5,6 +5,7 @@
 
     python tools/mvp/demo.py data/clips/demos/oliveira_gamrot.mp4.webm --out data/mvp/oliveira_gamrot.mp4_demo.mp4
     python tools/mvp/reel.py --footage      # data/mvp/rncv_reel_footage.mp4: real broadcast pixels, stays local (git-ignored)
+    python tools/mvp/reel.py --footage --fight oliveira_poirier     # another fight from FIGHTS (render its demo first)
 
 Title card -> the derived-data replay at 1.5x with captions -> pilot rates with their 95% intervals -> what the computer
 can and can't do yet -> end card.
@@ -22,17 +23,23 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[2]
 FOOTAGE = "--footage" in sys.argv
-SRC = ROOT / f"data/mvp/oliveira_gamrot.mp4_{'demo' if FOOTAGE else 'nopixels'}.mp4"
-OUT = ROOT / ("data/mvp/rncv_reel_footage.mp4" if FOOTAGE else "docs/media/rncv_reel.mp4")
+FIGHT = sys.argv[sys.argv.index("--fight") + 1] if "--fight" in sys.argv else "oliveira_gamrot"
 FFMPEG = shutil.which("ffmpeg")
 W, H, FPS = 1280, 720, 30
 SPEED = 1.5
-T_IN, T_OUT = 6.0, 34.5                     # stretch of the replay, in its own seconds
 TITLE_S, RATES_S, COMPUTER_S, END_S, FADE = 3.0, 5.0, 4.0, 2.5, 0.3
-CAPTIONS = [(6.0, 12.0, "A detector that never saw this fight flags the back attack"),
-            (12.0, 19.5, "Position details are hand-labeled; the model turns them into a finish chance"),
-            (19.5, 27.0, "The grip becomes a figure-four: the finish chance jumps"),
-            (27.0, 34.5, "HP, the estimated air left, has run out. Then the tap")]
+# fight -> (replay video stem, stretch of the replay in its own seconds, captions). Times are the demo video's seconds.
+FIGHTS = {
+    "oliveira_gamrot": ("oliveira_gamrot.mp4", 6.0, 34.5, [
+        (6.0, 12.0, "A detector that never saw this fight flags the back attack"),
+        (12.0, 19.5, "Position details are hand-labeled; the model turns them into a finish chance"),
+        (19.5, 27.0, "The grip becomes a figure-four: the finish chance jumps"),
+        (27.0, 34.5, "HP, the estimated air left, has run out. Then the tap")]),
+}
+STEM, T_IN, T_OUT, CAPTIONS = FIGHTS[FIGHT]
+SRC = ROOT / f"data/mvp/{STEM}_{'demo' if FOOTAGE else 'nopixels'}.mp4"
+OUT = ROOT / (f"data/mvp/rncv_reel_footage{'' if FIGHT == 'oliveira_gamrot' else '_' + FIGHT}.mp4" if FOOTAGE
+              else f"docs/media/rncv_reel{'' if FIGHT == 'oliveira_gamrot' else '_' + FIGHT}.mp4")
 BG, INK, DIM, ORANGE, BLUE, GOLD = (13, 16, 22), (235, 238, 242), (140, 150, 162), (249, 115, 22), (74, 158, 255), (250, 190, 40)
 F = lambda s: ImageFont.truetype("C:/Windows/Fonts/bahnschrift.ttf", s)
 

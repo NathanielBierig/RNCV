@@ -186,6 +186,7 @@ def main():
     hist, shown, last_end, i, fade = [], 0.0, None, 0, 1.0
     scope = bg = None                           # --no-pixels: fading trails of the confident joints on a dark grid
     air, grip, band = 1.0, 1.0, None
+    prev_st, prev_air = None, 1.0
     while True:
         ok, fr = cap.read()
         if not ok:
@@ -207,9 +208,16 @@ def main():
             xv = x_at(cur, el)
             target = sm.predict(beta, xv, sample=False)          # P(finish | state now), no time ramp
             band = sm.interval(beta, cov, xv)
-            shown += (target - shown) * 0.35                      # light display smoothing only
             tr = airs[id(cur)]
             air = tr[min(len(tr) - 1, int(el / 0.1))][1] / 100
+            # Display rule, not fitted: the finish chance and HP must not contradict each other. A draining defender
+            # pushes the chance up (HP 0 closes 60% of the gap to 100%: HP is an average and can't see toughness),
+            # and while nothing in the position changes and HP keeps falling, the chance never drops.
+            target += (1 - target) * 0.6 * (1 - air)
+            if st == prev_st and air < prev_air:
+                target = max(target, shown)
+            prev_st, prev_air = st, air
+            shown += (target - shown) * 0.35                      # light display smoothing only
             air_hist = [(tt, aa) for tt, aa in air_hist if t - tt <= 1.0] + [(t, air)]
             grip = 1 - float(xv[fat_i])
             hist.append(shown); att_t = el; last_end = cur; peak = max(peak, shown)
