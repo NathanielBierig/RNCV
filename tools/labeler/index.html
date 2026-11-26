@@ -565,7 +565,7 @@ function kPass(dir) {
   }
   kTarget = all[j];
   const s = Number(kTarget.video_time_start);
-  v.currentTime = Math.max(0, s - K_LEAD); v.playbackRate = 1; v.play().catch(() => {});
+  v.currentTime = Math.max(0, s - K_LEAD); v.play().catch(() => {});
   const left = all.filter(r => !r.seconds_to_lock).length;
   setStatus(`K pass ${j + 1}/${all.length}: ${kTarget.outcome} attempt at ${s.toFixed(1)} s (${left} left in this clip). Press <kbd>K</kbd> when back control begins, <kbd>N</kbd> to skip, <kbd>Shift+N</kbd> for the previous one.`);
   drawTimeline();
