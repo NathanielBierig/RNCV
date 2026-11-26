@@ -22,7 +22,7 @@ proper long videos. Re-downloading is allowed (official sources only: the owner 
 ## Findings from this session (data, 2026-11-26)
 - `phase3_labels/labeling_queue_long.csv`: 225 rounds with 3 min or more of control; 208 still todo; 78 with 4 min or more.
 - Of the 28 todo rounds by Aljo/Brazilian back-riders, 25 were already searched with **no official video** and none are left unsearched.
-- Inverted search: I listed the first 6000 uploads of the official UFC channel (`data/drafts/ufc_channel_uploads.tsv`, git-ignored): 383 look like fight videos (4 to 53 min). Matched to the long queue by both surnames: only 4 hits, and none is a usable long round (Pantoja-Royval is only a "Fight Day Focus" show, Allen-Duncan is "Behind The Scenes", Vinicius Oliveira-Said Nurmagomedov is already downloaded, Hokit-Lewis is a 10-minute 2026 upload). Official YouTube does not carry most long-control rounds.
+- Inverted search: I listed the first 6000 uploads of the official UFC channel (`data/drafts/ufc_channel_uploads.tsv`, git-ignored): 383 look like fight videos (4 to 53 min). Matched to the long queue by both surnames: only 4 hits, and none is a usable long round (Pantoja-Royval is only a "Fight Day Focus" show, Allen-Duncan is "Behind The Scenes", Vinicius Oliveira-Said Nurmagomedov was downloaded and the owner watched it: no attempts (marked watched_no_rnc), Hokit-Lewis is a 10-minute 2026 upload). Official YouTube does not carry most long-control rounds.
 - Conclusion: the supply problem is the source, not the tool. yt-dlp is current (2026.10.26; update with `yt-dlp -U`; winget fails on this install).
 
 ## The queue
