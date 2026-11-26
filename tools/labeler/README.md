@@ -19,6 +19,8 @@ This is one offline HTML file. There's no server, nothing is installed and nothi
 | Press end at the tap, stoppage, limp, escape, position change or bell. **Bell keeps its own code**; the analysis treats it as censored. | <kbd>Space</kbd>, then <kbd>E</kbd> |
 | Outcome panel: outcome, camera_cut_flag, sub_type, confidence; editable style sequence (`a>b>c`, checked against the allowed tags); optional seconds_to_lock and notes. | <kbd>1</kbd>–<kbd>9</kbd>, then <kbd>Enter</kbd> |
 
+**L (K pass):** reuse your last K moment in this video for the next attempt, for a long control with several attempts.
+
 **Other keys:** <kbd>W</kbd> swap attacker/defender · <kbd>Space</kbd> play/pause · <kbd>←</kbd>/<kbd>→</kbd> ±1 s (<kbd>Shift</kbd> ±5 s) · <kbd>,</kbd>/<kbd>.</kbd> ±1 frame · <kbd>[</kbd>/<kbd>]</kbd> speed · <kbd>B</kbd> back 10 s · <kbd>U</kbd> undo last row · <kbd>↑</kbd>/<kbd>↓</kbd> change field in a panel · <kbd>Esc</kbd> cancel · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> confirm while typing notes.
 
 **View blocked:** if the referee, a camera cut or the angle hides the choke at the 2 s pause, press <kbd>X</kbd> in the factor panel. Every factor is left blank in one go and the attempt gets `view_blocked=True`, so you skip the 12 fields. During an attempt, <kbd>X</kbd> toggles the flag on or off.

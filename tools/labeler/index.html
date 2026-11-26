@@ -121,6 +121,7 @@
         <kbd>G</kbd> log a state change (hooks, body lock, arm position, two-on-one, chin, flattened, context) at the current time<br>
         <kbd>N</kbd> K pass: jump to 30 s before the next labeled attempt that has no K yet (<kbd>Shift+N</kbd> back); then <kbd>K</kbd> fills it and moves on<br>
         <kbd>K</kbd> back control began here (when hooks or a seatbelt are first in, before any choke): fills the next saved attempt, or the next one you start<br>
+        <kbd>L</kbd> same back-control start as your last K in this video (for a long control with several attempts: no scrubbing back)<br>
         <kbd>U</kbd> undo last saved row · <kbd>B</kbd> back 10 s
       </div>
     </div>
@@ -570,14 +571,16 @@ function kPass(dir) {
   setStatus(`K pass ${j + 1}/${all.length}: ${kTarget.outcome} attempt at ${s.toFixed(1)} s (${left} left in this clip). Press <kbd>K</kbd> when back control begins, <kbd>N</kbd> to skip, <kbd>Shift+N</kbd> for the previous one.`);
   drawTimeline();
 }
-function markBackStart() {
+let lastK = null;
+function markBackStart(useLast) {
+  if (useLast) { if (!lastK || lastK.video !== videoName) { setStatus("No earlier K in this video to repeat. Press <kbd>K</kbd> at the start of back control first."); return; } v.currentTime = lastK.t; }
   const t = v.currentTime;
   if (kTarget && Number(kTarget.video_time_start) - t < 0) { setStatus(`K pass: you are past the attempt start (${Number(kTarget.video_time_start).toFixed(1)} s). Go back a few seconds, or press <kbd>N</kbd> to skip it.`); return; }
   const next = kTarget && kTarget.video_url === videoName ? kTarget
     : rows.filter(r => r.video_url === videoName && Number(r.video_time_start) >= t && Number(r.video_time_start) - t <= 180)
           .sort((a, b) => Number(a.video_time_start) - Number(b.video_time_start))[0];
   if (next) {
-    next.seconds_to_lock = r1(Number(next.video_time_start) - t);
+    next.seconds_to_lock = r1(Number(next.video_time_start) - t); lastK = {video: videoName, t};
     touched.set(rowKey(next), next); touchedAt.set(rowKey(next), Date.now()); persist(); renderTable();
     writeLinked().catch(err => alert("Write failed: " + err.message));
     const msg = `Back control start saved: ${next.seconds_to_lock} s before the attempt at ${Number(next.video_time_start).toFixed(1)} s (${next.outcome}).`;
@@ -727,6 +730,7 @@ document.addEventListener("keydown", e => {
   }
   if ((k === "n" || k === "N") && !cur) { e.preventDefault(); kPass(e.shiftKey ? -1 : 1); return; }
   if ((k === "k" || k === "K") && !cur) { e.preventDefault(); markBackStart(); return; }
+  if ((k === "l" || k === "L") && !cur) { e.preventDefault(); markBackStart(true); return; }
   if (k === "g" || k === "G") { e.preventDefault(); openChangePanel(); return; }
   if (k === "t" || k === "T") {
     if (!cur || !cur.factorsDone) { setStatus("Add styles after the landmark factors are coded (<kbd>S</kbd> first)."); return; }
