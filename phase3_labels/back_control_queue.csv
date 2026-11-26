@@ -1,4 +1,8 @@
 queue_rank,fight_id,date,event,attacker,defender,round,who,video_file,folder_to_load,attempts_to_K,attempt_start_times_in_video
+0.1,e61d83e4e1f9c4d7,2025-06-07,NEW (label first): L55_dvalishvili_o'malley.mp4,Merab Dvalishvili,Sean O'Malley,3,NEW clip,L55_dvalishvili_o'malley.mp4,to_label,label first,
+0.2,36ec204f47e4d613,2025-06-21,NEW (label first): L126_orolbai_musayev.mp4,Myktybek Orolbai,Tofiq Musayev,1,NEW clip,L126_orolbai_musayev.mp4,to_label,label first,
+0.3,ac37849f627a79c4,2023-11-04,NEW (label first): L208_almeida_lewis.mp4,Jailton Almeida,Derrick Lewis,2,NEW clip,L208_almeida_lewis.mp4,to_label,label first,
+0.4,1b6a3b0d27654d3e,2026-07-11,NEW (label first): q99_costa_durden.mp4,Alessandro Costa,Cody Durden,2,NEW clip,q99_costa_durden.mp4,to_label,label first,
 0.5,fef29aa73bd5b907,2021-05-15,NEW (label first): oliveira_chandler.mp4,Charles Oliveira,Michael Chandler,1,NEW clip,oliveira_chandler.mp4,to_label,label first,
 1,f030febede41c661,,[Oliveira] olivera_hoolowar_r1.mp4 - 2 to K,Charles Oliveira,Max Holloway,1,Oliveira,olivera_hoolowar_r1.mp4,restored,2,0:43  1:16
 2,7d4e49d8a6678157,,[Oliveira] charles_gaethje.mp4.webm - 1 to K,Charles Oliveira,Justin Gaethje,1,Oliveira,charles_gaethje.mp4.webm,restored,1,0:13
