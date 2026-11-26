@@ -1,0 +1,41 @@
+queue_rank,fight_id,date,event,attacker,defender,round,who,video_file,folder_to_load,attempts_to_K,attempt_start_times_in_video
+0.5,fef29aa73bd5b907,2021-05-15,NEW (label first): oliveira_chandler.mp4,Charles Oliveira,Michael Chandler,1,NEW clip,oliveira_chandler.mp4,to_label,label first,
+1,f030febede41c661,,[Oliveira] olivera_hoolowar_r1.mp4 - 2 to K,Charles Oliveira,Max Holloway,1,Oliveira,olivera_hoolowar_r1.mp4,restored,2,0:43  1:16
+2,7d4e49d8a6678157,,[Oliveira] charles_gaethje.mp4.webm - 1 to K,Charles Oliveira,Justin Gaethje,1,Oliveira,charles_gaethje.mp4.webm,restored,1,0:13
+3,e761c5009c09b295,,[Pantoja] pantoja_asakura_r2_b.mp4 - 1 to K,Alexandre Pantoja,Kai Asakura,2,Pantoja,pantoja_asakura_r2_b.mp4,demos,1,0:19
+4,301f230c90c4bd7d,,[Almeida] q122_almeida_turkalj.mp4 - 1 to K,Jailton Almeida,Anton Turkalj,1,Almeida,q122_almeida_turkalj.mp4,restored,1,4:01
+5,96b59d89ecac66d0,,[Others] q17_smith_oezdemir.mp4 - 1 to K,Anthony Smith,Volkan Oezdemir,3,Others,q17_smith_oezdemir.mp4,labeled,1,16:51
+6,8bc0c220f7dcefa7,,[Others] q10_tybura_tuivasa.mp4 - 1 to K,Marcin Tybura,Tai Tuivasa,1,Others,q10_tybura_tuivasa.mp4,restored,1,3:30
+7,b34abcfe4c2e8a57,,[Others] q61_rosas_turcios.mp4 - 3 to K,Ricky Turcios,Raul Rosas Jr.,1,Others,q61_rosas_turcios.mp4,labeled,3,4:09  6:41  7:27
+8,a83ebbf013905949,,[Others] f29_vera_grant.mp4 - 2 to K,Marlon Vera,Davey Grant,3,Others,f29_vera_grant.mp4,labeled,2,11:03  14:43
+9,d14fea43712707f0,,[Others] q21_denis_ruffy.mp4 - 1 to K,Benoit Saint Denis,Mauricio Ruffy,2,Others,q21_denis_ruffy.mp4,labeled,1,11:38
+10,0f51869f98afa6c0,,[Others] q01_moreno_figueiredo2.mp4 - 3 to K,Brandon Moreno,Deiveson Figueiredo,3,Others,q01_moreno_figueiredo2.mp4,demos,3,13:13  13:40  13:54
+11,d869eaea38426f06,,[Others] q39_walker_cutelaba.mp4 - 4 to K,Johnny Walker,Ion Cutelaba,1,Others,q39_walker_cutelaba.mp4,restored,4,3:14  3:27  4:29  4:38
+12,0e55d8a3d7a73912,,[Others] f01_barcelos_rosas.mp4 - 2 to K,Raoni Barcelos,Raul Rosas Jr.,4,Others,f01_barcelos_rosas.mp4,labeled,2,13:04  13:36
+13,d006dd2513bd376d,,[Others] q31_pyfer_magomedov.mp4 - 1 to K,Joe Pyfer,Abus Magomedov,2,Others,q31_pyfer_magomedov.mp4,restored,1,9:21
+14,6e73ebbd089aff5e,,[Others] f18_poirier_denis.mp4 - 4 to K,Dustin Poirier,Benoit Saint Denis,1,Others,f18_poirier_denis.mp4,labeled,4,6:06  6:07  6:18  6:18
+15,800a35b3a7e52308,,[Others] f21_blachowicz_pereira_r1.mp4 - 5 to K,Jan Blachowicz,Alex Pereira,1,Others,f21_blachowicz_pereira_r1.mp4,demos,5,2:07  3:41  4:07  4:33  5:01
+16,f17813d03fcd8e7a,,[Others] q23_anjos_barberena.mp4 - 1 to K,Rafael Dos Anjos,Bryan Barberena,2,Others,q23_anjos_barberena.mp4,restored,1,8:17
+17,2ba11e0bf32829d6,,[Others] q12_allen_muniz.mp4 - 2 to K,Brendan Allen,Andre Muniz,3,Others,q12_allen_muniz.mp4,restored,2,16:14  16:41
+18,d14f98b24691d082,,[Others] L05_barcelos_talbott.mp4 - 4 to K,Raoni Barcelos,Payton Talbott,1,Others,L05_barcelos_talbott.mp4,labeled,4,3:41  4:23  17:57  18:47
+19,ab4a91a59c01d6b6,,[Others] q58_chairez_vergara.mp4 - 1 to K,Edgar Chairez,CJ Vergara,1,Others,q58_chairez_vergara.mp4,restored,1,4:08
+20,a3d75cc363a6544b,,[Others] q115_ulberg_jung.mp4 - 1 to K,Carlos Ulberg,Da Woon Jung,3,Others,q115_ulberg_jung.mp4,restored,1,15:01
+21,d03d0abf331df751,,[Others] L32_covington_masvidal.mp4 - 7 to K,Colby Covington,Jorge Masvidal,3,Others,L32_covington_masvidal.mp4,labeled,7,2:52  2:57  9:53  15:30  15:53  23:38  27:07
+22,1535fb6549fa8bab,,[Others] q73_dawson_madsen.mp4 - 3 to K,Grant Dawson,Mark Madsen,3,Others,q73_dawson_madsen.mp4,restored,3,2:11  2:20  12:24
+23,20d74ed23d3e9b3a,,[Others] q147_chairez_silva.mp4 - 1 to K,Edgar Chairez,Bruno Silva,1,Others,q147_chairez_silva.mp4,restored,1,5:41
+24,d69bd8e53ec858dc,,[Others] q07_moicano_duncan.mp4 - 3 to K,Renato Moicano,Chris Duncan,2,Others,q07_moicano_duncan.mp4,restored,3,6:55  7:02  8:37
+25,ecab8b8b36727b8d,,[Others] L92_plessis_till.mp4 - 4 to K,Dricus Du Plessis,Darren Till,1,Others,L92_plessis_till.mp4,labeled,4,3:19  3:34  4:02  14:04
+26,bf647be41de365e4,,[Others] q66_battle_fletcher.mp4 - 1 to K,Bryan Battle,AJ Fletcher,2,Others,q66_battle_fletcher.mp4,restored,1,9:42
+27,8abad36b4c5e4070,,[Others] q55_nolan_campbell.mp4 - 1 to K,Tom Nolan,Charlie Campbell,1,Others,q55_nolan_campbell.mp4,labeled,1,4:03
+28,8bd5f20f49434c65,,[Others] q173_lima_naimov.mp4 - 1 to K,Felipe Lima,Muhammad Naimov,3,Others,q173_lima_naimov.mp4,labeled,1,15:24
+29,3eea92e7f26fb05b,,[Others] q02_khabib_mcgregor.mp4 - 1 to K,Khabib Nurmagomedov,Conor McGregor,4,Others,q02_khabib_mcgregor.mp4,restored,1,18:19
+30,923e151bd990961b,,[Others] q15_teixeira_santos.mp4 - 2 to K,Glover Teixeira,Thiago Santos,2,Others,q15_teixeira_santos.mp4,labeled,2,11:24  14:28
+31,f23e9729b2b73c27,,[Others] L29_chimaev_usman.mp4 - 4 to K,Khamzat Chimaev,Kamaru Usman,1,Others,L29_chimaev_usman.mp4,labeled,4,3:03  3:26  3:32  4:30
+32,a10deecfb8558335,,[Others] q06_salkilld_gamrot.mp4 - 3 to K,Mateusz Gamrot,Quillan Salkilld,1,Others,q06_salkilld_gamrot.mp4,labeled,3,5:34  6:19  6:27
+33,6c44af21414e4143,,[Others] ddp_adesanya.mp4.webm - 1 to K,Dricus Du Plessis,Israel Adesanya,4,Others,ddp_adesanya.mp4.webm,restored,1,0:18
+34,d61373d9fdf01a12,,[Others] L03_allen_ridder.mp4 - 3 to K,Reinier de Ridder,Brendan Allen,3,Others,L03_allen_ridder.mp4,labeled,3,4:19  4:52  11:35
+35,3ab0d8b344d2ebea,,[Others] q110_figueiredo_garbrandt.mp4 - 2 to K,Deiveson Figueiredo,Cody Garbrandt,2,Others,q110_figueiredo_garbrandt.mp4,restored,2,12:49  12:59
+36,01a4827b3596d111,,[Others] khabib_dustin.mp4.webm - 2 to K,Khabib Nurmagomedov,Dustin Poirier,3,Others,khabib_dustin.mp4.webm,restored,2,0:12  0:28
+37,eebb4dde70a67369,,[Others] q18_oleinik_hunt.mp4 - 1 to K,Aleksei Oleinik,Mark Hunt,1,Others,q18_oleinik_hunt.mp4,labeled,1,7:05
+38,b8bf186f884678ea,,[Others] q19_chimaev_whittaker.mp4 - 2 to K,Khamzat Chimaev,Robert Whittaker,1,Others,q19_chimaev_whittaker.mp4,restored,2,3:12  3:44
+39,086c2a0cae0835c4,,[Others] q215_rakhmonov_prazeres.mp4 - 2 to K,Shavkat Rakhmonov,Michel Prazeres,2,Others,q215_rakhmonov_prazeres.mp4,labeled,2,7:24  7:33
